@@ -1,50 +1,46 @@
-# React + TypeScript + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**dx-editor 图形编辑器**，一款开源的基于 [leaferjs](https://www.leaferjs.com/ui/) 实现的矢量图形编辑器。
 
-Currently, two official plugins are available:
+[体验网址](https://leidao.github.io/circuit-graph/)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+![Screenshot](screenshot.png)
 
-## Expanding the ESLint configuration
+## 特性
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+1. 图形的创建和编辑，包括：图元、线、文本；
+2. 丰富的工具：选中工具、绘制图形工具、画布工具、抓手工具；
+3. 无限画布，可以缩放和拖拽画布；
+4. 历史记录，可撤销重做；
+5. 快捷键；
+6. 图层面板、属性面板；
+7. 标尺功能；
+8. 导入导出图纸；
 
-- Configure the top-level `parserOptions` property like this:
+下一步计划
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+- [ ] 用户设置；
+- [ ] 丰富更多图形；
+- [ ] 丰富属性面板。
+- [ ] 线和图元的关联。
+
+## 环境依赖
+
+运行项目，需要安装 Node.js（建议官网 LTS 版本），然后用 Node.js 安装 PNPM 包管理器：
+
+```sh
+npm install -g pnpm
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+## 如何开发和构建产物？
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+进入项目文件根目录，安装依赖
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+```sh
+pnpm install
+```
+
+开发环境（当文件修改后会自动更新刷新页面）
+
+```sh
+pnpm run serve
 ```

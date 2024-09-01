@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2022-04-06 14:45:22
  * @LastEditors: ldx
- * @LastEditTime: 2024-08-30 10:08:24
+ * @LastEditTime: 2024-09-01 18:00:52
  */
 import legacy from '@vitejs/plugin-legacy'
 import react from '@vitejs/plugin-react'
@@ -33,7 +33,10 @@ export default defineConfig({
       // safelist: safelist
     })
   ],
- 
+  build: {
+    outDir: 'docs'
+  },
+  base: '/circuit-graph',
   server: {
     port: 8004,
     open: true,
