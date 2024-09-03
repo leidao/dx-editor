@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2024-08-30 19:41:38
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-01 16:56:45
+ * @LastEditTime: 2024-09-03 15:26:01
  */
 
 import EditorContext from "@/editor/context"
@@ -12,7 +12,7 @@ import NumberInput from "../numberInput"
 import { IUI } from "@leafer-ui/interface"
 import _ from "lodash"
 import { Attr } from '@/editor/components/panel/index'
-import { Rotation, Unlock, Lock } from '../../icons'
+import { Rotation, Unlock, Lock } from './icons'
 import { Tooltip } from "antd"
 interface Props {
   selectList: IUI[]
@@ -68,6 +68,8 @@ const Stats: React.FC<Props> = ({ selectList, attr }) => {
         value={attr.rotation}
         prefix={<Rotation />}
         placeholder='多个值'
+        min={-1}
+        max={360}
         onFocus={() => {
           if (!view) return
           view.app.editor.config.keyEvent = false

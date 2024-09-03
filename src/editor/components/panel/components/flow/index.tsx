@@ -6,7 +6,7 @@
  * @LastEditTime: 2024-08-31 16:53:35
  */
 import { useContext, useEffect, useMemo, useState } from "react"
-import { AlignLeft, HorizontalCenter, AlignRight, AlignTop, VerticalCenter, AlignBottom } from '../../icons'
+import { AlignLeft, HorizontalCenter, AlignRight, AlignTop, VerticalCenter, AlignBottom } from '../stats/icons'
 import EditorContext from "@/editor/context"
 import { isWindows } from "@/editor/utils"
 import { Tooltip } from "antd"

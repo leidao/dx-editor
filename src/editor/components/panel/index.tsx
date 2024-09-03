@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2023-12-21 15:26:11
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-01 17:43:02
+ * @LastEditTime: 2024-09-03 15:44:47
  */
 import { Collapse, Empty, Slider } from 'antd'
 import { useContext, useEffect, useState } from 'react'
@@ -12,10 +12,10 @@ import { IUI } from '@leafer-ui/interface'
 import { EditorEvent, EditorMoveEvent, EditorRotateEvent, EditorScaleEvent } from 'leafer-editor'
 import _ from 'lodash'
 import Stats from './components/stats'
-import NumberInput from './components/numberInput'
 import Flow from './components/flow'
 import Opacity from './components/opacity'
 import Text from './components/text'
+import Appearance from './components/appearance'
 export interface Attr {
   x: number | string
   y: number | string
@@ -24,10 +24,11 @@ export interface Attr {
   height: number | string
 }
 const getAttr0 = (element?: IUI) => {
+  const rotation = element?.rotation !== undefined ? element.rotation : ''
   return {
     x: element?.x !== undefined ? element?.x : '',
     y: element?.y !== undefined ? element?.y : '',
-    rotation: element?.rotation !== undefined ? element.rotation : '',
+    rotation: +rotation < 0 ? +rotation + 360 : rotation,
     width: element?.width !== undefined ? element?.width : '',
     height: element?.height !== undefined ? element?.height : '',
   }
@@ -60,12 +61,6 @@ const Panel = () => {
       // getAttr中element.x/y需要异步
       setTimeout(() => {
         const newAttr = getAttr(list)
-        // 比较属性是否发生变化
-        // console.log('_.isEqual',attr, newAttr);
-        // if (!_.isEqual(attr, newAttr)) {
-        // setAttr(newAttr)
-        // console.log('x');
-        // }
         setAttr(newAttr)
         setSelectList(list.slice())
       })
@@ -108,14 +103,10 @@ const Panel = () => {
             <Opacity selectList={selectList} opacity={opacity} ></Opacity>
           </div>
           <div className='border-b-solid border-1px border-#dee0e2'>
-            <Collapse defaultActiveKey={['文本']} ghost expandIconPosition='end' items={[
-              {
-                key: '文本',
-                label: '文本',
-                children: <Text></Text>,
-              }
-            ]} />
-
+            <Text selectList={selectList}></Text>
+          </div>
+          <div className='border-b-solid border-1px border-#dee0e2'>
+            <Appearance selectList={selectList}></Appearance>
           </div>
         </div>
       )}

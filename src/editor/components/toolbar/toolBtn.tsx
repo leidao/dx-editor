@@ -3,19 +3,21 @@
  * @Author: ldx
  * @Date: 2023-12-21 11:13:40
  * @LastEditors: ldx
- * @LastEditTime: 2024-08-31 16:51:54
+ * @LastEditTime: 2024-09-02 09:49:21
  */
 
 import { Tooltip } from 'antd'
 import { useContext, useEffect, useState } from 'react'
 
 import EditorContext from '@/editor/context'
+
 import ToolDrawLine from '@/editor/manager/tools/drawLine'
 import ToolOperationGraph from '@/editor/manager/tools/operationGraph'
 import ToolDragCanvas from '@/editor/manager/tools/dragCanvas'
 import ToolDrawText from '@/editor/manager/tools/drawText'
-import { HandOutlined, LineOutlined, SelectOutlined, TextFilled } from './icons'
-import { InnerEditorEvent } from 'leafer-editor'
+import ToolDrawRect from '@/editor/manager/tools/drawRect'
+import { HandOutlined, LineOutlined, SelectOutlined, TextFilled, RectOutlined } from './icons'
+
 const ToolBtn = () => {
   const [selectedName, setSelectedName] = useState('')
   const [tools, setTools] = useState<any[]>([])
@@ -46,6 +48,13 @@ const ToolBtn = () => {
         icon: <TextFilled />
       },
       {
+        instance: new ToolDrawRect(view),
+        name: 'drawRect',
+        keyboard: 'r',
+        tip: '绘制矩形 R',
+        icon: <RectOutlined />
+      },
+      {
         instance: new ToolDragCanvas(view),
         name: 'dragCanvas',
         keyboard: 'h',
@@ -54,6 +63,8 @@ const ToolBtn = () => {
       },
     ]
     tools.forEach(tool => {
+      console.log('tool',tool.name);
+      
       view.manager.tools.register(tool.instance)
       view.manager.keybord.register({
         keyboard: tool.keyboard,

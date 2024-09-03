@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@ant-design/colors": "^7.1.0",
     "@ant-design/icons": "^5.4.0",
     "@leafer-in/flow": "^1.0.2",
     "@leafer-ui/interface": "^1.0.2",
@@ -29,6 +30,7 @@
     "path-browserify": "^1.0.1",
     "rc-virtual-list": "^3.14.5",
     "react": "^18.3.1",
+    "react-color": "^2.19.3",
     "react-dom": "^18.3.1",
     "unocss": "^0.62.2",
     "uuid": "^10.0.0"

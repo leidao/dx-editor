@@ -1,16 +1,24 @@
-.ant-tooltip-content{
-  margin-top: 4px !important;
+@font-face {
+  font-family: 'AlimamaShuHeiTi';
+  src: url('/fonts/数黑体/AlimamaShuHeiTi-Bold.woff2');
 }
 
-.ant-tabs{
-  height: 100%;
-  .ant-tabs-nav{
-    margin-bottom: 0px;
-  }
-  .ant-tabs-content,.ant-tabs-tabpane{
-    height: 100%;
-  }
+@font-face {
+  font-family: 'AlimamaDaoLiTi';
+  src: url('/fonts/刀隶体/AlimamaDaoLiTi.woff2');
 }
-.ant-input-number-input{
-  height: 26px !important;
+
+@font-face {
+  font-family: 'AlimamaFangYuanTiVF';
+  src: url('/fonts/方圆体/AlimamaFangYuanTiVF-Thin.woff2');
+}
+
+@font-face {
+  font-family: 'AlimamaDongFangDaKai';
+  src: url('/fonts/东方大楷/AlimamaDongFangDaKai-Regular.woff2');
+}
+
+@font-face {
+  font-family: 'bailufeiyunshouxieti';
+  src: url('/fonts/白路飞云手写体/bailufeiyunshouxieti.woff');
 }

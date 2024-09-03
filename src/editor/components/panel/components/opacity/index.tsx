@@ -5,7 +5,7 @@
  * @Author: ldx
  * @Date: 2024-08-31 14:52:09
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-01 17:07:02
+ * @LastEditTime: 2024-09-03 14:54:11
  */
 import { Slider } from "antd"
 import NumberInput from "../numberInput"
@@ -19,7 +19,7 @@ interface Props {
 }
 const Opacity: React.FC<Props> = ({ opacity,selectList }) => {
   const view = useContext(EditorContext)
-  return <div className="p-10px flex items-center ">
+  return <div className="panel_opacity p-10px flex items-center ">
     <div className='w-58px text-12px text-#00000099'>不透明度</div>
     <div className='flex-1'>
       <Slider

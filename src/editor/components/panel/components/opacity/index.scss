@@ -1,26 +1,28 @@
-.ant-slider-handle{
-  &::after{
-    box-shadow: 0 0 0 1px #e0e0e0 !important;
-  }
-  &:hover{
+.panel_opacity{
+  .ant-slider-handle{
     &::after{
       box-shadow: 0 0 0 1px #e0e0e0 !important;
-      outline:none !important;
-      background: #cccccc;
     }
-  }
-  &:active{
-    &::after{
-      box-shadow: 0 0 0 1px #e0e0e0 !important;
-      outline:none !important;
-      background: #cccccc;
+    &:hover{
+      &::after{
+        box-shadow: 0 0 0 1px #e0e0e0 !important;
+        outline:none !important;
+        background: #cccccc;
+      }
     }
-  }
-  &:focus{
-    &::after{
-      box-shadow: 0 0 0 1px #e0e0e0 !important;
-      outline:none !important;
-      background: #cccccc;
+    &:active{
+      &::after{
+        box-shadow: 0 0 0 1px #e0e0e0 !important;
+        outline:none !important;
+        background: #cccccc;
+      }
+    }
+    &:focus{
+      &::after{
+        box-shadow: 0 0 0 1px #e0e0e0 !important;
+        outline:none !important;
+        background: #cccccc;
+      }
     }
   }
 }
