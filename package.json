@@ -16,6 +16,7 @@
     "@leafer-ui/interface": "^1.0.2",
     "@types/lodash": "^4.17.7",
     "@types/path-browserify": "^1.0.3",
+    "@types/react-color": "^3.0.12",
     "@types/uuid": "^10.0.0",
     "@vitejs/plugin-legacy": "^5.4.2",
     "ahooks": "^3.8.1",

@@ -3,11 +3,11 @@
  * @Author: ldx
  * @Date: 2024-09-02 14:28:40
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-03 16:08:35
+ * @LastEditTime: 2024-09-03 17:22:28
  */
 import { Col, ColorPicker, ColorPickerProps, Divider, Row } from "antd";
 // import { cyan, generate, green, presetPalettes, red } from '@ant-design/colors';
-
+import { SketchPicker } from 'react-color';
 interface Props {
   value?: string
   onChange?: (value: string) => void
@@ -17,7 +17,17 @@ interface Props {
 const Color: React.FC<Props> = ({ value, onChange }) => {
 
 
-  return <ColorPicker
+  return <div>
+    {/* <SketchPicker
+      color={value}
+      onChange={() => {
+
+      }}
+      onChangeComplete={() => {
+
+      }}
+    /> */}
+    <ColorPicker
     size="small"
     value={value}
     onChange={(color) => {
@@ -26,6 +36,9 @@ const Color: React.FC<Props> = ({ value, onChange }) => {
   // allowClear
   // mode="gradient"
   />
+  </div>
+
+
 }
 
 export default Color

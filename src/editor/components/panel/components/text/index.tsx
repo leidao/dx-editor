@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2024-09-01 17:08:29
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-03 16:16:11
+ * @LastEditTime: 2024-09-03 17:09:44
  */
 import './index.scss'
 import { useContext, useEffect, useState } from 'react';
@@ -36,12 +36,6 @@ const fontFamilyOptions = [
   },
   {
     value: 'bailufeiyunshouxieti', label: '白路飞云手写体',
-  },
-  {
-    value: 'AlimamaShuHeiTi', label: '数黑体',
-  },
-  {
-    value: 'AlimamaDongFangDaKai', label: '东方大楷',
   },
 ]
 interface Props {

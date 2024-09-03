@@ -3,14 +3,14 @@
  * @Author: ldx
  * @Date: 2024-08-20 14:50:58
  * @LastEditors: ldx
- * @LastEditTime: 2024-08-31 09:42:38
+ * @LastEditTime: 2024-09-03 17:12:54
  */
 
 import _ from 'lodash'
 import { App, Rect } from 'leafer-editor'
 // import { Ruler } from 'leafer-x-ruler'
-import { Line, Image, DragEvent } from 'leafer-ui'
-import { v4  } from 'uuid'
+import { Line, Image, Text } from 'leafer-ui'
+import { v4 } from 'uuid'
 // import KeybordManager from './command/keybordManger'
 // import CursorManager from './cursor/cursorManager'
 import Manager from './manager/index'
@@ -25,7 +25,7 @@ export class EditorView {
   /** 管理器 */
   manager!: Manager
   /** 标尺 */
-  ruler!:Ruler
+  ruler!: Ruler
   constructor(option: Option) {
     if (!option.container) return
     // 场景相关
@@ -36,13 +36,33 @@ export class EditorView {
       // 会自动创建 editor实例、tree层、sky层
       editor: {
         /** 锁定元素的宽高比 */
-        lockRatio:true
-      } 
+        lockRatio: true
+      }
     })
     this.ruler = new Ruler(this.app)
 
-     // 管理器
-     this.manager = new Manager(this)
+    // 管理器
+    this.manager = new Manager(this)
+
+    const text = new Text({
+      x: 400,
+      y: 200,
+      text: 'dx-editor，实现电路图和工业组态编辑器',
+      name: '文字',
+      editable: true,
+      id: v4()
+    })
+    this.app.tree.add(text)
+
+    const rect = new Rect({
+      editable: true,
+      fill: '#d9d9d9',
+      name: '矩形',
+      x: 400,
+      y: 400,
+      id: v4()
+    })
+    this.app.tree.add(rect)
 
   }
 
@@ -67,14 +87,14 @@ export class EditorView {
     const coord = this.app.getPagePointByClient(event)
     const image = new Image({
       url: src,
-      x: coord.x -35,
-      y: coord.y -25,
+      x: coord.x - 35,
+      y: coord.y - 25,
       // offsetX: -35,
       // offsetY: -25,
       width: 70,
       height: 50,
       editable: true,
-      name:'图元',
+      name: '图元',
       id: v4(),
     })
     this.app.tree.add(image)
@@ -84,6 +104,6 @@ export class EditorView {
   destroy() {
     this.app.destroy()
     this.manager.destroy()
-   }
+  }
 
 }
