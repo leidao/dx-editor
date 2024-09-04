@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2024-08-20 14:50:58
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-03 17:12:54
+ * @LastEditTime: 2024-09-04 17:59:36
  */
 
 import _ from 'lodash'
@@ -56,10 +56,15 @@ export class EditorView {
 
     const rect = new Rect({
       editable: true,
-      fill: '#d9d9d9',
+      fill: {
+        type: 'solid',
+        color: '#d9d9d9'
+      },
       name: '矩形',
       x: 400,
       y: 400,
+      width: 100,
+      height: 100,
       id: v4()
     })
     this.app.tree.add(rect)

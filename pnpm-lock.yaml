@@ -74,6 +74,9 @@ dependencies:
   react-dom:
     specifier: ^18.3.1
     version: 18.3.1(react@18.3.1)
+  tinycolor2:
+    specifier: ^1.6.0
+    version: 1.6.0
   unocss:
     specifier: ^0.62.2
     version: 0.62.2(postcss@8.4.41)(vite@5.4.1)

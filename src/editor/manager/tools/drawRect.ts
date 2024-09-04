@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2023-12-09 10:21:06
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-02 09:51:18
+ * @LastEditTime: 2024-09-04 17:53:27
  */
 import { v4 } from 'uuid'
 import { EditorView } from '@/editor/view'
@@ -20,7 +20,10 @@ export default class ToolDrawRect extends ToolBase {
   start = (e: DragEvent) => {
     this.rect = new Rect({
       editable: true,
-      fill: '#d9d9d9',
+      fill: {
+        type:'solid',
+        color:'#d9d9d9'
+      },
       name: '矩形',
       id: v4()
     })
