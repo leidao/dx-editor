@@ -111,6 +111,7 @@ const Appearance: React.FC<Props> = ({ selectList }) => {
                     const radius = [cornerRadius[0], cornerRadius[0], cornerRadius[0], cornerRadius[0]]
                     changeAttr('cornerRadius', radius)
                     setCornerRadius(radius)
+                    view?.app.tree.emit('update')
                   }}
                 >
                   <Tooltip placement="bottom" title='圆角' arrow={false}>
@@ -407,11 +408,15 @@ const Appearance: React.FC<Props> = ({ selectList }) => {
                       if (value === 'solid') {
                         changeAttr('dashPattern', undefined)
                         changeAttr('dashPattern', 0)
+                        setDashOffset(0)
+                        setDashPattern([20,10])
                       } else {
                         changeAttr('dashPattern', dashPattern)
                         changeAttr('dashOffset', dashOffset)
+                        setDashOffset(0)
+                        setDashPattern([20,10])
                       }
-
+                      view?.app.tree.emit('update')
                     }}
                   >
                     <Tooltip placement="bottom" title='直线' arrow={false}>

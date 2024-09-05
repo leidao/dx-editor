@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2023-12-09 18:58:58
  * @LastEditors: ldx
- * @LastEditTime: 2024-08-30 20:11:02
+ * @LastEditTime: 2024-09-05 16:52:31
  */
 import { ChildEvent, DragEvent, KeyEvent, UI } from 'leafer-ui'
 import { EditorView } from '../../view'
@@ -14,6 +14,10 @@ import _ from 'lodash'
 import { IKeyEvent } from '@leafer-ui/interface'
 
 type Queue = { [key: number]: { redo: Patch[], undo: Patch[] } }
+
+function isPlainValue(data:any){
+  return !(Object.prototype.toString.call(data) === '[object Object]' || Array.isArray(data))
+}
 
 export default class CommandManger {
   current = -1 // 前进后退的索引值
@@ -38,13 +42,13 @@ export default class CommandManger {
     // 监听键盘事件
     this.view.app.on(KeyEvent.DOWN, this.onKeydown)
   }
-  destroy(){
-     this.view.app.editor.off(InnerEditorEvent.CLOSE, this.change)
-     this.view.app.tree.off('add', this.change)
-     this.view.app.tree.off('reomve', this.change)
-     this.view.app.tree.off('update', this.change)
-     this.view.app.editor.off(DragEvent.END, this.change)
-     this.view.app.off(KeyEvent.DOWN, this.onKeydown)
+  destroy() {
+    this.view.app.editor.off(InnerEditorEvent.CLOSE, this.change)
+    this.view.app.tree.off('add', this.change)
+    this.view.app.tree.off('reomve', this.change)
+    this.view.app.tree.off('update', this.change)
+    this.view.app.editor.off(DragEvent.END, this.change)
+    this.view.app.off(KeyEvent.DOWN, this.onKeydown)
   }
   onKeydown = (event: IKeyEvent) => {
     if (
@@ -78,17 +82,28 @@ export default class CommandManger {
     const data: { [key: string]: any } = {}
     json.children?.forEach((child: any) => data[child.id] = child)
     this.initialState = produce(this.initialState, draft => {
-      const mergeData = { ...draft, ...data }
-      // TODO 比较老数据和新数据的变化，这里只做了一层比较，后续做改造
-      Object.keys(mergeData).forEach(key => {
-        if (!draft[key]) {
-          draft[key] = data[key]
-        } else if (!data[key]) {
-          delete draft[key]
-        } else {
-          this.deepCompareAndMerge(draft[key], data[key])
-        }
-      })
+      const deepCompareAndMerge = (draft: any, data: any) => {
+        const mergeData = { ...draft, ...data }
+        // TODO 比较老数据和新数据的变化，这里只做了一层比较，后续做改造
+        Object.keys(mergeData).forEach(key => {
+          // 新的有，老得没有，直接赋值
+          if (!draft[key]) {
+            draft[key] = data[key]
+          } else if (!data[key]) {
+            // 新的没有，老得有，直接删除
+            delete draft[key]
+          } else {
+            if (isPlainValue(draft[key]) && isPlainValue(data[key])) {
+              draft[key] = data[key]
+            } else {
+               // 两个都有，并且都不是普通值
+               deepCompareAndMerge(draft[key], data[key])
+            }
+          }
+        })
+      }
+      deepCompareAndMerge(draft, data)
+
     }, (patches, inversePatches) => {
       // 没有任何变化
       if (patches.length === 0 && inversePatches.length === 0) return
@@ -107,22 +122,22 @@ export default class CommandManger {
     })
     // console.log('nextState', this.initialState);
   }
-  deepCompareAndMerge(obj1: any, obj2: any) {
-    for (const key in obj2) {
-      if (obj2.hasOwnProperty(key)) {
-        if (typeof obj2[key] === 'object' && obj2[key] !== null) {
-          // 如果是对象，递归调用
-          if (typeof obj1[key] !== 'object') {
-            obj1[key] = {};
-          }
-          this.deepCompareAndMerge(obj1[key], obj2[key]);
-        } else {
-          // 否则直接赋值
-          obj1[key] = obj2[key];
-        }
-      }
-    }
-  }
+  // deepCompareAndMerge(obj1: any, obj2: any) {
+  //   for (const key in obj2) {
+  //     if (obj2.hasOwnProperty(key)) {
+  //       if (typeof obj2[key] === 'object' && obj2[key] !== null) {
+  //         // 如果是对象，递归调用
+  //         if (typeof obj1[key] !== 'object') {
+  //           obj1[key] = {};
+  //         }
+  //         this.deepCompareAndMerge(obj1[key], obj2[key]);
+  //       } else {
+  //         // 否则直接赋值
+  //         obj1[key] = obj2[key];
+  //       }
+  //     }
+  //   }
+  // }
 
   redo = () => {
     const cmd = this.queue[this.current + 1] // 找到当前的下一步还原操作
