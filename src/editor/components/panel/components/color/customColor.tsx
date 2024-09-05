@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2024-09-02 14:31:59
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-04 17:36:00
+ * @LastEditTime: 2024-09-05 09:53:28
  */
 import './index.scss'
 import React, { Component } from 'react';
@@ -16,7 +16,7 @@ import {
 import ChromeFields from 'react-color/lib/components/chrome/ChromeFields'
 import Swatch from 'react-color/lib/components/common/Swatch'
 import * as color from 'react-color/lib/helpers/color'
-import { CustomPicker } from 'react-color';
+import { CustomPicker, SketchPicker } from 'react-color';
 
 const HuePointer = () => {
   return <div
@@ -81,6 +81,8 @@ const  Color  = (props:any={}) =>{
     );
 
 }
-
+// const Color = (props:any)=>{
+//   return <SketchPicker {...props}/>
+// }
 
 export default CustomPicker(Color);

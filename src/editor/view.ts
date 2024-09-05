@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2024-08-20 14:50:58
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-04 17:59:36
+ * @LastEditTime: 2024-09-05 09:13:10
  */
 
 import _ from 'lodash'
@@ -68,6 +68,7 @@ export class EditorView {
       id: v4()
     })
     this.app.tree.add(rect)
+    this.app.tree.emit('update')
 
   }
 

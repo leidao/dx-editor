@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2024-09-04 14:26:55
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-04 17:45:22
+ * @LastEditTime: 2024-09-05 09:57:59
  */
 import { Popover } from 'antd'
 import CustomColor from './customColor'
@@ -22,28 +22,31 @@ interface Props {
   onSwitchChange: (v: any) => void
   onUpload: (v: any) => void
   onImageModeChange: (v: any) => void
+  onOpenChange: (v: any) => void
 }
 
 // const 
 
-const ColorPicker: React.FC<Props> = ({ option, onChange, onSwitchChange, onUpload ,onImageModeChange}) => {
-
+const ColorPicker: React.FC<Props> = ({ option, onChange, onSwitchChange, onUpload, onImageModeChange, onOpenChange }) => {
   return <Popover
     overlayClassName='custom_color_picker'
     placement="left"
     trigger='click'
     arrow={false}
+    onOpenChange={onOpenChange}
     content={
       <div className='custom_color_picker'>
         <SwitchHeader type={option.type} onChange={onSwitchChange} />
-        {option.type === 'image' ? <UploadImage url={option.url} bgUrl={option.bgUrl} mode={option.mode} onUpload={onUpload} onImageModeChange={onImageModeChange}/> : <CustomColor color={option.color} onChange={onChange} />}
+        {option.type === 'image' ?
+          <UploadImage url={option.url} bgUrl={option.bgUrl} mode={option.mode} onUpload={onUpload} onImageModeChange={onImageModeChange} /> :
+          <CustomColor color={option.color} onChange={onChange} />}
       </div>
     }>
     <div className='w-18px h-18px border-1px border-solid border-#cfcfcf p-2px rounded-4px cursor-pointer' >
       {
         option.url ?
           <img src={option.url} className='w-100% h-100% rounded-4px' /> :
-          <div className='w-100% h-100% rounded-4px' style={{ background: tinycolor(option.color) }}></div>
+          <div className='w-100% h-100% rounded-4px' style={{ background: tinycolor(option.color||'transparent') }}></div>
       }
     </div>
   </Popover>

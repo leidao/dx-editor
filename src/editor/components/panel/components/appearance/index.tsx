@@ -16,8 +16,15 @@ const Appearance: React.FC<Props> = ({ selectList }) => {
 
   const [cornerRadius, setCornerRadius] = useState([0, 0, 0, 0])
 
-  const [colorData, setColorData] = useState<any>({
-    color: '#ff0000ff',
+  const [fillData, setFillData] = useState<any>({
+    color: '#d9d9d9',
+    type: 'solid',
+    url: '',
+    bgUrl: image,
+    mode: 'cover'
+  })
+  const [strokeData, setStrokeData] = useState<any>({
+    color: '#ffffff',
     type: 'solid',
     url: '',
     bgUrl: image,
@@ -32,9 +39,18 @@ const Appearance: React.FC<Props> = ({ selectList }) => {
       const cornerRadius = item.cornerRadius
       setCornerRadius(cornerRadius !== undefined ? (Array.isArray(cornerRadius) ? cornerRadius : [+cornerRadius, +cornerRadius, +cornerRadius, +cornerRadius]) : [0, 0, 0, 0])
       const fill = item.fill || {}
-      setColorData({
-        ...colorData,
+      setFillData({
+        bgUrl: image,
+        type: 'solid',
+        mode: 'cover',
         ...fill,
+      })
+      const stroke = item.stroke || {}
+      setStrokeData({
+        bgUrl: image,
+        type: 'solid',
+        mode: 'cover',
+        ...stroke,
       })
     }
   }, [selectList])
@@ -58,7 +74,7 @@ const Appearance: React.FC<Props> = ({ selectList }) => {
             <div className="mb-10px flex items-center">
               <div>
                 <Radio.Group value={cornerRadiusType} size='small'
-                  onChange={(e) => {
+                  onChange={(e:any) => {
                     setCornerRadiusType(e.target.value)
                     const radius = [cornerRadius[0], cornerRadius[0], cornerRadius[0], cornerRadius[0]]
                     changeAttr('cornerRadius', radius)
@@ -158,69 +174,139 @@ const Appearance: React.FC<Props> = ({ selectList }) => {
             <div className='mb-10px flex items-center'>
               <div className='text-12px text-#00000099 mt-2px'>填充</div>
               <div className='ml-14px flex items-center'><ColorPicker
-                option={colorData}
+                option={fillData}
                 onChange={(value: any) => {
                   const data = {
-                    ...colorData,
+                    ...fillData,
                     color: value.rgb
                   }
                   changeAttr('fill', {
-                    type: colorData.type,
-                    color: colorData.color
+                    type: fillData.type,
+                    color: value.rgb
                   })
-                  setColorData(data)
+                  setFillData(data)
 
                 }}
                 onSwitchChange={(value) => {
                   const data = {
-                    ...colorData,
+                    ...fillData,
                     type: value
                   }
                   changeAttr('fill', {
                     type: value,
-                    color: value !== 'image' ? colorData.color : undefined,
-                    url: value === 'image' ? colorData.url || colorData.bgUrl : undefined,
+                    color: value !== 'image' ? fillData.color : undefined,
+                    url: value === 'image' ? fillData.url || fillData.bgUrl : undefined,
                   })
-                  setColorData(data)
+                  setFillData(data)
 
                 }}
                 onUpload={(url) => {
                   const data = {
-                    ...colorData,
+                    ...fillData,
                     url: url
                   }
                   changeAttr('fill', {
-                    type: colorData.type,
+                    type: fillData.type,
                     url: url,
-                    mode: colorData.mode
+                    mode: fillData.mode
                   })
-                  setColorData(data)
+                  setFillData(data)
 
                 }}
                 onImageModeChange={(mode) => {
                   const data = {
-                    ...colorData,
+                    ...fillData,
                     mode: mode
                   }
                   changeAttr('fill', {
-                    type: colorData.type,
-                    url: colorData.url,
+                    type: fillData.type,
+                    url: fillData.url,
                     mode: mode
                   })
-                  setColorData(data)
+                  setFillData(data)
+                }}
+                onOpenChange={(value) => {
+                  if (!view) return
+                  if (value) {
+                    view.app.editor.visible = false
+                    view.app.editor.config.keyEvent = false
+                  } else {
+                    view.app.editor.visible = true
+                    view.app.editor.config.keyEvent = true
+                    view.app.tree.emit('update')
+                  }
                 }}
               />
               </div>
             </div>
-            {/* <div className='mb-10px flex items-center'>
-              <div className='text-12px text-#00000099 mr-14px'>描边</div>
-              <div className='ml-14px'><Color></Color></div>
-            </div> */}
-            {/* <div className='mb-10px flex items-center'>
-              <div className='text-12px text-#00000099 mr-14px'>阴影</div>
-              <div><Checkbox onChange={() => { }} /></div>
-              <div className='ml-14px'><Color></Color></div>
-            </div> */}
+            <div className='mb-10px flex items-center'>
+              <div className='text-12px text-#00000099 mt-2px'>描边</div>
+              <div className='ml-14px flex items-center'>
+                <ColorPicker
+                  option={strokeData}
+                  onChange={(value: any) => {
+                    const data = {
+                      ...strokeData,
+                      color: value.rgb
+                    }
+                    changeAttr('stroke', {
+                      type: strokeData.type,
+                      color: value.rgb
+                    })
+                    setStrokeData(data)
+                  }}
+                  onSwitchChange={(value) => {
+                    const data = {
+                      ...strokeData,
+                      type: value
+                    }
+                    changeAttr('stroke', {
+                      type: value,
+                      color: value !== 'image' ? strokeData.color : undefined,
+                      url: value === 'image' ? strokeData.url || strokeData.bgUrl : undefined,
+                    })
+                    setStrokeData(data)
+                  }}
+                  onUpload={(url) => {
+                    const data = {
+                      ...strokeData,
+                      url: url
+                    }
+                    changeAttr('stroke', {
+                      type: strokeData.type,
+                      url: url,
+                      mode: strokeData.mode
+                    })
+                    setStrokeData(data)
+
+                  }}
+                  onImageModeChange={(mode) => {
+                    const data = {
+                      ...strokeData,
+                      mode: mode
+                    }
+                    changeAttr('stroke', {
+                      type: strokeData.type,
+                      url: strokeData.url,
+                      mode: mode
+                    })
+                    setStrokeData(data)
+                  }}
+                  onOpenChange={(value) => {
+                    if (!view) return
+                    if (value) {
+                      view.app.editor.visible = false
+                      view.app.editor.config.keyEvent = false
+                    } else {
+                      view.app.editor.visible = true
+                      view.app.editor.config.keyEvent = true
+                      view.app.tree.emit('update')
+                    }
+                  }}
+                />
+              </div>
+            </div>
+
           </div>
         ),
       }
