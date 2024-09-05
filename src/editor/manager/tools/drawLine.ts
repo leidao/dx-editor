@@ -3,15 +3,17 @@
  * @Author: ldx
  * @Date: 2023-12-09 10:21:06
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-05 15:12:05
+ * @LastEditTime: 2024-09-05 17:30:53
  */
 import { v4 } from 'uuid'
 import { EditorView } from '@/editor/view'
 import ToolBase from './toolBase'
-import {  DragEvent, Line } from 'leafer-editor'
+import {  DragEvent, KeyEvent, Line, Point } from 'leafer-editor'
 export default class ToolDrawLine extends ToolBase {
   readonly keyboard = 'l'
   readonly type = 'drawLine'
+  /** 是否按住了shift健 */
+  shiftKey = false
   line!: Line
   constructor(view: EditorView) {
     super(view)
@@ -33,12 +35,41 @@ export default class ToolDrawLine extends ToolBase {
   drag = (e: DragEvent) => {
     if (this.line) {
       const { x, y } = this.app.getPagePoint({x:e.x,y:e.y})
-      const points = (this.line.points||[]).splice(0, 2,)
+      const points = (this.line.points||[]).splice(0, 2)
+      // let lastPointX = x,lastPointY = y
+      // if(this.shiftKey){
+      //  const angle =  new Point(...points).getAngle(new Point(x,y))
+      //   if(angle > -22.5 && angle < 22.5){
+      //     lastPointY = points[1]
+      //   }else if(angle > 22.5 && angle < 67.5){
+
+      //   }else if(angle > 67.5 && angle < 112.5){
+      //     lastPointX = points[0]
+      //   }else if(angle > 112.5 && angle < 157.5){
+          
+      //   }else if(angle > 157.5 && angle < 202.5){
+      //     lastPointY = points[1]
+      //   }else if(angle > 202.5 && angle < 247.5){
+          
+      //   }else if(angle > 202.5 && angle < 247.5){
+          
+      //   }
+      //  console.log('xxxxx',angle);
+       
+      // }
       this.line.points = [...points, x, y]
+      
+      
     }
   }
   end = () =>{
     this.app.tree.emit('add')
+  }
+  down = (event:KeyEvent) =>{
+    this.shiftKey = event.shiftKey
+  }
+  up = (event:KeyEvent) =>{
+    this.shiftKey = event.shiftKey
   }
  
   active() {
@@ -47,6 +78,8 @@ export default class ToolDrawLine extends ToolBase {
     this.app.on(DragEvent.START, this.start)
     this.app.on(DragEvent.DRAG, this.drag)
     this.app.on(DragEvent.END, this.end)
+    this.app.on(KeyEvent.DOWN, this.down)
+    this.app.on(KeyEvent.UP, this.up)
   }
   inactive() {
     this.app.editor.visible = true
