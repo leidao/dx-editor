@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2023-12-09 10:21:06
  * @LastEditors: ldx
- * @LastEditTime: 2024-08-30 11:20:35
+ * @LastEditTime: 2024-09-05 15:12:05
  */
 import { v4 } from 'uuid'
 import { EditorView } from '@/editor/view'
