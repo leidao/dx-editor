@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2024-08-20 14:50:58
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-05 09:13:10
+ * @LastEditTime: 2024-09-05 17:48:39
  */
 
 import _ from 'lodash'
@@ -36,7 +36,7 @@ export class EditorView {
       // 会自动创建 editor实例、tree层、sky层
       editor: {
         /** 锁定元素的宽高比 */
-        lockRatio: true
+        // lockRatio: true
       }
     })
     this.ruler = new Ruler(this.app)
@@ -68,6 +68,16 @@ export class EditorView {
       id: v4()
     })
     this.app.tree.add(rect)
+
+    const line = new Line({
+      editable: true,
+      // width:6,
+      strokeWidth: 20,
+      stroke: '#ff0000',
+      points: [100, 100, 400, 400],
+      name: '线段',
+    })
+    this.app.tree.add(line)
     this.app.tree.emit('update')
 
   }

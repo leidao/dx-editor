@@ -3,11 +3,11 @@
  * @Author: ldx
  * @Date: 2024-08-30 19:41:38
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-03 15:26:01
+ * @LastEditTime: 2024-09-05 17:55:13
  */
 
 import EditorContext from "@/editor/context"
-import { useContext, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import NumberInput from "../numberInput"
 import { IUI } from "@leafer-ui/interface"
 import _ from "lodash"
@@ -20,7 +20,14 @@ interface Props {
 }
 const Stats: React.FC<Props> = ({ selectList, attr }) => {
   const view = useContext(EditorContext)
-  const [lockRatio, setLockRatio] = useState(true)
+  const [lockRatio, setLockRatio] = useState(false)
+
+  useEffect(()=>{
+    const first = selectList[0]
+    if(first){
+      setLockRatio(!!first.lockRatio)
+    }
+  },[selectList])
   return <div >
     <div className='px-10px py-5px flex items-center justify-between'>
       <NumberInput
@@ -106,7 +113,7 @@ const Stats: React.FC<Props> = ({ selectList, attr }) => {
           const { element } = view.app.editor
           // 想缩放到指定 scale， 需除以元素的 scale，如下：
           const scale = value / (element?.width || 1)
-          const lockRatio = view.app.editor.config.lockRatio
+          // const lockRatio = view.app.editor.config.lockRatio
           view.app.editor.element && view.app.editor.scaleOf('top-left', scale, lockRatio ? scale : 1)
         }}
       />
@@ -128,7 +135,7 @@ const Stats: React.FC<Props> = ({ selectList, attr }) => {
           if (!view) return
           const { element } = view.app.editor
           const scale = value / (element?.height || 1)
-          const lockRatio = view.app.editor.config.lockRatio
+          // const lockRatio = view.app.editor.config.lockRatio
           view.app.editor.element && view.app.editor.scaleOf('top-left', lockRatio ? scale : 1, scale)
         }}
       />
@@ -137,8 +144,9 @@ const Stats: React.FC<Props> = ({ selectList, attr }) => {
           className="cursor-pointer hover:bg-#f2f2f2 rounded-6px ml-6px w-28px h-28px flex items-center justify-center"
           onClick={() => {
             if (!view) return
-            const lockRatio = view.app.editor.config.lockRatio
-            view.app.editor.config.lockRatio = !lockRatio
+            // const lockRatio = view.app.editor.config.lockRatio
+            // view.app.editor.config.lockRatio = !lockRatio
+            selectList.forEach(item=>item.lockRatio = !lockRatio)
             setLockRatio(!lockRatio)
           }}
         >

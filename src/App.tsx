@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2024-08-20 14:33:49
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-02 15:50:00
+ * @LastEditTime: 2024-09-05 17:49:13
  */
 
 import { useEffect, useRef, useState } from 'react'
@@ -54,7 +54,6 @@ const Home = () => {
             className="absolute left-0px box-border w-100% h-100% bg-#f4f4f4 border-solid border-t-0px border-b-0px border-#dadadc99"
             ref={container}
           >
-            {/* <canvas  className="w-100% h-100%"></canvas> */}
           </div>
         </div>
         <div className="w-280px h-100% bg-#fafafa">

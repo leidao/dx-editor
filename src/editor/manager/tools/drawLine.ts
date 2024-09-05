@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2023-12-09 10:21:06
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-05 17:30:53
+ * @LastEditTime: 2024-09-05 18:01:41
  */
 import { v4 } from 'uuid'
 import { EditorView } from '@/editor/view'
@@ -36,27 +36,27 @@ export default class ToolDrawLine extends ToolBase {
     if (this.line) {
       const { x, y } = this.app.getPagePoint({x:e.x,y:e.y})
       const points = (this.line.points||[]).splice(0, 2)
-      // let lastPointX = x,lastPointY = y
-      // if(this.shiftKey){
-      //  const angle =  new Point(...points).getAngle(new Point(x,y))
-      //   if(angle > -22.5 && angle < 22.5){
-      //     lastPointY = points[1]
-      //   }else if(angle > 22.5 && angle < 67.5){
-
-      //   }else if(angle > 67.5 && angle < 112.5){
-      //     lastPointX = points[0]
-      //   }else if(angle > 112.5 && angle < 157.5){
+      let lastPointX = x,lastPointY = y
+      if(this.shiftKey){
+       const angle =  new Point(...points).getAngle(new Point(x,y))
+        if(angle > -22.5 && angle < 22.5){
+          lastPointY = points[1]
+        }else if(angle > 22.5 && angle < 67.5){
           
-      //   }else if(angle > 157.5 && angle < 202.5){
-      //     lastPointY = points[1]
-      //   }else if(angle > 202.5 && angle < 247.5){
+        }else if(angle > 67.5 && angle < 112.5){
+          lastPointX = points[0]
+        }else if(angle > 112.5 && angle < 157.5){
           
-      //   }else if(angle > 202.5 && angle < 247.5){
+        }else if(angle > 157.5 && angle > -157.5){
+          lastPointY = points[1]
+        }else if(angle > 202.5 && angle < 247.5){
           
-      //   }
+        }else if(angle > 202.5 && angle < 247.5){
+          
+        }
       //  console.log('xxxxx',angle);
        
-      // }
+      }
       this.line.points = [...points, x, y]
       
       
