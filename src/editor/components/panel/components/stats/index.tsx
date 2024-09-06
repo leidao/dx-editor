@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2024-08-30 19:41:38
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-05 17:55:13
+ * @LastEditTime: 2024-09-06 09:16:42
  */
 
 import EditorContext from "@/editor/context"
@@ -13,7 +13,7 @@ import { IUI } from "@leafer-ui/interface"
 import _ from "lodash"
 import { Attr } from '@/editor/components/panel/index'
 import { Rotation, Unlock, Lock } from './icons'
-import { Tooltip } from "antd"
+import { Button, Tooltip } from "antd"
 interface Props {
   selectList: IUI[]
   attr: Attr
@@ -21,11 +21,17 @@ interface Props {
 const Stats: React.FC<Props> = ({ selectList, attr }) => {
   const view = useContext(EditorContext)
   const [lockRatio, setLockRatio] = useState(false)
+  const [disabled, setDisabled] = useState(false)
 
   useEffect(()=>{
     const first = selectList[0]
     if(first){
       setLockRatio(!!first.lockRatio)
+    }
+    if(selectList.length === 1 && first.__tag === 'Line'){
+      setDisabled(true)
+    }else{
+      setDisabled(false)
     }
   },[selectList])
   return <div >
@@ -122,6 +128,7 @@ const Stats: React.FC<Props> = ({ selectList, attr }) => {
         className="w-80px"
         prefix="H"
         placeholder='多个值'
+        disabled={disabled}
         onFocus={() => {
           if (!view) return
           view.app.editor.config.keyEvent = false
@@ -152,7 +159,7 @@ const Stats: React.FC<Props> = ({ selectList, attr }) => {
         >
           <Tooltip placement="bottom" title='锁定宽高比' arrow={false}>
             <span className="flex justify-center items-center">
-              {lockRatio ? <Lock /> : <Unlock />}
+            <Button type="text"  disabled={disabled}>{lockRatio ? <Lock /> : <Unlock />}</Button>
             </span>
           </Tooltip>
         </div>

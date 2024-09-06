@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2024-08-30 16:23:14
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-03 15:43:18
+ * @LastEditTime: 2024-09-06 09:15:58
  */
 
 import { InputNumber } from "antd";
@@ -27,6 +27,7 @@ interface INumberInputProps {
   addonAfter?: React.ReactNode;
   className?: string
   style?: any
+  disabled?: boolean
   variant?: "filled" | "outlined" | "borderless" | undefined
   size?: SizeType
   controls?: boolean | {
@@ -53,6 +54,7 @@ const NumberInput: React.FC<INumberInputProps> = ({
   size = 'small',
   variant = 'filled',
   step = 1,
+  disabled,
   controls = { upIcon: <TriangleUp />, downIcon: <TriangleDown /> }
 }) => {
   return <div className="panel_input_number">
@@ -68,6 +70,7 @@ const NumberInput: React.FC<INumberInputProps> = ({
       formatter={(value) => `${toFixed(value, 2)}`}
       className={className}
       style={style}
+      disabled={disabled}
       onPressEnter={(event: any) => {
         const value = event.target?.value
         if (!isNaN(value - parseFloat(value))) {

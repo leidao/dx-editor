@@ -11,6 +11,9 @@ dependencies:
   '@ant-design/icons':
     specifier: ^5.4.0
     version: 5.4.0(react-dom@18.3.1)(react@18.3.1)
+  '@leafer-in/editor':
+    specifier: ^1.0.2
+    version: 1.0.2
   '@leafer-in/flow':
     specifier: ^1.0.2
     version: 1.0.2

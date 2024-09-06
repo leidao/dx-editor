@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2024-08-20 14:50:58
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-05 17:48:39
+ * @LastEditTime: 2024-09-06 14:29:35
  */
 
 import _ from 'lodash'
@@ -74,7 +74,10 @@ export class EditorView {
       // width:6,
       strokeWidth: 20,
       stroke: '#ff0000',
-      points: [100, 100, 400, 400],
+      // points: [100, 100,400,400],
+      x: 100,
+      y: 100,
+      toPoint: { x: 300, y: 300 },
       name: '线段',
     })
     this.app.tree.add(line)
