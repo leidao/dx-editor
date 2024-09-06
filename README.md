@@ -1,7 +1,14 @@
+<!--
+ * @Description: 
+ * @Author: ldx
+ * @Date: 2024-08-20 14:33:49
+ * @LastEditors: ldx
+ * @LastEditTime: 2024-09-06 17:32:56
+-->
 
 **dx-editor 图形编辑器**，一款开源的基于 [leaferjs](https://www.leaferjs.com/ui/) 实现的矢量图形编辑器。
 
-[体验网址](https://leidao.github.io/circuit-graph/)
+[体验网址](https://leidao.github.io/dx-editor/)
 
 ![Screenshot](screenshot.png)
 

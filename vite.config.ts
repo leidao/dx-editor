@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2022-04-06 14:45:22
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-01 18:00:52
+ * @LastEditTime: 2024-09-06 17:32:10
  */
 import legacy from '@vitejs/plugin-legacy'
 import react from '@vitejs/plugin-react'
@@ -36,7 +36,7 @@ export default defineConfig({
   build: {
     outDir: 'docs'
   },
-  base: '/circuit-graph',
+  base: '/dx-editor',
   server: {
     port: 8004,
     open: true,
