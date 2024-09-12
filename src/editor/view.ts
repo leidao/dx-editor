@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2024-08-20 14:50:58
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-12 11:30:03
+ * @LastEditTime: 2024-09-12 15:13:49
  */
 
 import _ from 'lodash'
@@ -83,16 +83,16 @@ export class EditorView {
     })
     this.app.tree.add(rect2)
 
-    // const line = new Line({
-    //   editable: true,
-    //   strokeWidth: 20,
-    //   stroke: '#ff0000',
-    //   x: 100,
-    //   y: 100,
-    //   toPoint: { x: 300, y: 300 },
-    //   name: '线段',
-    // })
-    // this.app.tree.add(line)
+    const line = new Line({
+      editable: true,
+      strokeWidth: 20,
+      stroke: '#ff0000',
+      x: 100,
+      y: 100,
+      toPoint: { x: 300, y: 300 },
+      name: '线段',
+    })
+    this.app.tree.add(line)
 
     this.app.tree.emit('update')
 

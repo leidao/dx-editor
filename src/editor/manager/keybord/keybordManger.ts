@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2023-12-09 18:58:58
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-06 11:03:53
+ * @LastEditTime: 2024-09-12 15:14:17
  */
 import { EditorView } from '@/editor/view'
 import { KeyboardCode } from './keybord-code'
@@ -86,7 +86,7 @@ export default class KeybordManager {
     }
 
     const keyNames = keyString.join('+')
-    console.log('event',event);
+    // console.log('event',event);
     
     // 执行对应键盘命令
     this.KeybordMap.forEach(({ keyboard, action }) => {

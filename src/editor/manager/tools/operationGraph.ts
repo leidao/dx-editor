@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2023-12-09 10:21:06
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-12 14:21:33
+ * @LastEditTime: 2024-09-12 15:07:09
  */
 
 import { EditorView } from '@/editor/view'
@@ -49,7 +49,7 @@ export class CustomLineEditTool extends LineEditTool {
     this.group.clear()
   }
   onLoad() {
-    this.editor.app.tree?.add(this.group)
+    this.editor.app.sky?.add(this.group)
     this.editor.on(DragEvent.END, this.end)
   }
   onUnload() {
@@ -94,7 +94,7 @@ export class CustomEditTool extends EditTool {
   }
   onLoad() {
     this.isDrag = false
-    this.editor.app.tree?.add(this.group)
+    this.editor.app.sky?.add(this.group)
     this.editor.on(DragEvent.DRAG, this.drag)
     this.editor.on(DragEvent.END, this.end)
   }

@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2023-12-09 18:58:58
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-05 16:52:31
+ * @LastEditTime: 2024-09-12 15:14:10
  */
 import { ChildEvent, DragEvent, KeyEvent, UI } from 'leafer-ui'
 import { EditorView } from '../../view'
@@ -141,6 +141,8 @@ export default class CommandManger {
 
   redo = () => {
     const cmd = this.queue[this.current + 1] // 找到当前的下一步还原操作
+    // console.log('redo=====',cmd.redo,cmd);
+    
     if (cmd) {
       this.initialState = produce(this.initialState, draft => {
         applyPatches(draft, cmd.redo);

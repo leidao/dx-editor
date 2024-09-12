@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2024-09-11 14:59:53
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-12 14:21:44
+ * @LastEditTime: 2024-09-12 15:11:30
  */
 import _ from 'lodash'
 import { AABB, getMaxMin } from '@/editor/utils';
@@ -123,7 +123,7 @@ export const updateAuxiliaryLine = (editor: IEditor, event: IEditorMoveEvent): L
     const inBounds = bounds.set(app.canvas.bounds).hit(item.__world)
     
     if (inBounds) {
-      const otherPoints = item.getLayoutPoints('box', item.leafer)
+      const otherPoints = item.getLayoutPoints('box', 'world')
       const viewportAABB = getMaxMin(otherPoints)
       // 将视口内图形的 AABB 边界和中心辅助线加入到 guideLines 中
       guide.set(item.innerId, viewportAABB)
@@ -131,7 +131,7 @@ export const updateAuxiliaryLine = (editor: IEditor, event: IEditorMoveEvent): L
   }
 
   // 获取选中图形的包围盒点位
-  const points = element.getLayoutPoints('box', element.leafer)
+  const points = element.getLayoutPoints('box', 'world')
   const selectedAABB = getMaxMin(points)
   // console.log('selectedAABB',selectedAABB);
   
@@ -149,7 +149,7 @@ export const updateAuxiliaryLine = (editor: IEditor, event: IEditorMoveEvent): L
   /** 辅助线数组 */
   const lines: number[][] = [];
   // 辅助线生效距离范围
-  const DISTANCE = element.getWorldPointByPage({ x: 5, y: 0 }, undefined, true).x;
+  const DISTANCE = 5;
 
   (Object.keys(data) as ['vertical' | 'horizontal']).forEach((key, index) => {
     const array = data[key]
@@ -182,14 +182,14 @@ export const updateAuxiliaryLine = (editor: IEditor, event: IEditorMoveEvent): L
           const min = Math.min(closestMin, closestMax, minY, maxY)
           const max = Math.max(closestMin, closestMax, minY, maxY)
           lines.push([value, min, value, max])
-          const x = element.getWorldPointByPage({ x: value - item.value, y: 0 }, undefined, true).x
+          const x = value - item.value
           moveX = Math.abs(moveX) > DISTANCE ? moveX : x
 
         } else {
           const min = Math.min(closestMin, closestMax, minX, maxX)
           const max = Math.max(closestMin, closestMax, minX, maxX)
           lines.push([min, value, max, value])
-          const y = element.getWorldPointByPage({ x: 0, y: value - item.value }, undefined, true).y
+          const y = value - item.value
           moveY = Math.abs(moveY) > DISTANCE ? moveY : y
 
         }
@@ -224,7 +224,7 @@ function findClosestGuideLine(element: IUI, value: number, guide: Map<number, AA
     const array = type === 'vertical' ? [minX, centerX, maxX] : [minY, centerY, maxY]
     for (let i = 0; i < array.length; i++) {
       // 用屏幕坐标去对比
-      const distance = element.getWorldPointByPage({ x: Math.abs(value - array[i]), y: 0 }, undefined, true).x;;
+      const distance = Math.abs(value - array[i])
       if (distance === minDistance) {
         // 如果相等，考虑可能存在多条距离相等的辅助线，需要都展示
         data.push({
