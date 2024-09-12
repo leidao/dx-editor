@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2023-12-09 10:21:06
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-12 11:28:01
+ * @LastEditTime: 2024-09-12 14:21:33
  */
 
 import { EditorView } from '@/editor/view'
@@ -26,7 +26,7 @@ export class CustomLineEditTool extends LineEditTool {
     updateLinePoints(line, { x, y }, event.direction)
   }, 16)
 
-  onMove(event: IEditorMoveEvent): void {
+  onMove(event: IEditorMoveEvent) {
     const { editor } = this
     const { list, app } = editor
     const { moveX, moveY } = event
@@ -37,6 +37,7 @@ export class CustomLineEditTool extends LineEditTool {
       this.editBox.visible = false
       const lines = updateAuxiliaryLine(editor, event)
       this.group.addMany(...lines)
+      this.group.set({ x: 0, y: 0 })
     } else {
       list.forEach(target => {
         target.moveWorld(moveX, moveY)
@@ -47,12 +48,11 @@ export class CustomLineEditTool extends LineEditTool {
   end = () => {
     this.group.clear()
   }
-  onLoad(): void {
+  onLoad() {
     this.editor.app.tree?.add(this.group)
     this.editor.on(DragEvent.END, this.end)
   }
-
-  onUnload(): void {
+  onUnload() {
     this.group.clear()
     this.editor.off(DragEvent.END, this.end)
   }
@@ -64,7 +64,7 @@ export class CustomEditTool extends EditTool {
   public bounds = new Bounds()
   public group = new Group({ name: '辅助线' })
   public get tag() { return 'CustomEditTool' }
-  onMove(event: IEditorMoveEvent): void {
+  onMove(event: IEditorMoveEvent) {
     const { editor } = this
     const { list, app } = editor
     const { moveX, moveY } = event
@@ -75,6 +75,7 @@ export class CustomEditTool extends EditTool {
       this.editBox.visible = false
       const lines = updateAuxiliaryLine(editor, event)
       this.group.addMany(...lines)
+      this.group.set({ x: 0, y: 0 })
     } else {
       list.forEach(target => {
         target.moveWorld(moveX, moveY)
@@ -91,16 +92,16 @@ export class CustomEditTool extends EditTool {
     this.group.clear()
     this.editBox.visible = true
   }
-  onLoad(): void {
+  onLoad() {
     this.isDrag = false
     this.editor.app.tree?.add(this.group)
     this.editor.on(DragEvent.DRAG, this.drag)
     this.editor.on(DragEvent.END, this.end)
   }
-  onUpdate(): void {
+  onUpdate() {
     this.editBox.visible = !this.isDrag
   }
-  onUnload(): void {
+  onUnload() {
     this.group.clear()
     this.editor.off(DragEvent.DRAG, this.drag)
     this.editor.off(DragEvent.END, this.end)

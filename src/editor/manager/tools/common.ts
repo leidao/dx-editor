@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2024-09-11 14:59:53
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-12 11:05:07
+ * @LastEditTime: 2024-09-12 14:21:44
  */
 import _ from 'lodash'
 import { AABB, getMaxMin } from '@/editor/utils';
@@ -112,6 +112,7 @@ export const updateAuxiliaryLine = (editor: IEditor, event: IEditorMoveEvent): L
    * 先获取选中元素的包围盒，在获取所有可视区域内的包围盒，记得把选中的元素排除，否则会出现自己和自己比对的情况
    * 用选中元素的包围盒的六条线和可视区域内的图形包围盒的六条线进行求最小值，找到最小值就是辅助线的生成逻辑
    */
+  
   const children = app.tree?.children || []
   const guide = new Map<number, AABB>();
   for (let i = 0; i < children.length; i++) {
@@ -119,7 +120,8 @@ export const updateAuxiliaryLine = (editor: IEditor, event: IEditorMoveEvent): L
     // 排除选中元素
     if (list.some(graph => graph.innerId === item.innerId) || item.name === '辅助线') continue
     // 查找可视范围内的图形
-    const inBounds = bounds.set(app.tree?.boxBounds).hit(item.__world)
+    const inBounds = bounds.set(app.canvas.bounds).hit(item.__world)
+    
     if (inBounds) {
       const otherPoints = item.getLayoutPoints('box', item.leafer)
       const viewportAABB = getMaxMin(otherPoints)
@@ -131,6 +133,8 @@ export const updateAuxiliaryLine = (editor: IEditor, event: IEditorMoveEvent): L
   // 获取选中图形的包围盒点位
   const points = element.getLayoutPoints('box', element.leafer)
   const selectedAABB = getMaxMin(points)
+  // console.log('selectedAABB',selectedAABB);
+  
   // 获取六条边
   const { minX, minY, maxX, maxY } = selectedAABB
   const centerX = (minX + maxX) / 2;
@@ -145,7 +149,7 @@ export const updateAuxiliaryLine = (editor: IEditor, event: IEditorMoveEvent): L
   /** 辅助线数组 */
   const lines: number[][] = [];
   // 辅助线生效距离范围
-  const DISTANCE = element.getWorldPointByLocal({ x: 5, y: 0 }, undefined, true).x;
+  const DISTANCE = element.getWorldPointByPage({ x: 5, y: 0 }, undefined, true).x;
 
   (Object.keys(data) as ['vertical' | 'horizontal']).forEach((key, index) => {
     const array = data[key]
@@ -178,14 +182,14 @@ export const updateAuxiliaryLine = (editor: IEditor, event: IEditorMoveEvent): L
           const min = Math.min(closestMin, closestMax, minY, maxY)
           const max = Math.max(closestMin, closestMax, minY, maxY)
           lines.push([value, min, value, max])
-          const x = element.getWorldPointByLocal({ x: value - item.value, y: 0 }, undefined, true).x
+          const x = element.getWorldPointByPage({ x: value - item.value, y: 0 }, undefined, true).x
           moveX = Math.abs(moveX) > DISTANCE ? moveX : x
 
         } else {
           const min = Math.min(closestMin, closestMax, minX, maxX)
           const max = Math.max(closestMin, closestMax, minX, maxX)
           lines.push([min, value, max, value])
-          const y = element.getWorldPointByLocal({ x: 0, y: value - item.value }, undefined, true).y
+          const y = element.getWorldPointByPage({ x: 0, y: value - item.value }, undefined, true).y
           moveY = Math.abs(moveY) > DISTANCE ? moveY : y
 
         }
@@ -193,7 +197,7 @@ export const updateAuxiliaryLine = (editor: IEditor, event: IEditorMoveEvent): L
 
     }
   })
-
+  
   list.forEach(target => {
     target.moveWorld(moveX, moveY)
   })
@@ -210,6 +214,8 @@ export const updateAuxiliaryLine = (editor: IEditor, event: IEditorMoveEvent): L
 function findClosestGuideLine(element: IUI, value: number, guide: Map<number, AABB>, type: 'horizontal' | 'vertical' = 'horizontal', DISTANCE: number): any {
   let minDistance = DISTANCE
   let data: any[] = []
+  // console.log('guide',guide);
+  
   // 查找距离最小的辅助线
   guide.forEach((bounds) => {
     const { minX, minY, maxX, maxY } = bounds
@@ -218,7 +224,7 @@ function findClosestGuideLine(element: IUI, value: number, guide: Map<number, AA
     const array = type === 'vertical' ? [minX, centerX, maxX] : [minY, centerY, maxY]
     for (let i = 0; i < array.length; i++) {
       // 用屏幕坐标去对比
-      const distance = element.getWorldPointByLocal({ x: Math.abs(value - array[i]), y: 0 }, undefined, true).x;;
+      const distance = element.getWorldPointByPage({ x: Math.abs(value - array[i]), y: 0 }, undefined, true).x;;
       if (distance === minDistance) {
         // 如果相等，考虑可能存在多条距离相等的辅助线，需要都展示
         data.push({
