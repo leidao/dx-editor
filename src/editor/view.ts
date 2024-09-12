@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2024-08-20 14:50:58
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-06 14:29:35
+ * @LastEditTime: 2024-09-12 11:30:03
  */
 
 import _ from 'lodash'
@@ -61,26 +61,39 @@ export class EditorView {
         color: '#d9d9d9'
       },
       name: '矩形',
-      x: 400,
+      x: 500,
       y: 400,
       width: 100,
       height: 100,
       id: v4()
     })
     this.app.tree.add(rect)
-
-    const line = new Line({
+    const rect2 = new Rect({
       editable: true,
-      // width:6,
-      strokeWidth: 20,
-      stroke: '#ff0000',
-      // points: [100, 100,400,400],
-      x: 100,
+      fill: {
+        type: 'solid',
+        color: '#d9d9d9'
+      },
+      name: '矩形',
+      x: 500,
       y: 100,
-      toPoint: { x: 300, y: 300 },
-      name: '线段',
+      width: 200,
+      height: 100,
+      id: v4()
     })
-    this.app.tree.add(line)
+    this.app.tree.add(rect2)
+
+    // const line = new Line({
+    //   editable: true,
+    //   strokeWidth: 20,
+    //   stroke: '#ff0000',
+    //   x: 100,
+    //   y: 100,
+    //   toPoint: { x: 300, y: 300 },
+    //   name: '线段',
+    // })
+    // this.app.tree.add(line)
+
     this.app.tree.emit('update')
 
   }

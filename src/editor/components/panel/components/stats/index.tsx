@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2024-08-30 19:41:38
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-06 09:16:42
+ * @LastEditTime: 2024-09-11 16:45:45
  */
 
 import EditorContext from "@/editor/context"
@@ -23,17 +23,17 @@ const Stats: React.FC<Props> = ({ selectList, attr }) => {
   const [lockRatio, setLockRatio] = useState(false)
   const [disabled, setDisabled] = useState(false)
 
-  useEffect(()=>{
+  useEffect(() => {
     const first = selectList[0]
-    if(first){
+    if (first) {
       setLockRatio(!!first.lockRatio)
     }
-    if(selectList.length === 1 && first.__tag === 'Line'){
+    if (selectList.length === 1 && first.__tag === 'Line') {
       setDisabled(true)
-    }else{
+    } else {
       setDisabled(false)
     }
-  },[selectList])
+  }, [selectList])
   return <div >
     <div className='px-10px py-5px flex items-center justify-between'>
       <NumberInput
@@ -153,13 +153,13 @@ const Stats: React.FC<Props> = ({ selectList, attr }) => {
             if (!view) return
             // const lockRatio = view.app.editor.config.lockRatio
             // view.app.editor.config.lockRatio = !lockRatio
-            selectList.forEach(item=>item.lockRatio = !lockRatio)
+            selectList.forEach(item => item.lockRatio = !lockRatio)
             setLockRatio(!lockRatio)
           }}
         >
           <Tooltip placement="bottom" title='锁定宽高比' arrow={false}>
             <span className="flex justify-center items-center">
-            <Button type="text"  disabled={disabled}>{lockRatio ? <Lock /> : <Unlock />}</Button>
+              <Button type="text" disabled={disabled}>{lockRatio ? <Lock /> : <Unlock />}</Button>
             </span>
           </Tooltip>
         </div>

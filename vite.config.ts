@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2022-04-06 14:45:22
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-06 17:32:10
+ * @LastEditTime: 2024-09-06 17:51:29
  */
 import legacy from '@vitejs/plugin-legacy'
 import react from '@vitejs/plugin-react'

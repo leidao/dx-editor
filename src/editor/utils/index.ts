@@ -1,3 +1,10 @@
+/*
+ * @Description: 
+ * @Author: ldx
+ * @Date: 2024-08-30 15:33:08
+ * @LastEditors: ldx
+ * @LastEditTime: 2024-09-10 16:54:58
+ */
 
 /** 判断是否是window系统 */
 export const isWindows =
@@ -22,8 +29,15 @@ export const isSame = (arr: any[], attr: string): string | number => {
   return firstX;
 }
 
+export interface AABB {
+  minX: number;
+  maxX: number;
+  minY: number;
+  maxY: number;
+}
+
 /** 或者一组坐标数组中的最大最小坐标 */
-export const getMaxMin = (points: { x: number, y: number }[]) => {
+export const getMaxMin = (points: { x: number, y: number }[]):AABB => {
   let minX = Infinity
   let minY = Infinity
   let maxX = -Infinity

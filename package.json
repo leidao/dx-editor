@@ -14,6 +14,7 @@
     "@ant-design/icons": "^5.4.0",
     "@leafer-in/editor": "^1.0.2",
     "@leafer-in/flow": "^1.0.2",
+    "@leafer-in/interface": "^1.0.2",
     "@leafer-ui/interface": "^1.0.2",
     "@types/lodash": "^4.17.7",
     "@types/path-browserify": "^1.0.3",
