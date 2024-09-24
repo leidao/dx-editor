@@ -3,51 +3,70 @@
  * @Author: ldx
  * @Date: 2023-12-09 10:21:06
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-12 15:07:09
+ * @LastEditTime: 2024-09-24 16:54:01
  */
 
 import { EditorView } from '@/editor/view'
 import ToolBase from './toolBase'
-import { Line, DragEvent, Bounds, Group, UI, registerUI } from 'leafer-editor';
-import { EditorMoveEvent, EditorScaleEvent, EditTool, LineEditTool, registerEditTool } from '@leafer-in/editor'
+import { Line, DragEvent, Bounds, Group, UI, registerUI, Ellipse, Direction9, PointerEvent } from 'leafer-editor';
+import { EditorScaleEvent, EditTool, LineEditTool, registerEditTool } from '@leafer-in/editor'
 import { IEditorMoveEvent } from '@leafer-in/interface'
 import _ from 'lodash';
 import { AABB, getMaxMin } from '@/editor/utils';
-import { updateAuxiliaryLine, updateLinePoints } from './common';
+import { updateAuxiliaryLine, updateLinePoints, leafList, calculatedAdsorptionEffect } from './common';
+const { left, right } = Direction9
 @registerEditTool()
 export class CustomLineEditTool extends LineEditTool {
+  lastTarget!: any
   public bounds = new Bounds()
   public group = new Group({ name: '辅助线' })
   public get tag() { return 'CustomLineEditTool' } // 2. 定义全局唯一的 tag 名称
   onScaleWithDrag = _.throttle((event: EditorScaleEvent) => {
     const line = event.target as Line
+    leafList.reset()
     if (!line) return
-    const { x, y } = line.leafer?.getPagePointByClient(event.drag.origin as any)!
+    leafList.add(line)
+    /** 吸附的点位坐标 */
+    const { adsorbPoint, lastTarget } = calculatedAdsorptionEffect(event.drag as any, this.editor.app, event.direction)
+    this.lastTarget = lastTarget
+    const { x, y } = adsorbPoint ? adsorbPoint : line.leafer?.getPagePointByClient(event.drag.origin as any)!
     updateLinePoints(line, { x, y }, event.direction)
   }, 16)
 
-  onMove(event: IEditorMoveEvent) {
+  onMove = _.throttle((event: IEditorMoveEvent) => {
     const { editor } = this
     const { list, app } = editor
-    const { moveX, moveY } = event
+
     app.lockLayout()
     if (event.editor?.dragging) {
       // 清空辅助线，这样也能排除可视区域内的辅助线不为对比图形
       this.group.clear()
       this.editBox.visible = false
-      const lines = updateAuxiliaryLine(editor, event)
-      this.group.addMany(...lines)
+      const { lines, moveX, moveY } = updateAuxiliaryLine(editor, event)
+      list.forEach(target => {
+        target.moveWorld(moveX, moveY)
+      })
+      // 返回辅助线
+      this.group.addMany(...lines.map(points => new Line({
+        strokeWidthFixed: true,
+        stroke: '#ff0000',
+        name: '辅助线',
+        points
+      })))
       this.group.set({ x: 0, y: 0 })
     } else {
+      const { moveX, moveY } = event
       list.forEach(target => {
         target.moveWorld(moveX, moveY)
       })
     }
     app.unlockLayout()
-  }
+  }, 16)
   end = () => {
     this.group.clear()
+    this.lastTarget && (this.lastTarget.opacity = 0)
   }
+
   onLoad() {
     this.editor.app.sky?.add(this.group)
     this.editor.on(DragEvent.END, this.end)
@@ -64,25 +83,57 @@ export class CustomEditTool extends EditTool {
   public bounds = new Bounds()
   public group = new Group({ name: '辅助线' })
   public get tag() { return 'CustomEditTool' }
-  onMove(event: IEditorMoveEvent) {
+  onMove = _.throttle((event: IEditorMoveEvent) => {
     const { editor } = this
     const { list, app } = editor
-    const { moveX, moveY } = event
-    app.lockLayout()
+    const { moveX, moveY, target } = event
+    // app.lockLayout()
+    /** 手动控制移动 */
     if (event.editor?.dragging) {
       // 清空辅助线，这样也能排除可视区域内的辅助线不为对比图形
       this.group.clear()
       this.editBox.visible = false
-      const lines = updateAuxiliaryLine(editor, event)
-      this.group.addMany(...lines)
+      const { lines, moveX, moveY } = updateAuxiliaryLine(editor, event)
+      list.forEach(target => {
+        target.moveWorld(moveX, moveY)
+      })
+      // 返回辅助线
+      this.group.addMany(...lines.map(points => new Line({
+        strokeWidthFixed: true,
+        stroke: '#ff0000',
+        name: '辅助线',
+        points
+      })))
       this.group.set({ x: 0, y: 0 })
+      if (target instanceof Group && target.name === '图元') {
+        target.children.forEach(item => {
+          if (item instanceof Ellipse && item.name === '图元_圆点') {
+            const { lineId, direction } = item.data
+            if (!lineId) return
+            const circleWorldPoint = item.getWorldPointByLocal({ x: item.x || 0, y: item.y || 0 })
+            const adsorbPoint = item.getPagePoint(circleWorldPoint)
+            const line = app?.findOne(lineId) as Line
+            if (!line) return
+            const { toPoint: { x: lastPointX, y: lastPointY }, x = 0, y = 0 } = line
+            if (direction === left) {
+              line.x = adsorbPoint.x
+              line.y = adsorbPoint.y
+              line.toPoint = { x: x + lastPointX - adsorbPoint.x, y: y + lastPointY - adsorbPoint.y }
+            } else if (direction === right) {
+              line.toPoint = { x: adsorbPoint.x - x, y: adsorbPoint.y - y }
+            }
+          }
+        })
+      }
+
     } else {
+      /** 输入框或者键盘上下键控制移动 */
       list.forEach(target => {
         target.moveWorld(moveX, moveY)
       })
     }
-    app.unlockLayout()
-  }
+    // app.unlockLayout()
+  }, 16)
 
   drag = () => {
     this.isDrag = true

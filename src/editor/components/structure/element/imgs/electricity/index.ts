@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2023-12-06 10:54:49
  * @LastEditors: ldx
- * @LastEditTime: 2024-08-21 16:13:29
+ * @LastEditTime: 2024-09-23 10:57:08
  */
 import ceu from './ceu.svg'
 import cus from './cus.svg'
@@ -13,7 +13,6 @@ import rpeu from './rpeu.svg'
 import rpus from './rpus.svg'
 import rus from './rus.svg'
 import vcc from './vcc.svg'
-import ind from './ind.png'
 
 const electricity: any[] = [
   {
@@ -55,11 +54,6 @@ const electricity: any[] = [
     name: 'ceu',
     url: ceu,
     id: 'ceu'
-  },
-  {
-    name: 'ind',
-    url: ind,
-    id: 'ind'
   }
 ]
 export default electricity

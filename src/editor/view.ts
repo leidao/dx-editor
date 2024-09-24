@@ -3,18 +3,19 @@
  * @Author: ldx
  * @Date: 2024-08-20 14:50:58
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-12 15:13:49
+ * @LastEditTime: 2024-09-23 17:35:58
  */
 
 import _ from 'lodash'
 import { App, Rect } from 'leafer-editor'
 // import { Ruler } from 'leafer-x-ruler'
-import { Line, Image, Text } from 'leafer-ui'
+import { Line, Image, Text, Ellipse, Group } from 'leafer-ui'
 import { v4 } from 'uuid'
 // import KeybordManager from './command/keybordManger'
 // import CursorManager from './cursor/cursorManager'
 import Manager from './manager/index'
 import Ruler from './objects/ruler'
+import { loadSVG } from './utils'
 
 type Option = {
   container: HTMLDivElement
@@ -117,20 +118,66 @@ export class EditorView {
   drop = (event: any) => {
     const src = event.dataTransfer.getData('img');
     const coord = this.app.getPagePointByClient(event)
-    const image = new Image({
-      url: src,
-      x: coord.x - 35,
-      y: coord.y - 25,
-      // offsetX: -35,
-      // offsetY: -25,
-      width: 70,
-      height: 50,
-      editable: true,
-      name: '图元',
-      id: v4(),
+    loadSVG(src).then(svgDocument => {
+      const svg = svgDocument.querySelectorAll('svg');
+      // 获取svg的大小
+      const width = +(svg[0].getAttribute('width') || 70)
+      const height = +(svg[0].getAttribute('height') || 50)
+      // 查找所有灰色圆点
+      const viewBox = svg[0].getAttribute('viewBox')
+      const pixel = (viewBox?.split(' ') || []).map(Number)
+      const circles = svgDocument.querySelectorAll('circle[fill="#4F4F4F"]');
+      let data: any[] = []
+      circles.forEach((circle) => {
+        const cx = +(circle.getAttribute('cx') || 0);
+        const cy = +(circle.getAttribute('cy') || 0);
+        data.push({ x: cx - pixel[0], y: cy - pixel[1] })
+      });
+      const group = new Group({
+        id: v4(),
+        name: '图元',
+        editable: true,
+        x: coord.x - width / 2,
+        y: coord.y - height / 2,
+        lockRatio: true,
+        zIndex:Infinity
+      })
+
+      const image = new Image({
+        url: src,
+        x: 0,
+        y: 0,
+        width: width,
+        height: height,
+        // editable: true,
+        name: '图元_内容',
+      })
+
+      group.add(image)
+      data.forEach(item => {
+        const ellipse = new Ellipse({
+          width: 4,
+          height: 4,
+          x: item.x ,
+          y: item.y ,
+          offsetX:-2,
+          offsetY:-2,
+          name: '图元_圆点',
+          fill: "rgb(255,5,5)",
+          opacity:0
+          // editable: true,
+        })
+        group.add(ellipse)
+      })
+      group.editable = true
+      group.hitChildren = false
+      this.app.tree.add(group)
+      // this.app.editor.select(group)
+      // this.app.editor.group()
+      
+      this.app.tree.emit('add')
     })
-    this.app.tree.add(image)
-    this.app.tree.emit('add')
+
   }
 
   destroy() {

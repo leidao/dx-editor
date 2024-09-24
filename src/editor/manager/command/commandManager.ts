@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2023-12-09 18:58:58
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-12 15:14:10
+ * @LastEditTime: 2024-09-24 15:26:43
  */
 import { ChildEvent, DragEvent, KeyEvent, UI } from 'leafer-ui'
 import { EditorView } from '../../view'
@@ -18,7 +18,26 @@ type Queue = { [key: number]: { redo: Patch[], undo: Patch[] } }
 function isPlainValue(data:any){
   return !(Object.prototype.toString.call(data) === '[object Object]' || Array.isArray(data))
 }
-
+const deepCompareAndMerge = (draft: any, data: any) => {
+  const mergeData = { ...draft, ...data }
+  // TODO 比较老数据和新数据的变化，这里只做了一层比较，后续做改造
+  Object.keys(mergeData).forEach(key => {
+    // 新的有，老得没有，直接赋值
+    if (!draft[key]) {
+      draft[key] = data[key]
+    } else if (!data[key]) {
+      // 新的没有，老得有，直接删除
+      delete draft[key]
+    } else {
+      if (isPlainValue(draft[key]) && isPlainValue(data[key])) {
+        draft[key] = data[key]
+      } else {
+         // 两个都有，并且都不是普通值
+         deepCompareAndMerge(draft[key], data[key])
+      }
+    }
+  })
+}
 export default class CommandManger {
   current = -1 // 前进后退的索引值
   maxQueueValue = 50 // 最大存放数
@@ -81,27 +100,9 @@ export default class CommandManger {
     const json = _.cloneDeep(this.view.app.tree.toJSON())
     const data: { [key: string]: any } = {}
     json.children?.forEach((child: any) => data[child.id] = child)
+    
     this.initialState = produce(this.initialState, draft => {
-      const deepCompareAndMerge = (draft: any, data: any) => {
-        const mergeData = { ...draft, ...data }
-        // TODO 比较老数据和新数据的变化，这里只做了一层比较，后续做改造
-        Object.keys(mergeData).forEach(key => {
-          // 新的有，老得没有，直接赋值
-          if (!draft[key]) {
-            draft[key] = data[key]
-          } else if (!data[key]) {
-            // 新的没有，老得有，直接删除
-            delete draft[key]
-          } else {
-            if (isPlainValue(draft[key]) && isPlainValue(data[key])) {
-              draft[key] = data[key]
-            } else {
-               // 两个都有，并且都不是普通值
-               deepCompareAndMerge(draft[key], data[key])
-            }
-          }
-        })
-      }
+      
       deepCompareAndMerge(draft, data)
 
     }, (patches, inversePatches) => {
