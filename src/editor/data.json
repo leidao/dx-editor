@@ -1,0 +1,1127 @@
+{
+  "tag": "Leafer",
+  "x": 117.45205086817036,
+  "y": 137.03661192433515,
+  "scaleX": 0.5429592368153514,
+  "scaleY": 0.5429592368153514,
+  "hitChildren": true,
+  "children": [
+      {
+          "tag": "Line",
+          "id": "9c52293a-292a-4bcf-846e-c9eff5f5b54f",
+          "name": "线段",
+          "x": 307.9599004434993,
+          "y": 208.477231964364,
+          "width": 887.909093936617,
+          "rotation": 0,
+          "editable": true,
+          "stroke": "#ff0000",
+          "strokeWidth": 1
+      },
+      {
+          "tag": "Line",
+          "id": "41ce44dc-87cf-4be7-871c-e1375d421563",
+          "name": "线段",
+          "x": 623.8222167316808,
+          "y": -6.093021990302589,
+          "width": 101.06894691081436,
+          "rotation": 89.62179284207572,
+          "editable": true,
+          "stroke": "#ff0000",
+          "strokeWidth": 1
+      },
+      {
+          "tag": "Line",
+          "id": "06c6be97-1a0d-40dd-90b1-0032434179d3",
+          "name": "线段",
+          "x": 517.6939274344176,
+          "y": 208.47723196436397,
+          "width": 113.90940665660467,
+          "rotation": -90,
+          "editable": true,
+          "stroke": "#ff0000",
+          "strokeWidth": 1
+      },
+      {
+          "tag": "Line",
+          "id": "8a0b54fa-6515-4e1c-974c-ca8f8f75486a",
+          "name": "线段",
+          "x": 517.5539400997318,
+          "y": 94.68751642017276,
+          "width": 106.93542387903676,
+          "rotation": 0,
+          "editable": true,
+          "stroke": "#ff0000",
+          "strokeWidth": 1
+      },
+      {
+          "tag": "Line",
+          "id": "423ffaf0-874d-4f2e-a272-7d5dafc45dc9",
+          "name": "线段",
+          "x": 517.5539400997318,
+          "y": 249.79881408893291,
+          "width": 107.6135118666297,
+          "rotation": 90,
+          "editable": true,
+          "stroke": "#ff0000",
+          "strokeWidth": 1
+      },
+      {
+          "tag": "Line",
+          "id": "d93270a3-d989-4a70-817e-366ea99616d5",
+          "name": "线段",
+          "x": 517.5127762710011,
+          "y": 357.4916271640591,
+          "width": 54.03862448782991,
+          "rotation": 0,
+          "editable": true,
+          "stroke": "#ff0000",
+          "strokeWidth": 1
+      },
+      {
+          "tag": "Line",
+          "id": "a9ae1d4e-ba8f-4736-9bc8-6ce542c49671",
+          "name": "线段",
+          "x": 611.551400758831,
+          "y": 357.49162716405897,
+          "width": 132.92035077054743,
+          "rotation": 2.4502553408400306e-14,
+          "editable": true,
+          "stroke": "#ff0000",
+          "strokeWidth": 1
+      },
+      {
+          "tag": "Line",
+          "id": "7907886f-ae00-49b0-a65f-11cc7155523e",
+          "name": "线段",
+          "x": 670.8652719792724,
+          "y": 249.74307276402578,
+          "width": 108.03747788897726,
+          "rotation": 90,
+          "editable": true,
+          "stroke": "#ff0000",
+          "strokeWidth": 1
+      },
+      {
+          "tag": "Line",
+          "id": "e85fddd1-59a2-449a-be60-92c5cf2a27a5",
+          "name": "线段",
+          "x": 1195.368994380116,
+          "y": 337.78055065300305,
+          "width": 129.2319555176358,
+          "rotation": -90,
+          "editable": true,
+          "stroke": "#ff0000",
+          "strokeWidth": 1
+      },
+      {
+          "tag": "Line",
+          "id": "835afea7-a750-4703-a6ea-3a0160ba9e74",
+          "name": "线段",
+          "x": 784.4717515293785,
+          "y": 357.4916271640591,
+          "width": 55.12588968960688,
+          "rotation": 90,
+          "editable": true,
+          "stroke": "#ff0000",
+          "strokeWidth": 1
+      },
+      {
+          "tag": "Line",
+          "id": "f1e04276-3972-463a-bb64-044bef4ba4df",
+          "name": "线段",
+          "x": 764.4717515293786,
+          "y": 465.94875089890354,
+          "width": 53.82725332279654,
+          "rotation": -90,
+          "editable": true,
+          "stroke": "#ff0000",
+          "strokeWidth": 1
+      },
+      {
+          "tag": "Line",
+          "id": "57ff2da8-90d4-40f2-9ca6-479c237401a5",
+          "name": "线段",
+          "x": 765.0192475787155,
+          "y": 412.53732001986145,
+          "width": 19.703545936265982,
+          "rotation": 0,
+          "editable": true,
+          "stroke": "#ff0000",
+          "strokeWidth": 1
+      },
+      {
+          "tag": "Line",
+          "id": "5c6447b4-3eeb-4053-a466-dcff2e6061c6",
+          "name": "线段",
+          "x": 845.5393982478017,
+          "y": 249.84256695893993,
+          "width": 116.24206610890036,
+          "rotation": 90,
+          "editable": true,
+          "stroke": "#ff0000",
+          "strokeWidth": 1
+      },
+      {
+          "tag": "Line",
+          "id": "d82d9332-1a2f-4c5b-b937-4b3e77fda91f",
+          "name": "线段",
+          "x": 1002.6591812098779,
+          "y": 249.84834488791287,
+          "width": 116.1385235495571,
+          "rotation": 90,
+          "editable": true,
+          "stroke": "#ff0000",
+          "strokeWidth": 1
+      },
+      {
+          "tag": "Line",
+          "id": "40072da9-26b6-4845-b22e-852d5bd29dd5",
+          "name": "线段",
+          "x": 940.6863598304625,
+          "y": 366.0448291772968,
+          "width": 62.25102390254756,
+          "rotation": -0.14908331759955853,
+          "editable": true,
+          "stroke": "#ff0000",
+          "strokeWidth": 1
+      },
+      {
+          "tag": "Line",
+          "id": "29397b80-de24-432c-90f0-32fa5799911d",
+          "name": "线段",
+          "x": 900.1366032880669,
+          "y": 365.96775746952767,
+          "width": 54.586424519483636,
+          "rotation": -179.72535618480947,
+          "editable": true,
+          "stroke": "#ff0000",
+          "strokeWidth": 1
+      },
+      {
+          "tag": "Line",
+          "id": "8c1ef984-7b1e-4375-9081-f1d437e9172b",
+          "name": "线段",
+          "x": 1195.368994380116,
+          "y": 377.78055065300305,
+          "width": 192.7705971901895,
+          "rotation": 90,
+          "editable": true,
+          "stroke": "#ff0000",
+          "strokeWidth": 1
+      },
+      {
+          "tag": "Line",
+          "id": "57f4e46c-8969-4753-9584-4138f306ea12",
+          "name": "线段",
+          "x": 1195.2480970102135,
+          "y": 570.5771335529354,
+          "width": 742.988685790574,
+          "rotation": 180,
+          "editable": true,
+          "stroke": "#ff0000",
+          "strokeWidth": 1
+      },
+      {
+          "tag": "Line",
+          "id": "3c3c162e-3b03-49ec-b61f-96c0d41780bf",
+          "name": "线段",
+          "x": 764.4717515293785,
+          "y": 505.94875089890354,
+          "width": 64.9679808058703,
+          "rotation": 90,
+          "editable": true,
+          "stroke": "#ff0000",
+          "strokeWidth": 1
+      },
+      {
+          "tag": "Line",
+          "id": "0ac9ddf5-0aa3-4112-a4d2-7c779f56acae",
+          "name": "线段",
+          "x": 919.5957555637751,
+          "y": 385.9123259555628,
+          "width": 250.1120186659972,
+          "rotation": 90,
+          "editable": true,
+          "stroke": "#ff0000",
+          "strokeWidth": 1
+      },
+      {
+          "tag": "Text",
+          "text": "1K",
+          "id": "b7313f07-64d0-4e53-815f-bd36a66c6f16",
+          "name": "文字",
+          "visible": true,
+          "x": 596.7682666031136,
+          "y": -31.984326217253084,
+          "editable": true
+      },
+      {
+          "tag": "Text",
+          "text": "1k",
+          "id": "75b5bb45-362f-4403-840d-385c4a997b3a",
+          "name": "文字",
+          "visible": true,
+          "x": 638.0560263972732,
+          "y": 70.55002472194238,
+          "editable": true
+      },
+      {
+          "tag": "Text",
+          "text": "470R",
+          "id": "48d0218e-957a-42fd-a783-417be12d5b5b",
+          "name": "文字",
+          "visible": true,
+          "x": 526.4379856113464,
+          "y": 220.21255134822084,
+          "editable": true
+      },
+      {
+          "tag": "Text",
+          "text": "470R",
+          "id": "a23cffc1-5860-481e-bc3b-b77099f9599a",
+          "name": "文字",
+          "visible": true,
+          "x": 678.0115761441048,
+          "y": 220.2125513482208,
+          "editable": true
+      },
+      {
+          "tag": "Text",
+          "text": "470R",
+          "id": "d6f42d20-bb9d-41d8-a376-8b1b0ac135eb",
+          "name": "文字",
+          "visible": true,
+          "x": 853.579509521515,
+          "y": 220.2125513482208,
+          "editable": true
+      },
+      {
+          "tag": "Text",
+          "text": "470R",
+          "id": "e23308ff-7443-4bfe-820d-e18c8030cbaf",
+          "name": "文字",
+          "visible": true,
+          "x": 1013.2798149233978,
+          "y": 220.21255134822087,
+          "editable": true
+      },
+      {
+          "tag": "Text",
+          "text": "300",
+          "id": "449f2229-6d7b-44b3-8d47-6426c5486462",
+          "name": "文字",
+          "visible": true,
+          "x": 580.7514053364679,
+          "y": 333.9123259555628,
+          "editable": true
+      },
+      {
+          "tag": "Text",
+          "text": "300",
+          "id": "f315814d-871a-4815-97fb-98169ef90e76",
+          "name": "文字",
+          "visible": true,
+          "x": 754.2192521563522,
+          "y": 333.9123259555628,
+          "editable": true
+      },
+      {
+          "tag": "Text",
+          "text": "480R",
+          "id": "dc550893-ec6f-4ba9-abf3-2fc567a9eb09",
+          "name": "文字",
+          "visible": true,
+          "x": 904.7397603855526,
+          "y": 342.9123259555628,
+          "editable": true
+      },
+      {
+          "tag": "Text",
+          "text": "B2",
+          "id": "04f7c959-709c-4b16-ae95-ed3d7369ac7d",
+          "name": "文字",
+          "visible": true,
+          "x": 777.0607985808995,
+          "y": 476.94875089890354,
+          "editable": true
+      },
+      {
+          "tag": "Text",
+          "text": "1",
+          "id": "52f3e503-dcf2-4758-b3ba-434a336ed36a",
+          "name": "文字",
+          "visible": true,
+          "x": 747.8537737143484,
+          "y": 466.22361646699505,
+          "rotation": -90,
+          "editable": true
+      },
+      {
+          "tag": "Text",
+          "text": "2",
+          "id": "5e7a606e-0b9f-4af3-9a68-0ff6537739d8",
+          "name": "文字",
+          "visible": true,
+          "x": 747.8537737143484,
+          "y": 510.9683352885614,
+          "rotation": -90,
+          "editable": true
+      },
+      {
+          "tag": "Text",
+          "text": "1",
+          "id": "38fd9d17-e5de-4017-b689-1e655e74cc41",
+          "name": "文字",
+          "visible": true,
+          "x": 1177.368994380116,
+          "y": 340.1865488829835,
+          "rotation": -90,
+          "editable": true
+      },
+      {
+          "tag": "Text",
+          "text": "2",
+          "id": "84236ef4-411c-4787-9e75-136714bd260d",
+          "name": "文字",
+          "visible": true,
+          "x": 1177.368994380116,
+          "y": 381.61232290380497,
+          "rotation": -90,
+          "editable": true
+      },
+      {
+          "tag": "Text",
+          "text": "B2",
+          "id": "183c381a-e746-4f75-bb86-58c93b8168b2",
+          "name": "文字",
+          "visible": true,
+          "x": 1205.206999446034,
+          "y": 348.78055065300305,
+          "editable": true
+      },
+      {
+          "tag": "Group",
+          "id": "028019e9-d7ce-4659-882a-ef87ce98baf5",
+          "name": "图元",
+          "zIndex": null,
+          "x": 277,
+          "y": 167,
+          "lockRatio": true,
+          "editable": true,
+          "hitChildren": false,
+          "children": [
+              {
+                  "tag": "Image",
+                  "url": "http://localhost:8004/dx-editor/src/editor/components/structure/element/imgs/electricity/vcc.svg",
+                  "name": "图元_内容",
+                  "x": 0,
+                  "y": 0,
+                  "width": 70,
+                  "height": 50
+              },
+              {
+                  "tag": "Ellipse",
+                  "name": "图元_圆点",
+                  "opacity": 0,
+                  "x": 15.5,
+                  "y": 29,
+                  "width": 4,
+                  "height": 4,
+                  "offsetX": -2,
+                  "offsetY": -2,
+                  "fill": "rgb(255,5,5)"
+              }
+          ]
+      },
+      {
+          "tag": "Group",
+          "id": "8e83c903-6507-4c78-9b37-963478d22d4a",
+          "name": "图元",
+          "zIndex": null,
+          "x": 532.5539400997318,
+          "y": 197.21255134822079,
+          "rotation": 90,
+          "skewX": 0,
+          "skewY": 0,
+          "lockRatio": true,
+          "editable": true,
+          "hitChildren": false,
+          "children": [
+              {
+                  "tag": "Image",
+                  "url": "http://localhost:8004/dx-editor/src/editor/components/structure/element/imgs/electricity/rus.svg",
+                  "name": "图元_内容",
+                  "x": 0,
+                  "y": 0,
+                  "width": 64,
+                  "height": 30,
+                  "rotation": 0,
+                  "skewX": 0,
+                  "skewY": 0
+              },
+              {
+                  "tag": "Ellipse",
+                  "name": "图元_圆点",
+                  "opacity": 0,
+                  "x": 46,
+                  "y": 9,
+                  "width": 4,
+                  "height": 4,
+                  "rotation": 0,
+                  "skewX": 0,
+                  "skewY": 0,
+                  "offsetX": -2,
+                  "offsetY": -2,
+                  "fill": "rgb(255,5,5)"
+              },
+              {
+                  "tag": "Ellipse",
+                  "name": "图元_圆点",
+                  "opacity": 0,
+                  "x": 6,
+                  "y": 9,
+                  "width": 4,
+                  "height": 4,
+                  "rotation": 0,
+                  "skewX": 0,
+                  "skewY": 0,
+                  "offsetX": -2,
+                  "offsetY": -2,
+                  "fill": "rgb(255,5,5)"
+              }
+          ]
+      },
+      {
+          "tag": "Group",
+          "id": "e8936d98-6cae-45e6-a651-aa8ceac8331c",
+          "name": "图元",
+          "zIndex": null,
+          "x": 685.292939086987,
+          "y": 197.21255134822084,
+          "rotation": 90,
+          "skewX": 0,
+          "skewY": 0,
+          "lockRatio": true,
+          "editable": true,
+          "hitChildren": false,
+          "children": [
+              {
+                  "tag": "Image",
+                  "url": "http://localhost:8004/dx-editor/src/editor/components/structure/element/imgs/electricity/rus.svg",
+                  "name": "图元_内容",
+                  "x": 0,
+                  "y": 0,
+                  "width": 64,
+                  "height": 30,
+                  "rotation": 0,
+                  "skewX": 0,
+                  "skewY": 0
+              },
+              {
+                  "tag": "Ellipse",
+                  "name": "图元_圆点",
+                  "opacity": 0,
+                  "x": 46,
+                  "y": 9,
+                  "width": 4,
+                  "height": 4,
+                  "rotation": 0,
+                  "skewX": 0,
+                  "skewY": 0,
+                  "offsetX": -2,
+                  "offsetY": -2,
+                  "fill": "rgb(255,5,5)"
+              },
+              {
+                  "tag": "Ellipse",
+                  "name": "图元_圆点",
+                  "opacity": 0,
+                  "x": 6,
+                  "y": 9,
+                  "width": 4,
+                  "height": 4,
+                  "rotation": 0,
+                  "skewX": 0,
+                  "skewY": 0,
+                  "offsetX": -2,
+                  "offsetY": -2,
+                  "fill": "rgb(255,5,5)"
+              }
+          ]
+      },
+      {
+          "tag": "Group",
+          "id": "f80e0ee7-54d2-40dd-b6b9-c108511740ed",
+          "name": "图元",
+          "zIndex": null,
+          "x": 860.2902361799036,
+          "y": 197.21255134822076,
+          "rotation": 90,
+          "skewX": 0,
+          "skewY": 0,
+          "lockRatio": true,
+          "editable": true,
+          "hitChildren": false,
+          "children": [
+              {
+                  "tag": "Image",
+                  "url": "http://localhost:8004/dx-editor/src/editor/components/structure/element/imgs/electricity/rus.svg",
+                  "name": "图元_内容",
+                  "x": 0,
+                  "y": 0,
+                  "width": 64,
+                  "height": 30,
+                  "rotation": 0,
+                  "skewX": 0,
+                  "skewY": 0
+              },
+              {
+                  "tag": "Ellipse",
+                  "name": "图元_圆点",
+                  "opacity": 0,
+                  "x": 46,
+                  "y": 9,
+                  "width": 4,
+                  "height": 4,
+                  "rotation": 0,
+                  "skewX": 0,
+                  "skewY": 0,
+                  "offsetX": -2,
+                  "offsetY": -2,
+                  "fill": "rgb(255,5,5)"
+              },
+              {
+                  "tag": "Ellipse",
+                  "name": "图元_圆点",
+                  "opacity": 0,
+                  "x": 6,
+                  "y": 9,
+                  "width": 4,
+                  "height": 4,
+                  "rotation": 0,
+                  "skewX": 0,
+                  "skewY": 0,
+                  "offsetX": -2,
+                  "offsetY": -2,
+                  "fill": "rgb(255,5,5)"
+              }
+          ]
+      },
+      {
+          "tag": "Group",
+          "id": "67faaa53-70c4-4ff6-9dc9-7cb9585394c7",
+          "name": "图元",
+          "zIndex": null,
+          "x": 1017.097650783498,
+          "y": 197.2125513482208,
+          "rotation": 90,
+          "skewX": 0,
+          "skewY": 0,
+          "lockRatio": true,
+          "editable": true,
+          "hitChildren": false,
+          "children": [
+              {
+                  "tag": "Image",
+                  "url": "http://localhost:8004/dx-editor/src/editor/components/structure/element/imgs/electricity/rus.svg",
+                  "name": "图元_内容",
+                  "x": 0,
+                  "y": 0,
+                  "width": 64,
+                  "height": 30,
+                  "rotation": 0,
+                  "skewX": 0,
+                  "skewY": 0
+              },
+              {
+                  "tag": "Ellipse",
+                  "name": "图元_圆点",
+                  "opacity": 0,
+                  "x": 46,
+                  "y": 9,
+                  "width": 4,
+                  "height": 4,
+                  "rotation": 0,
+                  "skewX": 0,
+                  "skewY": 0,
+                  "offsetX": -2,
+                  "offsetY": -2,
+                  "fill": "rgb(255,5,5)"
+              },
+              {
+                  "tag": "Ellipse",
+                  "name": "图元_圆点",
+                  "opacity": 0,
+                  "x": 6,
+                  "y": 9,
+                  "width": 4,
+                  "height": 4,
+                  "rotation": 0,
+                  "skewX": 0,
+                  "skewY": 0,
+                  "offsetX": -2,
+                  "offsetY": -2,
+                  "fill": "rgb(255,5,5)"
+              }
+          ]
+      },
+      {
+          "tag": "Group",
+          "id": "8debd3e0-ed2d-4c1c-bb06-385035172eaf",
+          "name": "图元",
+          "zIndex": null,
+          "x": 571.8222167316808,
+          "y": -21.093021990302617,
+          "lockRatio": true,
+          "editable": true,
+          "hitChildren": false,
+          "children": [
+              {
+                  "tag": "Image",
+                  "url": "http://localhost:8004/dx-editor/src/editor/components/structure/element/imgs/electricity/reu.svg",
+                  "name": "图元_内容",
+                  "x": 0,
+                  "y": 0,
+                  "width": 64,
+                  "height": 30
+              },
+              {
+                  "tag": "Ellipse",
+                  "name": "图元_圆点",
+                  "opacity": 0,
+                  "x": 52,
+                  "y": 15,
+                  "width": 4,
+                  "height": 4,
+                  "offsetX": -2,
+                  "offsetY": -2,
+                  "fill": "rgb(255,5,5)",
+                  "data": {
+                      "lineId": 242049,
+                      "direction": 7
+                  }
+              },
+              {
+                  "tag": "Ellipse",
+                  "name": "图元_圆点",
+                  "opacity": 0,
+                  "x": 12,
+                  "y": 15,
+                  "width": 4,
+                  "height": 4,
+                  "offsetX": -2,
+                  "offsetY": -2,
+                  "fill": "rgb(255,5,5)"
+              }
+          ]
+      },
+      {
+          "tag": "Group",
+          "id": "e368a4c1-d7af-4d75-8d53-00b535f2f117",
+          "name": "图元",
+          "zIndex": null,
+          "x": 612.4893639787684,
+          "y": 79.97372300631689,
+          "lockRatio": true,
+          "editable": true,
+          "hitChildren": false,
+          "children": [
+              {
+                  "tag": "Image",
+                  "url": "http://localhost:8004/dx-editor/src/editor/components/structure/element/imgs/electricity/rus.svg",
+                  "name": "图元_内容",
+                  "x": 0,
+                  "y": 0,
+                  "width": 64,
+                  "height": 30
+              },
+              {
+                  "tag": "Ellipse",
+                  "name": "图元_圆点",
+                  "opacity": 0,
+                  "x": 52,
+                  "y": 15,
+                  "width": 4,
+                  "height": 4,
+                  "offsetX": -2,
+                  "offsetY": -2,
+                  "fill": "rgb(255,5,5)"
+              },
+              {
+                  "tag": "Ellipse",
+                  "name": "图元_圆点",
+                  "opacity": 0,
+                  "x": 12,
+                  "y": 15,
+                  "width": 4,
+                  "height": 4,
+                  "offsetX": -2,
+                  "offsetY": -2,
+                  "fill": "rgb(255,5,5)",
+                  "data": {
+                      "direction": 3,
+                      "lineId": 273655
+                  }
+              }
+          ]
+      },
+      {
+          "tag": "Group",
+          "id": "459a74dc-2e0f-434e-8abf-0c7f6183a1e1",
+          "name": "图元",
+          "zIndex": null,
+          "x": 559.5514007588312,
+          "y": 342.491627164059,
+          "lockRatio": true,
+          "editable": true,
+          "hitChildren": false,
+          "children": [
+              {
+                  "tag": "Image",
+                  "url": "http://localhost:8004/dx-editor/src/editor/components/structure/element/imgs/electricity/reu.svg",
+                  "name": "图元_内容",
+                  "x": 0,
+                  "y": 0,
+                  "width": 64,
+                  "height": 30
+              },
+              {
+                  "tag": "Ellipse",
+                  "name": "图元_圆点",
+                  "opacity": 0,
+                  "x": 52,
+                  "y": 15,
+                  "width": 4,
+                  "height": 4,
+                  "offsetX": -2,
+                  "offsetY": -2,
+                  "fill": "rgb(255,5,5)",
+                  "data": {
+                      "lineId": 317225,
+                      "direction": 7
+                  }
+              },
+              {
+                  "tag": "Ellipse",
+                  "name": "图元_圆点",
+                  "opacity": 0,
+                  "x": 12,
+                  "y": 15,
+                  "width": 4,
+                  "height": 4,
+                  "offsetX": -2,
+                  "offsetY": -2,
+                  "fill": "rgb(255,5,5)",
+                  "data": {
+                      "lineId": 307660,
+                      "direction": 3
+                  }
+              }
+          ]
+      },
+      {
+          "tag": "Group",
+          "id": "ca247286-1bef-4d79-9b6e-6717b37e1b82",
+          "name": "图元",
+          "zIndex": null,
+          "x": 732.4717515293786,
+          "y": 342.4916271640591,
+          "lockRatio": true,
+          "editable": true,
+          "hitChildren": false,
+          "children": [
+              {
+                  "tag": "Image",
+                  "url": "http://localhost:8004/dx-editor/src/editor/components/structure/element/imgs/electricity/reu.svg",
+                  "name": "图元_内容",
+                  "x": 0,
+                  "y": 0,
+                  "width": 64,
+                  "height": 30
+              },
+              {
+                  "tag": "Ellipse",
+                  "name": "图元_圆点",
+                  "opacity": 0,
+                  "x": 52,
+                  "y": 15,
+                  "width": 4,
+                  "height": 4,
+                  "offsetX": -2,
+                  "offsetY": -2,
+                  "fill": "rgb(255,5,5)",
+                  "data": {
+                      "lineId": 362811,
+                      "direction": 7
+                  }
+              },
+              {
+                  "tag": "Ellipse",
+                  "name": "图元_圆点",
+                  "opacity": 0,
+                  "x": 12,
+                  "y": 15,
+                  "width": 4,
+                  "height": 4,
+                  "offsetX": -2,
+                  "offsetY": -2,
+                  "fill": "rgb(255,5,5)",
+                  "data": {
+                      "lineId": 317225,
+                      "direction": 3
+                  }
+              }
+          ]
+      },
+      {
+          "tag": "Group",
+          "id": "48e7f971-7263-4283-9747-7c22931699dc",
+          "name": "图元",
+          "zIndex": null,
+          "x": 1212.868994380116,
+          "y": 325.78055065300305,
+          "rotation": 90,
+          "lockRatio": true,
+          "editable": true,
+          "hitChildren": false,
+          "children": [
+              {
+                  "tag": "Image",
+                  "url": "http://localhost:8004/dx-editor/src/editor/components/structure/element/imgs/electricity/ceu.svg",
+                  "name": "图元_内容",
+                  "x": 0,
+                  "y": 0,
+                  "width": 64,
+                  "height": 34
+              },
+              {
+                  "tag": "Ellipse",
+                  "name": "图元_圆点",
+                  "opacity": 0,
+                  "x": 12,
+                  "y": 17.5,
+                  "width": 4,
+                  "height": 4,
+                  "offsetX": -2,
+                  "offsetY": -2,
+                  "fill": "rgb(255,5,5)",
+                  "data": {
+                      "lineId": 336266,
+                      "direction": 7
+                  }
+              },
+              {
+                  "tag": "Ellipse",
+                  "name": "图元_圆点",
+                  "opacity": 1,
+                  "x": 52,
+                  "y": 17.5,
+                  "width": 4,
+                  "height": 4,
+                  "offsetX": -2,
+                  "offsetY": -2,
+                  "fill": "rgb(255,5,5)",
+                  "data": {
+                      "lineId": 464254,
+                      "direction": 7
+                  }
+              }
+          ]
+      },
+      {
+          "tag": "Group",
+          "id": "0ffe4b3f-c80a-4661-98da-b12e1a57ed2a",
+          "name": "图元",
+          "zIndex": null,
+          "x": 782.4717515293786,
+          "y": 453.94875089890354,
+          "rotation": 90,
+          "lockRatio": true,
+          "editable": true,
+          "hitChildren": false,
+          "children": [
+              {
+                  "tag": "Image",
+                  "url": "http://localhost:8004/dx-editor/src/editor/components/structure/element/imgs/electricity/cus.svg",
+                  "name": "图元_内容",
+                  "x": 0,
+                  "y": 0,
+                  "width": 64,
+                  "height": 36
+              },
+              {
+                  "tag": "Ellipse",
+                  "name": "图元_圆点",
+                  "opacity": 0,
+                  "x": 12,
+                  "y": 18,
+                  "width": 4,
+                  "height": 4,
+                  "offsetX": -2,
+                  "offsetY": -2,
+                  "fill": "rgb(255,5,5)",
+                  "data": {
+                      "lineId": 367740,
+                      "direction": 7
+                  }
+              },
+              {
+                  "tag": "Ellipse",
+                  "name": "图元_圆点",
+                  "opacity": 0,
+                  "x": 52,
+                  "y": 18,
+                  "width": 4,
+                  "height": 4,
+                  "offsetX": -2,
+                  "offsetY": -2,
+                  "fill": "rgb(255,5,5)",
+                  "data": {
+                      "lineId": 489928,
+                      "direction": 7
+                  }
+              }
+          ]
+      },
+      {
+          "tag": "Group",
+          "id": "b19e9b8a-88ca-4177-bacf-6c0968305c26",
+          "name": "图元",
+          "zIndex": null,
+          "x": 950.5957555637752,
+          "y": 396.9123259555628,
+          "rotation": 180,
+          "lockRatio": true,
+          "editable": true,
+          "hitChildren": false,
+          "children": [
+              {
+                  "tag": "Image",
+                  "url": "http://localhost:8004/dx-editor/src/editor/components/structure/element/imgs/electricity/rpus.svg",
+                  "name": "图元_内容",
+                  "x": 0,
+                  "y": 0,
+                  "width": 62,
+                  "height": 45
+              },
+              {
+                  "tag": "Ellipse",
+                  "name": "图元_圆点",
+                  "opacity": 0,
+                  "x": 31,
+                  "y": 11,
+                  "width": 4,
+                  "height": 4,
+                  "offsetX": -2,
+                  "offsetY": -2,
+                  "fill": "rgb(255,5,5)",
+                  "data": {
+                      "lineId": 498718,
+                      "direction": 7
+                  }
+              },
+              {
+                  "tag": "Ellipse",
+                  "name": "图元_圆点",
+                  "opacity": 0,
+                  "x": 51,
+                  "y": 31,
+                  "width": 4,
+                  "height": 4,
+                  "offsetX": -2,
+                  "offsetY": -2,
+                  "fill": "rgb(255,5,5)",
+                  "data": {
+                      "lineId": 413910,
+                      "direction": 7
+                  }
+              },
+              {
+                  "tag": "Ellipse",
+                  "name": "图元_圆点",
+                  "opacity": 0,
+                  "x": 11,
+                  "y": 31,
+                  "width": 4,
+                  "height": 4,
+                  "offsetX": -2,
+                  "offsetY": -2,
+                  "fill": "rgb(255,5,5)",
+                  "data": {
+                      "lineId": 405171,
+                      "direction": 7
+                  }
+              }
+          ]
+      },
+      {
+          "tag": "Group",
+          "id": "b19912a7-1f18-4043-8b45-f519471435e2",
+          "name": "图元",
+          "zIndex": null,
+          "x": 884.5957555637751,
+          "y": 625.5869723057497,
+          "lockRatio": true,
+          "editable": true,
+          "hitChildren": false,
+          "children": [
+              {
+                  "tag": "Image",
+                  "url": "http://localhost:8004/dx-editor/src/editor/components/structure/element/imgs/electricity/gnd.svg",
+                  "name": "图元_内容",
+                  "x": 0,
+                  "y": 0,
+                  "width": 70,
+                  "height": 50
+              },
+              {
+                  "tag": "Ellipse",
+                  "name": "图元_圆点",
+                  "opacity": 0,
+                  "x": 16.5,
+                  "y": 6,
+                  "width": 4,
+                  "height": 4,
+                  "offsetX": -2,
+                  "offsetY": -2,
+                  "fill": "rgb(255,5,5)"
+              }
+          ]
+      },
+      {
+          "tag": "Group",
+          "id": "e0b7870c-a293-4ead-9ca3-ca7551e60df1",
+          "name": "图元",
+          "zIndex": null,
+          "x": 417.2594112196395,
+          "y": 561.8565812051231,
+          "lockRatio": true,
+          "editable": true,
+          "hitChildren": false,
+          "children": [
+              {
+                  "tag": "Image",
+                  "url": "http://localhost:8004/dx-editor/src/editor/components/structure/element/imgs/electricity/gnd.svg",
+                  "name": "图元_内容",
+                  "x": 0,
+                  "y": 0,
+                  "width": 70,
+                  "height": 50
+              },
+              {
+                  "tag": "Ellipse",
+                  "name": "图元_圆点",
+                  "opacity": 0,
+                  "x": 16.5,
+                  "y": 6,
+                  "width": 4,
+                  "height": 4,
+                  "offsetX": -2,
+                  "offsetY": -2,
+                  "fill": "rgb(255,5,5)"
+              }
+          ]
+      }
+  ]
+}

@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2023-12-09 10:21:06
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-24 16:25:37
+ * @LastEditTime: 2024-09-25 14:54:31
  */
 import { v4 } from 'uuid'
 import { EditorView } from '@/editor/view'
@@ -29,7 +29,7 @@ export default class ToolDrawLine extends ToolBase {
     /** 吸附的点位坐标 */
     this.line = new Line({
       editable: true,
-      strokeWidth: 2,
+      strokeWidth: 1,
       stroke: '#ff0000',
       name: '线段',
       id: v4()
