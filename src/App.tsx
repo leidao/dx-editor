@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2024-08-20 14:33:49
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-05 17:49:13
+ * @LastEditTime: 2024-09-29 16:39:48
  */
 
 import { useEffect, useRef, useState } from 'react'
@@ -13,8 +13,8 @@ const preventDefaultScalePage = (event: WheelEvent) => {
     event.preventDefault()
   }
 }
-import Panel from '@/editor/components/panel'
-import Structure from '@/editor/components/structure'
+import LeftPanel from '@/editor/components/leftPanel'
+import RightPanel from '@/editor/components/rightPanel'
 import ToolBar from '@/editor/components/toolbar'
 import EditorContext from '@/editor/context'
 import { EditorView } from '@/editor/view'
@@ -41,13 +41,13 @@ const Home = () => {
   return (
     <EditorContext.Provider value={editor}>
       <div className='border-b-1 border-#e6e6e6 border-b-solid px-10px'>
-        <ToolBar className="h-37px box-border text-#202020"></ToolBar>
+        <ToolBar className="h-68px box-border text-#202020"></ToolBar>
       </div>
       <div className="flex w-100% overflow-hidden" style={{
-        height: 'calc(100% - 38px)'
+        height: 'calc(100% - 68px)'
       }}>
         <div className='w-240px h-100% bg-#fafafa'>
-          <Structure></Structure>
+          <LeftPanel></LeftPanel>
         </div>
         <div className="flex-1 relative box-border h-100%">
           <div
@@ -57,7 +57,7 @@ const Home = () => {
           </div>
         </div>
         <div className="w-280px h-100% bg-#fafafa">
-          <Panel></Panel>
+          <RightPanel></RightPanel>
         </div>
       </div>
     </EditorContext.Provider>

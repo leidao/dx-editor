@@ -3,12 +3,12 @@
  * @Author: ldx
  * @Date: 2024-08-28 14:10:14
  * @LastEditors: ldx
- * @LastEditTime: 2024-08-28 16:22:50
+ * @LastEditTime: 2024-09-29 11:16:05
  */
 import { App, EditorEvent, Group, LayoutEvent, Line, Rect, ResizeEvent, Text } from "leafer-editor";
-
+import globalConfig from '../config'
 export const HALF_PI = Math.PI / 2
-const getStepByZoom = (zoom: number) => {
+export const getStepByZoom = (zoom: number) => {
   /**
    * 步长研究，参考 figma
    * 1
@@ -43,19 +43,9 @@ export const getClosestTimesVal = (value: number, segment: number) => {
   return value - left <= right - value ? left : right
 }
 export default class Ruler {
-  group = new Group()
-  /** 文字颜色 */
-  textColor = '#aaa'
-  /** 背景颜色 */
-  bgColor = '#fff'
-  /** 间隔线颜色 */
-  lineColor = '#ccc'
-  /** 下边框颜色 */
-  borderColor = '#ccc'
-  /** 遮罩颜色 */
-  maskColor = '#e2ebff'
+  group = new Group({zIndex:Infinity})
   constructor(private app: App) {
-    this.app.sky.add(this.group)
+    this.app.ground.add(this.group)
     this.listen()
   }
   get visible(): boolean {
@@ -81,20 +71,20 @@ export default class Ruler {
     this.group.add(new Rect({
       width: width,
       height: 20,
-      fill: this.bgColor,
+      fill: globalConfig.rulerBgColor,
       zIndex: 10,
     }))
     this.group.add(new Rect({
       width: 20,
       height: height,
-      fill: this.bgColor,
+      fill: globalConfig.rulerBgColor,
       zIndex: 10,
     }))
     // 线条
     this.group.add(new Line({
       width: width,
       strokeWidth: 1,
-      stroke: this.borderColor,
+      stroke: globalConfig.rulerBorderColor,
       x: 0,
       y: 20,
       zIndex: 50,
@@ -102,7 +92,7 @@ export default class Ruler {
     this.group.add(new Line({
       width: width,
       strokeWidth: 1,
-      stroke: this.borderColor,
+      stroke: globalConfig.rulerBorderColor,
       rotation: 90,
       x: 20,
       y: 0,
@@ -112,7 +102,7 @@ export default class Ruler {
     this.group.add(new Rect({
       width: 20,
       height: 20,
-      fill: this.bgColor,
+      fill: globalConfig.rulerBgColor,
       zIndex: 40
     }))
     this.group.add(new Text({
@@ -120,7 +110,7 @@ export default class Ruler {
       y: 9,
       text: `px`,
       zIndex: 40,
-      fill: this.textColor,
+      fill: globalConfig.rulerTextColor,
       fontSize: 10,
       textAlign: 'center',
       verticalAlign: 'middle',
@@ -130,6 +120,7 @@ export default class Ruler {
     const zoom = this.getZoom()
     const stepInScene = getStepByZoom(zoom)
     const { x: x1 } = this.app.getPagePoint({ x: 0, y: 0 })
+    // console.log('====',x1);
     let startX = getClosestTimesVal(x1, stepInScene)
     const { x: x2 } = this.app.getPagePoint({ x: this.app.width!, y: 0 })
     const endX = getClosestTimesVal(x2, stepInScene)
@@ -139,7 +130,7 @@ export default class Ruler {
       const line = new Line({
         width: 6,
         strokeWidth: 1,
-        stroke: this.lineColor,
+        stroke: globalConfig.rulerLineColor,
         rotation: 90,
         x: x,
         y: 14,
@@ -149,7 +140,7 @@ export default class Ruler {
       const text = new Text({
         x,
         y: 8,
-        fill: this.textColor,
+        fill: globalConfig.rulerTextColor,
         fontSize: 10,
         text: `${startX}`,
         textAlign: 'center',
@@ -174,7 +165,7 @@ export default class Ruler {
       const line = new Line({
         width: 6,
         strokeWidth: 1,
-        stroke:this.lineColor,
+        stroke:globalConfig.rulerLineColor,
         x: 14,
         y: y,
         zIndex: 30
@@ -183,7 +174,7 @@ export default class Ruler {
       const text = new Text({
         x: 8,
         y,
-        fill: this.textColor,
+        fill: globalConfig.rulerTextColor,
         fontSize: 10,
         rotation: -90,
         text: `${startY}`,
@@ -205,7 +196,7 @@ export default class Ruler {
       const rectX = new Rect({
         width: bounds.width,
         height: 20,
-        fill: this.maskColor,
+        fill: globalConfig.rulerMaskColor,
         x: bounds.x,
         zIndex: 20
       })
@@ -213,7 +204,7 @@ export default class Ruler {
       const rectY = new Rect({
         width: 20,
         height: bounds.height,
-        fill: this.maskColor,
+        fill: globalConfig.rulerMaskColor,
         y: bounds.y,
         zIndex: 20
       })

@@ -3,19 +3,26 @@
  * @Author: ldx
  * @Date: 2022-04-06 19:34:55
  * @LastEditors: ldx
- * @LastEditTime: 2023-12-21 16:13:48
+ * @LastEditTime: 2024-09-29 16:46:06
  */
 
-import ToolBtn from './toolBtn'
-import ToolZoom from './toolZoom'
+import MenuBar from './components/menuBar'
+import ToolBtn from './components/toolBtn'
+import ToolZoom from './components/toolZoom'
 type Props = {
   className?: string
 }
 const ToolBar: React.FC<Props> = ({ className = '' }) => {
   return (
-    <div className={`${className} flex justify-center items-center `}>
-      <ToolBtn></ToolBtn>
-      <ToolZoom></ToolZoom>
+    <div className={`${className}`}>
+      <div>
+        <MenuBar></MenuBar>
+      </div>
+      <div className='flex justify-center items-center '>
+        <ToolBtn></ToolBtn>
+        <ToolZoom></ToolZoom>
+      </div>
+
     </div>
   )
 }
