@@ -3,49 +3,17 @@
  * @Author: ldx
  * @Date: 2024-08-28 14:10:14
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-29 11:16:05
+ * @LastEditTime: 2024-09-30 14:56:07
  */
 import { App, EditorEvent, Group, LayoutEvent, Line, Rect, ResizeEvent, Text } from "leafer-editor";
 import globalConfig from '../config'
+import { getClosestTimesVal, getStepByZoom } from "../utils";
 export const HALF_PI = Math.PI / 2
-export const getStepByZoom = (zoom: number) => {
-  /**
-   * 步长研究，参考 figma
-   * 1
-   * 2
-   * 5
-   * 10（对应 500% 往上） 找到规律了： 50 / zoom = 步长
-   * 25（对应 200% 往上）
-   * 50（对应 100% 往上）
-   * 100（对应 50% 往上）
-   * 250
-   * 500
-   * 1000
-   * 2500
-   * 5000
-   */
-  const steps = [1, 2, 5, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000]
-  const step = 50 / zoom
-  for (let i = 0, len = steps.length; i < len; i++) {
-    if (steps[i] >= step) return steps[i]
-  }
-  return steps[0]
-}
-/**
- * 找出离 value 最近的 segment 的倍数值
- */
-export const getClosestTimesVal = (value: number, segment: number) => {
-  const n = Math.floor(value / segment)
-  const left = segment * n
-  const right = segment * (n + 1)
-  // console.log('====', value, segment, n, left, right)
 
-  return value - left <= right - value ? left : right
-}
 export default class Ruler {
   group = new Group({zIndex:Infinity})
   constructor(private app: App) {
-    this.app.ground.add(this.group)
+    this.app.sky.add(this.group)
     this.listen()
   }
   get visible(): boolean {

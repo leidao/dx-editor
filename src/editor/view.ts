@@ -3,19 +3,20 @@
  * @Author: ldx
  * @Date: 2024-08-20 14:50:58
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-29 16:11:49
+ * @LastEditTime: 2024-09-30 15:11:06
  */
 
 import _ from 'lodash'
 import { v4 } from 'uuid'
-import { loadSVG } from './utils'
-// import { Ruler } from 'leafer-x-ruler'
 import Manager from './manager/index'
-import Ruler, { getClosestTimesVal } from './objects/ruler'
+import Ruler from './objects/ruler'
 import Grid from './objects/grid'
 import HelpLine from './objects/helpLine'
 import globalConfig from './config'
+
 import './service/customEditTool'
+
+import { getClosestTimesVal, loadSVG } from './utils'
 import { Line, Image, Text, Ellipse, Group, App, Platform, UI } from 'leafer-ui'
 
 type Option = {

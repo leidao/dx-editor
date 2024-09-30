@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2023-12-21 11:28:43
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-29 16:51:46
+ * @LastEditTime: 2024-09-30 11:26:47
  */
 import { useClickAway } from 'ahooks'
 import { InputNumber, Space } from 'antd'
@@ -12,7 +12,8 @@ import { useContext, useEffect, useRef, useState } from 'react'
 
 import EditorContext from '@/editor/context'
 
-import { CheckOutlined, DownOutlined } from '../../icons'
+import { CheckOutlined } from '../../icons/check-outlined'
+import { DownOutlined } from '../../icons/down-outlined'
 import { LayoutEvent, ZoomEvent } from 'leafer-ui'
 import { isWindows } from '@/editor/utils'
 const ToolZoom = () => {

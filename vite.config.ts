@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2022-04-06 14:45:22
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-06 17:51:29
+ * @LastEditTime: 2024-09-30 09:52:42
  */
 import legacy from '@vitejs/plugin-legacy'
 import react from '@vitejs/plugin-react'
@@ -14,11 +14,13 @@ import path from 'path-browserify'
 import { presetUno } from 'unocss'
 import Unocss from 'unocss/vite'
 import { defineConfig } from 'vite'
+import svgr from 'vite-plugin-svgr'
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     react(),
+    svgr(),
     // 可以直接使用index.less文件名，会导致debug不准
     // autoCSSModulePlugin(),
     legacy({

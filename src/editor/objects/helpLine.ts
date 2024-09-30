@@ -3,10 +3,11 @@
  * @Author: ldx
  * @Date: 2024-08-28 14:10:14
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-29 16:15:00
+ * @LastEditTime: 2024-09-30 15:17:51
  */
 import globalConfig from '../config'
 import { App, Line, MoveEvent, ResizeEvent, Event, PointerEvent } from "leafer-ui";
+import { getClosestTimesVal } from '../utils';
 export default class HelpLine {
   xLine!: Line
   yLine!: Line
@@ -43,13 +44,18 @@ export default class HelpLine {
     this.yLine.visible = visible
   }
   drawShape = (event: Event) => {
+    if (!globalConfig.helpLineVisible) return
     if (!this.visible) return
     if (event.type === 'resize' && event instanceof ResizeEvent) {
       this.xLine.width = event.width
       this.yLine.width = event.height
     } else if (event.type === 'pointer.move' && event instanceof PointerEvent) {
-      this.xLine.y = event.y
-      this.yLine.x = event.x
+      const pagePoint = this.app.getPagePoint({ x: event.x, y: event.y })
+      let x = getClosestTimesVal(pagePoint.x, globalConfig.moveSize)
+      let y = getClosestTimesVal(pagePoint.y, globalConfig.moveSize)
+      const worldPoint = this.app.getWorldPointByPage({x,y})
+      this.xLine.y = worldPoint.y
+      this.yLine.x = worldPoint.x
     } else if (event.type === 'move' && event instanceof MoveEvent) {
       this.xLine.y = (this.xLine.y || 0) + event.moveY
       this.yLine.x = (this.yLine.x || 0) + event.moveX

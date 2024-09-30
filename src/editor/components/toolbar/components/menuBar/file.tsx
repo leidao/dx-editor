@@ -3,14 +3,20 @@
  * @Author: ldx
  * @Date: 2023-12-21 11:13:40
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-29 18:07:34
+ * @LastEditTime: 2024-09-30 10:25:58
  */
 
 import { Button, Dropdown, MenuProps, Tooltip } from 'antd'
 import { useContext, useEffect, useState } from 'react'
 
 import EditorContext from '@/editor/context'
-import { NewProject, Save, Open, SaveAs, ImportJson, ExportJson } from '@/editor/components/toolbar/icons'
+
+import 新建 from '@/editor/components/toolbar/icons/新建.svg?react'
+import 打开 from '@/editor/components/toolbar/icons/打开.svg?react'
+import 保存 from '@/editor/components/toolbar/icons/保存.svg?react'
+import 另存为 from '@/editor/components/toolbar/icons/另存为.svg?react'
+import 导入 from '@/editor/components/toolbar/icons/导入.svg?react'
+import 导出 from '@/editor/components/toolbar/icons/导出.svg?react'
 
 
 
@@ -28,12 +34,12 @@ const File = () => {
     {
       key: '1',
       label: <span className='text-12px ml-10px'>新建</span>,
-      icon: <NewProject />,
+      icon: <新建 />,
     },
     {
       key: '2',
       label: <span className='text-12px ml-10px'>打开</span>,
-      icon: <Open />,
+      icon: <打开 />,
     },
     {
       type: 'divider',
@@ -41,12 +47,12 @@ const File = () => {
     {
       key: '3',
       label: <span className='text-12px ml-10px'>保存</span>,
-      icon: <Save />,
+      icon: <保存 />,
     },
     {
       key: '4',
       label: <span className='text-12px ml-10px'>另存为</span>,
-      icon: <SaveAs />,
+      icon: <另存为 />,
     },
     {
       type: 'divider',
@@ -54,16 +60,16 @@ const File = () => {
     {
       key: '5',
       label: <span className='text-12px ml-10px'>导入</span>,
-      icon: <ImportJson />,
+      icon: <导入 />,
     },
     {
       key: '6',
       label: <span className='text-12px ml-10px'>导出</span>,
-      icon: <ExportJson />,
+      icon: <导出 />,
     },
   ];
   return (
-    <Dropdown menu={{ items }} placement="bottomLeft" overlayStyle={{minWidth:'188px',background:'#f9f9f9'}}>
+    <Dropdown menu={{ items }} placement="bottomLeft" overlayStyle={{minWidth:'188px'}}>
       <Button type="text">文件</Button>
     </Dropdown>
   )

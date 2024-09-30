@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2023-12-21 11:13:40
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-29 17:57:20
+ * @LastEditTime: 2024-09-30 13:39:49
  */
 
 import { Button, Dropdown, MenuProps, Tooltip } from 'antd'
@@ -30,7 +30,7 @@ const MenuBar = () => {
 
 
   return (
-    <div className="flex-1 flex items-center h-30px my-4px">
+    <div className="flex-1 flex items-center h-30px py-4px">
       <div className='mr-20px'><img src={logo} alt="dx-editor" /></div>
       <div>
         <File></File>

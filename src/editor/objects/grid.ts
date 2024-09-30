@@ -3,11 +3,11 @@
  * @Author: ldx
  * @Date: 2024-08-28 14:10:14
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-29 10:52:49
+ * @LastEditTime: 2024-09-30 14:56:34
  */
 import globalConfig from '../config'
 import { App, Group, LayoutEvent, Line, ResizeEvent } from "leafer-ui";
-import { getStepByZoom, getClosestTimesVal } from './ruler'
+import { getStepByZoom, getClosestTimesVal } from '@/editor/utils'
 export default class Grid {
   group = new Group()
   constructor(private app: App) {

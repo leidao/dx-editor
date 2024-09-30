@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2024-08-20 14:33:49
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-29 16:39:48
+ * @LastEditTime: 2024-09-30 13:41:55
  */
 
 import { useEffect, useRef, useState } from 'react'
@@ -40,11 +40,11 @@ const Home = () => {
   }, [])
   return (
     <EditorContext.Provider value={editor}>
-      <div className='border-b-1 border-#e6e6e6 border-b-solid px-10px'>
-        <ToolBar className="h-68px box-border text-#202020"></ToolBar>
+      <div className='h-70px border-b-1 box-border border-#e6e6e6 border-b-solid px-10px'>
+        <ToolBar className="text-#202020"></ToolBar>
       </div>
       <div className="flex w-100% overflow-hidden" style={{
-        height: 'calc(100% - 68px)'
+        height: 'calc(100% - 70px)'
       }}>
         <div className='w-240px h-100% bg-#fafafa'>
           <LeftPanel></LeftPanel>
