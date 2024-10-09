@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2023-12-21 15:26:11
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-27 14:26:23
+ * @LastEditTime: 2024-10-08 10:10:50
  */
 import { Collapse, Empty, Slider } from 'antd'
 import { useContext, useEffect, useState } from 'react'
@@ -61,18 +61,18 @@ const Panel = () => {
         setSelectList(list.slice())
       })
     }, 60)
-    view.app.editor.on(EditorEvent.SELECT, change)
-    view.app.editor.on(EditorMoveEvent.MOVE, change)
-    view.app.editor.on(EditorScaleEvent.SCALE, change)
-    view.app.editor.on(EditorRotateEvent.ROTATE, change)
-    view.app.editor.on('opacityChange', change)
+    // view.app.editor.on(EditorEvent.SELECT, change)
+    // view.app.editor.on(EditorMoveEvent.MOVE, change)
+    // view.app.editor.on(EditorScaleEvent.SCALE, change)
+    // view.app.editor.on(EditorRotateEvent.ROTATE, change)
+    // view.app.editor.on('opacityChange', change)
 
     return () => {
-      view.app.editor.off(EditorEvent.SELECT, change)
-      view.app.editor.off(EditorMoveEvent.MOVE, change)
-      view.app.editor.off(EditorScaleEvent.SCALE, change)
-      view.app.editor.off(EditorRotateEvent.ROTATE, change)
-      view.app.editor.off('opacityChange', change)
+      // view.app.editor.off(EditorEvent.SELECT, change)
+      // view.app.editor.off(EditorMoveEvent.MOVE, change)
+      // view.app.editor.off(EditorScaleEvent.SCALE, change)
+      // view.app.editor.off(EditorRotateEvent.ROTATE, change)
+      // view.app.editor.off('opacityChange', change)
     }
 
   }, [view])

@@ -3,11 +3,12 @@
  * @Author: ldx
  * @Date: 2024-08-28 14:10:14
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-30 15:17:51
+ * @LastEditTime: 2024-10-08 09:35:09
  */
 import globalConfig from '../config'
 import { App, Line, MoveEvent, ResizeEvent, Event, PointerEvent } from "leafer-ui";
 import { getClosestTimesVal } from '../utils';
+import _ from 'lodash';
 export default class HelpLine {
   xLine!: Line
   yLine!: Line
@@ -42,8 +43,12 @@ export default class HelpLine {
     this._visible = visible
     this.xLine.visible = visible
     this.yLine.visible = visible
+    if(!visible){
+      this.xLine.y = 0
+      this.yLine.x = 0
+    }
   }
-  drawShape = (event: Event) => {
+  drawShape = _.throttle((event: Event) => {
     if (!globalConfig.helpLineVisible) return
     if (!this.visible) return
     if (event.type === 'resize' && event instanceof ResizeEvent) {
@@ -60,7 +65,7 @@ export default class HelpLine {
       this.xLine.y = (this.xLine.y || 0) + event.moveY
       this.yLine.x = (this.yLine.x || 0) + event.moveX
     }
-  }
+  },16)
   listen() {
     this.app.on(PointerEvent.MOVE, this.drawShape)
     this.app.tree.on(MoveEvent.MOVE, this.drawShape)

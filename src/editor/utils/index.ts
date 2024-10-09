@@ -3,8 +3,10 @@
  * @Author: ldx
  * @Date: 2024-08-30 15:33:08
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-23 17:31:43
+ * @LastEditTime: 2024-10-09 10:58:02
  */
+
+import { IUI } from "@leafer-ui/interface";
 
 /** 判断是否是window系统 */
 export const isWindows =
@@ -112,6 +114,11 @@ export const getClosestTimesVal = (value: number, segment: number) => {
   const left = segment * n
   const right = segment * (n + 1)
   // console.log('====', value, segment, n, left, right)
-
   return value - left <= right - value ? left : right
+}
+export const traverse =(graph: IUI, callback: (graph: IUI) => void) =>{
+  (graph?.children || []).forEach(item => {
+    callback(item)
+    traverse(item, callback)
+  })
 }

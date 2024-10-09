@@ -3,11 +3,11 @@
  * @Author: ldx
  * @Date: 2023-12-14 16:15:05
  * @LastEditors: ldx
- * @LastEditTime: 2024-08-29 17:48:37
+ * @LastEditTime: 2024-10-06 20:26:39
  */
 
 import { EditorView } from '@/editor/view'
-import { App } from 'leafer-editor'
+import { App } from 'leafer-ui'
 
 abstract class ToolBase {
   /** 快捷键 */

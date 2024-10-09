@@ -6,7 +6,7 @@
  * @LastEditTime: 2024-08-27 14:46:37
  */
 
-import { App } from 'leafer-editor'
+import { App } from 'leafer-ui'
 import ToolBase from './toolBase'
 import { EditorView } from '@/editor/view'
 class ToolManager {

@@ -3,15 +3,16 @@
  * @Author: ldx
  * @Date: 2024-08-28 14:10:14
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-30 14:56:07
+ * @LastEditTime: 2024-10-09 11:33:42
  */
 import { App, EditorEvent, Group, LayoutEvent, Line, Rect, ResizeEvent, Text } from "leafer-editor";
 import globalConfig from '../config'
 import { getClosestTimesVal, getStepByZoom } from "../utils";
+import _ from "lodash";
 export const HALF_PI = Math.PI / 2
 
 export default class Ruler {
-  group = new Group({zIndex:Infinity})
+  group = new Group()
   constructor(private app: App) {
     this.app.sky.add(this.group)
     this.listen()
@@ -157,7 +158,7 @@ export default class Ruler {
   }
   /** 选中图形的遮罩 */
   drawMask() {
-    const graphs = this.app.editor.list || []
+    const graphs = this.app.editor?.list || []
     for (let i = 0; i < graphs.length; i++) {
       const graph = graphs[i];
       const bounds = graph.getBounds()
@@ -182,12 +183,12 @@ export default class Ruler {
   listen() {
     this.app.tree.on(LayoutEvent.AFTER, this.drawShape)
     this.app.tree.on(ResizeEvent.RESIZE, this.drawShape)
-    this.app.editor.on(EditorEvent.SELECT, this.drawShape)
+    // this.app.editor.on(EditorEvent.SELECT, this.drawShape)
   }
   destroy() {
     this.app.tree.off(LayoutEvent.AFTER, this.drawShape)
     this.app.tree.off(ResizeEvent.RESIZE, this.drawShape)
-    this.app.editor.off(EditorEvent.SELECT, this.drawShape)
+    // this.app.editor.off(EditorEvent.SELECT, this.drawShape)
   }
   getZoom(): number {
     if (this.app.tree) {

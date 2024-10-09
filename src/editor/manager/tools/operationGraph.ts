@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2023-12-09 10:21:06
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-29 10:47:05
+ * @LastEditTime: 2024-10-09 15:29:45
  */
 
 import { EditorView } from '@/editor/view'
@@ -23,18 +23,14 @@ export default class ToolOperationGraph extends ToolBase {
   readonly type = 'operationGraph'
   constructor(view: EditorView) {
     super(view)
-    // Line.setEditOuter('CustomLineEditTool')
-    // UI.setEditOuter('CustomEditTool')
   }
-
-
   active() {
-    this.app.editor.visible = true
+    this.view.selector.hitChildren = true
     this.app.tree.hitChildren = true
   }
   inactive() {
-    this.app.editor.visible = false
+    this.view.selector.hitChildren = false
     this.app.tree.hitChildren = false
-    this.app.editor.cancel()
+    this.view.selector.cancel()
   }
 }

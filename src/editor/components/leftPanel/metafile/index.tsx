@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2023-12-21 11:03:37
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-29 11:12:24
+ * @LastEditTime: 2024-10-06 11:10:56
  */
 import { useContext, useState } from 'react'
 
@@ -23,6 +23,7 @@ const PicAssets: React.FC<Props> = ({ className = '' }) => {
     const img = event.target as HTMLImageElement | null
     if (!editor || !img) return
     event.dataTransfer.setData('img',img.src)
+    event.dataTransfer.setData('name',img.alt)
     const container = editor.domElement
     container.addEventListener('dragenter', editor.dragenter)
     container.addEventListener('dragleave', editor.dragleave)

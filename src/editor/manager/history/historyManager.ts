@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2023-12-09 18:58:58
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-27 14:32:12
+ * @LastEditTime: 2024-10-08 10:09:05
  */
 import {  DragEvent, KeyEvent } from 'leafer-ui'
 import { EditorView } from '../../view'
@@ -48,7 +48,7 @@ export default class HistoryManager {
   }
   listen() {
     // 文本内部编辑器关闭事件/文本的添加也会触发该事件
-    this.view.app.editor.on(InnerEditorEvent.CLOSE, this.change)
+    // this.view.app.editor.on(InnerEditorEvent.CLOSE, this.change)
     // 直接监听ChildEvent.ADD不合适，比如文字的添加/线段的绘制，都是当前绘制完成后才发布add事件
     this.view.app.tree.on('add', this.change)
     // set(json)会触发add事件，所以需要自己在需要的地方发布remove事件
@@ -56,16 +56,16 @@ export default class HistoryManager {
     // 直接监听PropertyEvent.CHANGE的话图形的拖拽/旋转等操作会多次触发，因此也是自己在合适的时机去手动发布update事件
     this.view.app.tree.on('update', this.change)
     // DragEvent.END目前还是合适的，在change事件中有比较补丁是否存在，所以如果点击后没有操作，也不用担心会被收集操作
-    this.view.app.editor.on(DragEvent.END, this.change)
+    // this.view.app.editor.on(DragEvent.END, this.change)
     // 监听键盘事件
     this.view.app.on(KeyEvent.DOWN, this.onKeydown)
   }
   destroy() {
-    this.view.app.editor.off(InnerEditorEvent.CLOSE, this.change)
+    // this.view.app.editor.off(InnerEditorEvent.CLOSE, this.change)
     this.view.app.tree.off('add', this.change)
     this.view.app.tree.off('reomve', this.change)
     this.view.app.tree.off('update', this.change)
-    this.view.app.editor.off(DragEvent.END, this.change)
+    // this.view.app.editor.off(DragEvent.END, this.change)
     this.view.app.off(KeyEvent.DOWN, this.onKeydown)
   }
   onKeydown = (event: IKeyEvent) => {

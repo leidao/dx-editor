@@ -3,12 +3,12 @@
  * @Author: ldx
  * @Date: 2023-12-09 10:21:06
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-04 17:53:27
+ * @LastEditTime: 2024-10-06 20:25:40
  */
 import { v4 } from 'uuid'
 import { EditorView } from '@/editor/view'
 import ToolBase from './toolBase'
-import { DragEvent, Rect } from 'leafer-editor'
+import { DragEvent, Rect } from 'leafer-ui'
 export default class ToolDrawRect extends ToolBase {
   readonly keyboard = 'r'
   readonly type = 'drawRect'

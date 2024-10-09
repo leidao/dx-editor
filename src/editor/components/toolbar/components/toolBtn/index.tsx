@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2023-12-21 11:13:40
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-30 14:47:57
+ * @LastEditTime: 2024-10-06 11:02:26
  */
 
 import { Button, Divider, Tooltip } from 'antd'
@@ -36,8 +36,10 @@ import 垂直居中对齐 from '@/editor/components/toolbar/icons/垂直居中�
 import 水平等距分布 from '@/editor/components/toolbar/icons/水平等距分布.svg?react'
 import 垂直等距分布 from '@/editor/components/toolbar/icons/垂直等距分布.svg?react'
 import 导线 from '@/editor/components/toolbar/icons/导线.svg?react'
+import 拖拽 from '@/editor/components/toolbar/icons/拖拽.svg?react'
 import ToolDrawWire from '@/editor/manager/tools/drawWire'
 import ToolBase from '@/editor/manager/tools/toolBase'
+import ToolDragCanvas from '@/editor/manager/tools/dragCanvas'
 
 type Tool = {
   name: string
@@ -240,6 +242,16 @@ const ToolBtn = () => {
           instance: new ToolDrawWire(view),
           action: () => {
             view.manager.tools.setActiveTool('drawWire')
+          }
+        },
+        {
+          name: '拖拽',
+          tip: `拖拽 H`,
+          icon: <拖拽 />,
+          keyboard: 'h',
+          instance: new ToolDragCanvas(view),
+          action: () => {
+            view.manager.tools.setActiveTool('dragCanvas')
           }
         }
       ],
