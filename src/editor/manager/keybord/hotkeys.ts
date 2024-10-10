@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2024-08-27 15:19:15
  * @LastEditors: ldx
- * @LastEditTime: 2024-08-31 19:33:04
+ * @LastEditTime: 2024-10-10 09:31:03
  */
 import { getMaxMin } from "@/editor/utils";
 import { EditorView } from "@/editor/view";
@@ -13,56 +13,72 @@ export default class Hotkeys {
   constructor(public view: EditorView) { }
   /** 删除选中 */
   deleteSelected = () => {
-    const list = this.view.app.editor.list || []
+    const list = this.view.selector.list || []
     list.forEach(item => {
       item.parent?.remove(item)
     })
-    this.view.app.editor.cancel()
+    this.view.selector.cancel()
 
     if (list.length > 0) {
       // 撤销回退需要
       this.view.app.tree.emit('reomve')
+      // this.view.app.emit('reomve')
     }
   }
   /** 全选 */
   selectAll = (event?: KeyboardEvent) => {
     event && event.preventDefault()
     const graph = this.view.app.tree.children
-    this.view.app.editor.select(graph)
+    this.view.selector.select(graph)
   }
   /** 缩小 */
   zoomOut = (event?: KeyboardEvent) => {
     event && event.preventDefault()
     this.view.app.tree.zoom('out')
-    this.view.app.editor.hoverTarget = undefined
+    this.view.selector.hoverTarget = null
+    this.view.app.tree.emit('zoomChange')
   }
   /** 放大 */
   zoomIn = (event?: KeyboardEvent) => {
     event && event.preventDefault()
     this.view.app.tree.zoom('in')
-    this.view.app.editor.hoverTarget = undefined
+    this.view.selector.hoverTarget = null
+    this.view.app.tree.emit('zoomChange')
   }
   /** 适应画布 */
   showAll = (event?: KeyboardEvent) => {
     event && event.preventDefault()
     // 画布中没有图形则不做任何操作
-    const graph = this.view.app.tree.children
-    graph.length > 0 && this.view.app.tree.zoom(graph)
-    this.view.app.editor.hoverTarget = undefined
+    const list = this.view.app.tree.children
+    list.length > 0 && this.view.app.tree.zoom(list)
+    this.view.selector.hoverTarget = null
+    this.view.app.tree.emit('zoomChange')
   }
   /** 适应选中图形 */
   showSelectGraph = (event?: KeyboardEvent) => {
     event && event.preventDefault()
     // 没有选中图形则自适应画布，画布中没有图形则不做任何操作
-    let graph = this.view.app.editor.list
+    let graph = this.view.selector.list
     if (graph.length === 0) graph = this.view.app.tree.children
     graph.length > 0 && this.view.app.tree.zoom(graph)
-    this.view.app.editor.hoverTarget = undefined
+    this.view.selector.hoverTarget = null
+    this.view.app.tree.emit('zoomChange')
   }
   /** 画布缩放到100% */
+  '50%' = (event?: KeyboardEvent) => {
+    event && event.preventDefault()
+    this.view.app.tree.scale = 0.5
+    this.view.app.tree.emit('zoomChange')
+  }
   '100%' = (event?: KeyboardEvent) => {
     event && event.preventDefault()
     this.view.app.tree.scale = 1
+    this.view.app.tree.emit('zoomChange')
+  }
+  '200%' = (event?: KeyboardEvent) => {
+    event && event.preventDefault()
+    this.view.app.tree.scale = 2
+    this.view.app.tree.emit('zoomChange')
   }
   /** 隐藏/显示标尺 */
   setRulerVisible = () => {
@@ -70,7 +86,7 @@ export default class Hotkeys {
   }
   /** 左对齐 */
   alignLeft = () => {
-    const list = this.view.app.editor.list
+    const list = this.view.selector.list
     const element = this.view.app.editor.element
     if (!element) return
     const { x = 0 } = element
@@ -83,11 +99,11 @@ export default class Hotkeys {
       if (item.x = x + offset) return
       item.x = x + offset
     })
-    this.view.app.editor.updateEditBox()
+    // this.view.app.editor.updateEditBox()
   }
   /** 水平居中 */
   horizontalCenter = () => {
-    const list = this.view.app.editor.list
+    const list = this.view.selector.list
     const element = this.view.app.editor.element
     if (!element) return
     const { x = 0, width = 0 } = element
@@ -100,11 +116,11 @@ export default class Hotkeys {
       if (item.x === center - offset) return
       item.x = center - offset
     })
-    this.view.app.editor.updateEditBox()
+    // this.view.app.editor.updateEditBox()
   }
   /** 右对齐 */
   alignRight = () => {
-    const list = this.view.app.editor.list
+    const list = this.view.selector.list
     const element = this.view.app.editor.element
     if (!element) return
     const { x = 0, width = 0 } = element
@@ -117,11 +133,11 @@ export default class Hotkeys {
       if (item.x === right - offset) return
       item.x = right - offset
     })
-    this.view.app.editor.updateEditBox()
+    // this.view.app.editor.updateEditBox()
   }
   /** 顶对齐 */
   alignTop = () => {
-    const list = this.view.app.editor.list
+    const list = this.view.selector.list
     const element = this.view.app.editor.element
     if (!element) return
     const { y = 0 } = element
@@ -134,11 +150,11 @@ export default class Hotkeys {
       if (item.y = y + offset) return
       item.y = y + offset
     })
-    this.view.app.editor.updateEditBox()
+    // this.view.app.editor.updateEditBox()
   }
   /** 垂直居中 */
   verticalCenter = () => {
-    const list = this.view.app.editor.list
+    const list = this.view.selector.list
     const element = this.view.app.editor.element
     if (!element) return
     const { y = 0, height = 0 } = element
@@ -151,11 +167,11 @@ export default class Hotkeys {
       if (item.y === center - offset) return
       item.y = center - offset
     })
-    this.view.app.editor.updateEditBox()
+    // this.view.app.editor.updateEditBox()
   }
   /** 底对齐 */
   alignBottom = () => {
-    const list = this.view.app.editor.list
+    const list = this.view.selector.list
     const element = this.view.app.editor.element
     if (!element) return
     const { y = 0,height = 0 } = element
@@ -168,6 +184,6 @@ export default class Hotkeys {
       if (item.y === bottom - offset) return
       item.y = bottom - offset
     })
-    this.view.app.editor.updateEditBox()
+    // this.view.app.editor.updateEditBox()
   }
 }

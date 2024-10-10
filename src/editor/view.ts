@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2024-08-20 14:50:58
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-09 11:32:36
+ * @LastEditTime: 2024-10-09 17:31:12
  */
 
 import _ from 'lodash'
@@ -33,6 +33,7 @@ export class EditorView {
   domElement!: HTMLDivElement
   app!: App
   selector!: EditSelect
+  layer!:Leafer
   /** 管理器 */
   manager!: Manager
   /** 标尺 */
@@ -63,9 +64,11 @@ export class EditorView {
     this.selector = new EditSelect(this.app)
     this.app.ground = new Leafer({ type: 'draw' })
     this.app.tree = new Leafer()
+    this.layer = new Leafer()
     this.app.sky = new Leafer({ type: 'draw', usePartRender: false })
     this.app.add(this.app.ground)
     this.app.add(this.app.tree)
+    this.app.add(this.layer)
     this.app.add(this.app.sky)
 
 

@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2024-09-27 16:04:35
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-09 15:30:59
+ * @LastEditTime: 2024-10-09 17:53:32
  */
 import { ILeafList, IObject, IPointerEvent, IUI } from "@leafer-in/interface"
 import { EditToolCreator } from "leafer-editor"
@@ -37,7 +37,6 @@ export default class EditSelect {
 
   // 组件
   get element() { return this.multiple ? this.list : this.list[0] as IUI }
-  editTool?: EditTool
   needRemoveItem: IUI | null = null
 
 
@@ -45,17 +44,30 @@ export default class EditSelect {
     this.listen()
   }
 
-
+  setHoverTarget(target?: IUI) {
+    if(!target) return
+    if(this.hoverTarget){
+      this.app.emit('EditSelect.hover', { element: this.hoverTarget, type: 'hoverLeave', event: null })
+    }
+    this.app.emit('EditSelect.hover', { element: target, type: 'hoverEnter', event: null })
+    this.hoverTarget = target
+  }
   // select 
-  select(target: IUI | IUI[]): void {
+  select(target?: IUI | IUI[]): void {
+    if(!target) return
     const array = Array.isArray(target) ? target : [target]
-    const leafList = new LeafList()
-    array.forEach(item => leafList.add(item))
-    this.app.emit('EditSelect.select', { value: leafList, oldValue: this.leafList.clone(), type: 'select', event: null })
+    const oldList = this.leafList.clone()
+    this.leafList.reset()
+    array.forEach(item => this.leafList.add(item))
+    this.app.emit('EditSelect.select', { value: this.leafList, oldValue: oldList, type: 'select', event: null })
+    this.app.emit('selectChange')
     this.target = target
   }
   cancel(): void {
-    this.app.emit('EditSelect.select', { value: new LeafList(), oldValue: this.leafList.clone(), type: 'select', event: null })
+    const oldList = this.leafList.clone()
+    this.leafList.reset()
+    this.app.emit('EditSelect.select', { value: this.leafList, oldValue: oldList, type: 'select', event: null })
+    this.app.emit('selectChange')
     this.target = null
   }
 
@@ -155,6 +167,7 @@ export default class EditSelect {
       }
     }
     app.emit('EditSelect.select', { value: this.leafList, oldValue: oldList, type: 'select', event: e })
+    app.emit('selectChange')
   }
   onTap = (e: PointerEvent) => {
     if (this.needRemoveItem) {
@@ -163,6 +176,7 @@ export default class EditSelect {
       this.removeItem(this.needRemoveItem)
       this.needRemoveItem = null
       app.emit('EditSelect.select', { value: this.leafList, oldValue: oldList, type: 'select', event: e })
+      app.emit('selectChange')
     }
   }
 
@@ -175,8 +189,8 @@ export default class EditSelect {
     if (this.dragging) {
       this.list.forEach(element => {
         const tag = element.editOuter as string
-        this.editTool = this.editToolList[tag] = this.editToolList[tag] || EditToolCreator.get(tag, this as any)
-        this.editTool?.onMove && this.editTool.onMove(e)
+        const editTool = this.editToolList[tag] = this.editToolList[tag] || EditToolCreator.get(tag, this as any)
+        editTool?.onMove && editTool.onMove(e)
       })
     }
   }
@@ -186,16 +200,16 @@ export default class EditSelect {
   onHover = (event: HoverEvent) => {
     const { element, type } = event
     const tag = element.editOuter as string
-    this.editTool = this.editToolList[tag] = this.editToolList[tag] || EditToolCreator.get(tag, this as any)
+    const editTool = this.editToolList[tag] = this.editToolList[tag] || EditToolCreator.get(tag, this as any)
     switch (type) {
       case 'hoverEnter':
-        this.editTool?.onHoverEnter && this.editTool.onHoverEnter(event)
+        editTool?.onHoverEnter && editTool.onHoverEnter(event)
         break;
       case 'hover':
-        this.editTool?.onHover && this.editTool.onHover(event)
+        editTool?.onHover && editTool.onHover(event)
         break;
       case 'hoverLeave':
-        this.editTool?.onHoverLeave && this.editTool.onHoverLeave(event)
+        editTool?.onHoverLeave && editTool.onHoverLeave(event)
         break;
       default:
         break;
@@ -213,14 +227,14 @@ export default class EditSelect {
       // 新的有，老的列表中没有新的，需要添加新的元素
       if (element && !oldValue.has(element)) {
         const tag = element.editOuter as string
-        this.editTool = this.editToolList[tag] = this.editToolList[tag] || EditToolCreator.get(tag, this as any)
-        this.editTool?.onSelect && this.editTool.onSelect({ element: element, type: 'select', event: event.event })
+        const editTool = this.editToolList[tag] = this.editToolList[tag] || EditToolCreator.get(tag, this as any)
+        editTool?.onSelect && editTool.onSelect({ element: element, type: 'select', event: event.event })
       }
       // 老的有，新的元素中没有老的，需要去除老的元素
       if (oldElement && !value.has(oldElement)) {
         const tag = oldElement.editOuter as string
-        this.editTool = this.editToolList[tag] = this.editToolList[tag] || EditToolCreator.get(tag, this as any)
-        this.editTool?.onUnSelect && this.editTool.onUnSelect({ element: oldElement, type: 'unSelect', event: event.event })
+        const editTool = this.editToolList[tag] = this.editToolList[tag] || EditToolCreator.get(tag, this as any)
+        editTool?.onUnSelect && editTool.onUnSelect({ element: oldElement, type: 'unSelect', event: event.event })
       }
     }
   }

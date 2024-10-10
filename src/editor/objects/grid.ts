@@ -3,10 +3,10 @@
  * @Author: ldx
  * @Date: 2024-08-28 14:10:14
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-08 17:29:04
+ * @LastEditTime: 2024-10-10 09:29:29
  */
 import globalConfig from '../config'
-import { App, Group, Line, MoveEvent, ResizeEvent, ZoomEvent } from "leafer-ui";
+import { App, Group, Line, MoveEvent, PropertyEvent, ResizeEvent, ZoomEvent } from "leafer-ui";
 import { getStepByZoom, getClosestTimesVal } from '@/editor/utils'
 export default class Grid {
   group = new Group()
@@ -29,7 +29,6 @@ export default class Grid {
       this.drawYLine()
     }
   }
-
   drawXLine = () => {
     const zoom = this.getZoom()
     const stepInScene = getStepByZoom(zoom)
@@ -80,11 +79,13 @@ export default class Grid {
     this.app.tree.on(MoveEvent.MOVE, this.drawShape)
     this.app.tree.on(ZoomEvent.ZOOM, this.drawShape)
     this.app.tree.on(ResizeEvent.RESIZE, this.drawShape)
+    this.app.tree.on('zoomChange',this.drawShape)
   }
   destroy() {
     this.app.tree.off(MoveEvent.MOVE, this.drawShape)
     this.app.tree.off(ZoomEvent.ZOOM, this.drawShape)
     this.app.tree.off(ResizeEvent.RESIZE, this.drawShape)
+    this.app.tree.off('zoomChange',this.drawShape)
   }
   getZoom(): number {
     if (this.app.tree) {

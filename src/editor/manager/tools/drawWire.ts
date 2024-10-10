@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2023-12-09 10:21:06
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-09 15:23:02
+ * @LastEditTime: 2024-10-10 09:47:43
  */
 import { v4 } from 'uuid'
 import { EditorView } from '@/editor/view'
@@ -35,7 +35,7 @@ export default class ToolDrawWire extends ToolBase {
         
       }
     })
-    this.app.tree.add(this.ellipse)
+    this.view.layer.add(this.ellipse)
     // console.log('this.app.sky',this.app.sky);
     
   }
@@ -123,6 +123,7 @@ export default class ToolDrawWire extends ToolBase {
         if (this.wire) {
           this.wire.points = this.wire.data._points.map((point: { x: number, y: number }) => ([point.x - (this.wire?.x || 0), point.y - (this.wire?.y || 0)])).flat()
           this.wire = null
+          this.ellipse.opacity = 0
           /** 触发撤销回退栈栈的收集 */
           this.app.tree.emit('add')
         }
@@ -134,6 +135,7 @@ export default class ToolDrawWire extends ToolBase {
           this.ellipse.opacity = 0
         } else {
           this.inactive()
+          this.view.manager.tools.setActiveTool('operationGraph')
         }
         break;
       default:

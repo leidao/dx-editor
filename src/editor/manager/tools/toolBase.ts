@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2023-12-14 16:15:05
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-06 20:26:39
+ * @LastEditTime: 2024-10-10 09:31:57
  */
 
 import { EditorView } from '@/editor/view'
@@ -24,7 +24,7 @@ abstract class ToolBase {
   abstract inactive(): void
   /** 禁止切换tool */
   get enableSwitchTool(){
-    return this.app.editor.dragging 
+    return this.view.selector.dragging 
   }
 }
 

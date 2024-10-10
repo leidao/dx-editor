@@ -3,18 +3,18 @@
  * @Author: ldx
  * @Date: 2023-12-09 18:58:58
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-08 10:09:05
+ * @LastEditTime: 2024-10-09 17:42:34
  */
-import {  DragEvent, KeyEvent } from 'leafer-ui'
+import { DragEvent, KeyEvent } from 'leafer-ui'
 import { EditorView } from '../../view'
 import { produce, enablePatches, applyPatches, Patch } from "immer"
 import { InnerEditorEvent } from 'leafer-editor'
 import _ from 'lodash'
 import { IKeyEvent } from '@leafer-ui/interface'
 
-type Queue = { [key: number]: { redo: Patch[], undo: Patch[] } }
+export type Queue = { [key: number]: { redo: Patch[], undo: Patch[] } }
 
-function isPlainValue(data:any){
+function isPlainValue(data: any) {
   return !(Object.prototype.toString.call(data) === '[object Object]' || Array.isArray(data))
 }
 const deepCompareAndMerge = (draft: any, data: any) => {
@@ -31,8 +31,8 @@ const deepCompareAndMerge = (draft: any, data: any) => {
       if (isPlainValue(draft[key]) && isPlainValue(data[key])) {
         draft[key] = data[key]
       } else {
-         // 两个都有，并且都不是普通值
-         deepCompareAndMerge(draft[key], data[key])
+        // 两个都有，并且都不是普通值
+        deepCompareAndMerge(draft[key], data[key])
       }
     }
   })
@@ -58,7 +58,7 @@ export default class HistoryManager {
     // DragEvent.END目前还是合适的，在change事件中有比较补丁是否存在，所以如果点击后没有操作，也不用担心会被收集操作
     // this.view.app.editor.on(DragEvent.END, this.change)
     // 监听键盘事件
-    this.view.app.on(KeyEvent.DOWN, this.onKeydown)
+    // this.view.app.on(KeyEvent.DOWN, this.onKeydown)
   }
   destroy() {
     // this.view.app.editor.off(InnerEditorEvent.CLOSE, this.change)
@@ -66,7 +66,7 @@ export default class HistoryManager {
     this.view.app.tree.off('reomve', this.change)
     this.view.app.tree.off('update', this.change)
     // this.view.app.editor.off(DragEvent.END, this.change)
-    this.view.app.off(KeyEvent.DOWN, this.onKeydown)
+    // this.view.app.off(KeyEvent.DOWN, this.onKeydown)
   }
   onKeydown = (event: IKeyEvent) => {
     if (
@@ -99,9 +99,9 @@ export default class HistoryManager {
     const json = _.cloneDeep(this.view.app.tree.toJSON())
     const data: { [key: string]: any } = {}
     json.children?.forEach((child: any) => data[child.id] = child)
-    
+
     this.initialState = produce(this.initialState, draft => {
-      
+
       deepCompareAndMerge(draft, data)
 
     }, (patches, inversePatches) => {
@@ -120,13 +120,14 @@ export default class HistoryManager {
       // console.log('inversePatches', inversePatches);
       // console.log('this.queue', this.queue);
     })
+    this.view.app.emit('historyChange', { queue: this.queue, current: this.current })
     // console.log('nextState', this.initialState);
   }
 
   redo = () => {
     const cmd = this.queue[this.current + 1] // 找到当前的下一步还原操作
-    // console.log('redo=====',cmd.redo,cmd);
-    
+    // console.log('redo=====',cmd?.redo,cmd);
+
     if (cmd) {
       this.initialState = produce(this.initialState, draft => {
         applyPatches(draft, cmd.redo);
@@ -136,22 +137,23 @@ export default class HistoryManager {
         tag: "Leafer",
         children: _.cloneDeep(Object.values(this.initialState))
       }
-      const listId = this.view.app.editor.list.map(item => item.id!)
-      const hoverId = this.view.app.editor.hoverTarget?.id
+      // const listId = this.view.selector.list.map(item => item.id!)
+      // const hoverId = this.view.selector.hoverTarget?.id
       this.view.app.tree.set(data)
       this.current++
-      if (listId.length > 0) {
-        const list = listId.map((id: string) => this.view.app.tree.findId(id)).filter(v => !!v)
-        this.view.app.editor.select(list)
-      }
-      if (hoverId) {
-        this.view.app.editor.hoverTarget = this.view.app.tree.findId(hoverId)
-      }
-
+      // if (listId.length > 0) {
+      //   const list = listId.map((id: string) => this.view.app.tree.findId(id)).filter(v => !!v)
+      //   this.view.selector.select(list)
+      // }
+      // if (hoverId) {
+      //   this.view.selector.setHoverTarget(this.view.app.tree.findId(hoverId))
+      // }
+      this.view.app.emit('historyChange', { queue: this.queue, current: this.current })
     }
   }
   undo = () => {
     const cmd = this.queue[this.current] // 找到上一步还原
+    // console.log('undo=====',cmd?.undo,cmd);
     if (cmd) {
       this.initialState = produce(this.initialState, draft => {
         applyPatches(draft, cmd.undo);
@@ -161,18 +163,18 @@ export default class HistoryManager {
         tag: "Leafer",
         children: _.cloneDeep(Object.values(this.initialState))
       }
-      const listId = this.view.app.editor.list.map(item => item.id!)
-      const hoverId = this.view.app.editor.hoverTarget?.id
+      // const listId = this.view.selector.list.map(item => item.id!)
+      // const hoverId = this.view.selector.hoverTarget?.id
       this.view.app.tree.set(data)
       this.current--
-      if (listId.length > 0) {
-        const list = listId.map((id: string) => this.view.app.tree.findId(id)).filter(v => !!v)
-        this.view.app.editor.select(list)
-      }
-      if (hoverId) {
-        this.view.app.editor.hoverTarget = this.view.app.tree.findId(hoverId)
-      }
-
+      // if (listId.length > 0) {
+      //   const list = listId.map((id: string) => this.view.app.tree.findId(id)).filter(v => !!v)
+      //   this.view.selector.select(list)
+      // }
+      // if (hoverId) {
+      //   this.view.selector.setHoverTarget(this.view.app.tree.findId(hoverId))
+      // }
+      this.view.app.emit('historyChange', { queue: this.queue, current: this.current })
     }
   }
 }

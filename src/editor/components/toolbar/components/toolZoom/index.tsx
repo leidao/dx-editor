@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2023-12-21 11:28:43
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-30 11:26:47
+ * @LastEditTime: 2024-10-10 09:30:22
  */
 import { useClickAway } from 'ahooks'
 import { InputNumber, Space } from 'antd'
@@ -40,21 +40,21 @@ const ToolZoom = () => {
         leftText: '放大',
         rightText: isWindows ? 'Ctrl+=' : '⌘+',
         name: 'zoomIn',
-        keyboard: 'ctrl+=',
+        // keyboard: 'ctrl+=',
         action: view?.manager.keybord.hotkeys.zoomIn
       },
       {
         leftText: '缩小',
         rightText: isWindows ? 'Ctrl+-' : '⌘-',
         name: 'zoomOut',
-        keyboard: 'ctrl+-',
+        // keyboard: 'ctrl+-',
         action: view?.manager.keybord.hotkeys.zoomOut
       },
       {
         leftText: '显示全部',
         rightText: isWindows ? 'Ctrl+1' : '⌘1',
         name: 'showAll',
-        keyboard: 'ctrl+1',
+        // keyboard: 'ctrl+1',
         action: view?.manager.keybord.hotkeys.showAll
       },
       {
@@ -68,34 +68,25 @@ const ToolZoom = () => {
         leftText: '50%',
         rightText: '',
         name: '50%',
-        action: () => {
-          if (!view) return
-          view.app.tree.scale = 0.5
-        }
+        action: view?.manager.keybord.hotkeys['50%']
       },
       {
         leftText: '100%',
         rightText: isWindows ? 'Ctrl+0' : '⌘0',
         name: '100%',
         keyboard: 'ctrl+0',
-        action: () => {
-          if (!view) return
-          view.app.tree.scale = 1
-        }
+        action: view?.manager.keybord.hotkeys['100%']
       },
       {
         leftText: '200%',
         rightText: '',
         name: '200%',
-        action: () => {
-          if (!view) return
-          view.app.tree.scale = 2
-        }
+        action:view?.manager.keybord.hotkeys['200%']
       },
     ]
     tools.forEach(tool => {
       if (!tool.keyboard) return
-      view.manager.keybord.register({
+      view.manager.keybord && view.manager.keybord.register({
         keyboard: tool.keyboard,
         name: tool.name,
         action: tool.action
@@ -107,7 +98,7 @@ const ToolZoom = () => {
       view.app.tree.off(LayoutEvent.AFTER, zoomChange)
       tools.forEach(tool => {
         if (!tool.keyboard) return
-        view.manager.keybord.unRegister(tool.name)
+        view.manager.keybord && view.manager.keybord.unRegister(tool.name)
       })
     }
   }, [view])

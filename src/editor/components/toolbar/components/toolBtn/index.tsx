@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2023-12-21 11:13:40
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-06 11:02:26
+ * @LastEditTime: 2024-10-10 09:44:48
  */
 
 import { Button, Divider, Tooltip } from 'antd'
@@ -37,16 +37,20 @@ import 水平等距分布 from '@/editor/components/toolbar/icons/水平等距�
 import 垂直等距分布 from '@/editor/components/toolbar/icons/垂直等距分布.svg?react'
 import 导线 from '@/editor/components/toolbar/icons/导线.svg?react'
 import 拖拽 from '@/editor/components/toolbar/icons/拖拽.svg?react'
+import 选择 from '@/editor/components/toolbar/icons/选择.svg?react'
 import ToolDrawWire from '@/editor/manager/tools/drawWire'
 import ToolBase from '@/editor/manager/tools/toolBase'
 import ToolDragCanvas from '@/editor/manager/tools/dragCanvas'
+import { Queue } from '@/editor/manager/history/historyManager'
+import ToolOperationGraph from '@/editor/manager/tools/operationGraph'
 
 type Tool = {
   name: string
   tip: string
-  icon: JSX.Element
+  icon: any
   keyboard?: string | string[],
   instance?: ToolBase
+  disabled?: boolean
   action: () => void
 }
 const ToolBtn = () => {
@@ -57,187 +61,202 @@ const ToolBtn = () => {
   useEffect(() => {
     if (!view) return
 
-    const tools:Array<Tool[]> = [
+    const tools: Array<Tool[]> = [
       [
         {
           name: '新建',
           tip: `新建`,
-          icon: <新建 />,
-          action: () => {}
+          icon: 新建,
+          action: () => { }
         },
         {
           name: '保存',
           tip: `保存 ${isWindows ? 'Ctrl+S' : '⌘s'}`,
-          icon: <保存 />,
+          icon: 保存,
           keyboard: 'ctrl+s',
-          action: () => {}
+          action: () => { }
         }
       ],
       [
         {
           name: '撤销',
           tip: `撤销 ${isWindows ? 'Ctrl+Z' : '⌘z'}`,
-          icon: <撤销 />,
+          icon: 撤销,
           keyboard: 'ctrl+z',
-          action: () => {}
+          disabled: true,
+          action: () => {
+            view.manager.history.undo()
+          }
         },
         {
           name: '重做',
           tip: `重做 ${isWindows ? 'Ctrl+Shift+Z' : '⌘⇧z'}`,
-          icon: <重做 />,
+          icon: 重做,
           keyboard: 'ctrl+shift+z',
-          action: () => {}
+          disabled: true,
+          action: () => {
+            view.manager.history.redo()
+          }
         },
         {
           name: '复制',
           tip: `复制 ${isWindows ? 'Ctrl+C' : '⌘c'}`,
-          icon: <复制 />,
+          icon: 复制,
           keyboard: 'ctrl+c',
-          action: () => {}
+          action: () => { }
         },
         {
           name: '剪切',
           tip: `剪切 ${isWindows ? 'Ctrl+X' : '⌘x'}`,
-          icon: <剪切 />,
+          icon: 剪切,
           keyboard: 'ctrl+x',
-          action: () => {}
+          action: () => { }
         },
         {
           name: '粘贴',
           tip: `粘贴 ${isWindows ? 'Ctrl+V' : '⌘v'}`,
-          icon: <粘贴 />,
+          icon: 粘贴,
           keyboard: 'ctrl+v',
-          action: () => {}
+          action: () => { }
         },
         {
           name: '删除',
           tip: `删除 ${isWindows ? 'delete' : 'backspace'}`,
-          icon: <删除 />,
+          icon: 删除,
+          disabled: true,
           keyboard: isWindows ? 'delete' : 'backspace',
-          action: () => {}
+          action: () => {
+            view.manager.keybord.hotkeys.deleteSelected()
+          }
         }
       ],
       [
         {
           name: '查找',
           tip: `查找 ${isWindows ? 'Ctrl+F' : '⌘f'}`,
-          icon: <查找 />,
+          icon: 查找,
           keyboard: 'ctrl+f',
-          action: () => {}
+          action: () => { }
         },
         {
           name: '放大',
           tip: `放大 ${isWindows ? 'Ctrl+=' : '⌘+'}`,
-          icon: <放大 />,
+          icon: 放大,
           keyboard: 'ctrl+=',
-          action: () => {}
+          action: () => { 
+            view.manager.keybord.hotkeys.zoomIn()
+          }
         },
         {
           name: '缩小',
           tip: `缩小 ${isWindows ? 'Ctrl+-' : '⌘-'}`,
-          icon: <缩小 />,
+          icon: 缩小,
           keyboard: 'ctrl+-',
-          action: () => {}
+          action: () => { 
+            view.manager.keybord.hotkeys.zoomOut()
+          }
         },
         {
           name: '适合窗口',
           tip: `适合窗口 ${isWindows ? 'Ctrl+1' : '⌘1'}`,
-          icon: <适合窗口 />,
+          icon: 适合窗口,
           keyboard: 'ctrl+1',
-          action: () => {}
+          action: () => { 
+            view.manager.keybord.hotkeys.showAll()
+          }
         },
       ],
       [
         {
           name: '逆时针旋转90度',
           tip: `逆时针旋转90度 ${isWindows ? 'Ctrl+←' : '⌘←'}`,
-          icon: <逆时针旋转90度 />,
+          icon: 逆时针旋转90度,
           keyboard: 'ctrl+←',
-          action: () => {}
+          action: () => { }
         },
         {
           name: '顺时针旋转90度',
           tip: `顺时针旋转90度 ${isWindows ? 'Ctrl+→' : '⌘→'}`,
-          icon: <顺时针旋转90度 />,
+          icon: 顺时针旋转90度,
           keyboard: 'ctrl+→',
-          action: () => {}
+          action: () => { }
         },
         {
           name: '水平翻转',
           tip: `水平翻转 X`,
-          icon: <水平翻转 />,
+          icon: 水平翻转,
           keyboard: 'x',
-          action: () => {}
+          action: () => { }
         },
         {
           name: '垂直翻转',
           tip: `垂直翻转 Y`,
-          icon: <垂直翻转 />,
+          icon: 垂直翻转,
           keyboard: 'y',
-          action: () => {}
+          action: () => { }
         },
         {
           name: '左对齐',
           tip: `左对齐 ${isWindows ? 'Ctrl+Shift+L' : '⌘⇧l'}`,
-          icon: <左对齐 />,
+          icon: 左对齐,
           keyboard: 'ctrl+shift+l',
-          action: () => {}
+          action: () => { }
         },
         {
           name: '右对齐',
           tip: `右对齐 ${isWindows ? 'Ctrl+Shift+R' : '⌘⇧r'}`,
-          icon: <右对齐 />,
+          icon: 右对齐,
           keyboard: 'ctrl+shift+r',
-          action: () => {}
+          action: () => { }
         },
         {
           name: '顶对齐',
           tip: `顶对齐 ${isWindows ? 'Ctrl+Shift+T' : '⌘⇧t'}`,
-          icon: <顶对齐 />,
+          icon: 顶对齐,
           keyboard: 'ctrl+shift+t',
-          action: () => {}
+          action: () => { }
         },
         {
           name: '底对齐',
           tip: `底对齐 ${isWindows ? 'Ctrl+Shift+B' : '⌘⇧b'}`,
-          icon: <底对齐 />,
+          icon: 底对齐,
           keyboard: 'ctrl+shift+b',
-          action: () => {}
+          action: () => { }
         },
         {
           name: '水平居中对齐',
           tip: `水平居中对齐 ${isWindows ? 'Ctrl+Shift+H' : '⌘⇧h'}`,
-          icon: <水平居中对齐 />,
+          icon: 水平居中对齐,
           keyboard: 'ctrl+shift+h',
-          action: () => {}
+          action: () => { }
         },
         {
           name: '垂直居中对齐',
           tip: `垂直居中对齐 ${isWindows ? 'Ctrl+Shift+E' : '⌘⇧e'}`,
-          icon: <垂直居中对齐 />,
+          icon: 垂直居中对齐,
           keyboard: 'ctrl+shift+e',
-          action: () => {}
+          action: () => { }
         },
         {
           name: '水平等距分布',
           tip: `水平等距分布 ${isWindows ? 'Ctrl+Alt+H' : '⌘⌥h'}`,
-          icon: <水平等距分布 />,
+          icon: 水平等距分布,
           keyboard: 'ctrl+shift+e',
-          action: () => {}
+          action: () => { }
         },
         {
           name: '垂直等距分布',
           tip: `垂直等距分布 ${isWindows ? 'Ctrl+Alt+E' : '⌘⌥e'}`,
-          icon: <垂直等距分布 />,
+          icon: 垂直等距分布,
           keyboard: 'ctrl+shift+e',
-          action: () => {}
+          action: () => { }
         },
       ],
       [
         {
           name: '导线',
           tip: `导线 L`,
-          icon: <导线 />,
+          icon: 导线,
           keyboard: 'l',
           instance: new ToolDrawWire(view),
           action: () => {
@@ -245,9 +264,19 @@ const ToolBtn = () => {
           }
         },
         {
+          name: '选择',
+          tip: `选择 A`,
+          icon: 选择,
+          keyboard: 'a',
+          instance: new ToolOperationGraph(view),
+          action: () => {
+            view.manager.tools.setActiveTool('operationGraph')
+          }
+        },
+        {
           name: '拖拽',
           tip: `拖拽 H`,
-          icon: <拖拽 />,
+          icon: 拖拽,
           keyboard: 'h',
           instance: new ToolDragCanvas(view),
           action: () => {
@@ -264,15 +293,36 @@ const ToolBtn = () => {
         action: tool.action
       })
     })
+
     setTools(tools)
+    // 存储栈发生变化
+    const historyChange = (data: { current: number, queue: Queue }) => {
+      const undoCmd = data.queue[data.current]
+      const redoCmd = data.queue[data.current + 1]
+      const undoTool = tools.flat().find(tool => tool.name === '撤销')
+      undoTool && (undoTool.disabled = !undoCmd)
+      const redoTool = tools.flat().find(tool => tool.name === '重做')
+      redoTool && (redoTool.disabled = !redoCmd)
+      setTools(tools.slice())
+    }
+    const selectChange = () => {
+      // 元素选中发生变化
+      const deleteTool = tools.flat().find(tool => tool.name === '删除')
+      deleteTool && (deleteTool.disabled = !(view.selector.list.length > 0))
+      setTools(tools.slice())
+    }
+    view.app.on('historyChange', historyChange)
+    view.app.on('EditSelect.select', selectChange)
     return () => {
       tools.flat().forEach(tool => {
         tool.instance && view.manager.tools.unRegister(tool.name)
-        tool.keyboard &&view.manager.keybord.unRegister(tool.name)
+        tool.keyboard && view.manager.keybord.unRegister(tool.name)
       })
+
+      view.app.off('historyChange', historyChange)
+      view.app.off('EditSelect.select', selectChange)
     }
   }, [view])
-
 
   return (
     <div className="flex-1 flex items-center ">
@@ -281,7 +331,8 @@ const ToolBtn = () => {
           <div key={index} className='flex items-center '>
             {item.map(tool => (
               <Tooltip key={tool.name} placement="bottom" title={tool.tip} arrow={false}>
-                <Button type='text' className='w-28px h-28px p-6px mx-2px' icon={tool.icon} onClick={tool.action}/>
+                <Button disabled={tool.disabled} type='text' className='w-28px h-28px p-6px mx-2px'
+                  icon={<tool.icon style={{ fill: tool.disabled ? '#ccc' : '#000' }} />} onClick={tool.action} />
               </Tooltip>
             ))}
             {index !== tools.length - 1 && <Divider type="vertical" className='bg-#000' />}

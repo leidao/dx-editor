@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2023-12-09 18:58:58
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-12 15:14:17
+ * @LastEditTime: 2024-10-09 18:24:39
  */
 import { EditorView } from '@/editor/view'
 import { KeyboardCode } from './keybord-code'
@@ -33,11 +33,11 @@ export default class KeybordManager {
   initKeybord() {
     const hotkeys = new Hotkeys(this.view)
     // 删除选中
-    this.register({
-      name: 'deleteSelected',
-      keyboard: ['backspace', 'delete'],
-      action: hotkeys.deleteSelected
-    })
+    // this.register({
+    //   name: 'deleteSelected',
+    //   keyboard: ['backspace', 'delete'],
+    //   action: hotkeys.deleteSelected
+    // })
     // 全选
     this.register({
       name: 'selectAll',
@@ -86,7 +86,7 @@ export default class KeybordManager {
     }
 
     const keyNames = keyString.join('+')
-    // console.log('event',event);
+    // console.log('event',keyNames);
     
     // 执行对应键盘命令
     this.KeybordMap.forEach(({ keyboard, action }) => {
@@ -96,7 +96,7 @@ export default class KeybordManager {
       const keys = Array.isArray(keyboard) ? keyboard : [keyboard]
       if (keys.indexOf(keyNames) > -1) {
         event.origin?.stopPropagation()
-        // event.preventDefault()
+        event.origin?.preventDefault()
         action(event.origin as KeyboardEvent, this.view)
       }
     })
