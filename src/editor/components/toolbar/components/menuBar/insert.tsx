@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2023-12-21 11:13:40
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-30 14:40:16
+ * @LastEditTime: 2024-10-11 15:32:23
  */
 
 import { Button, Dropdown, MenuProps, Tooltip } from 'antd'
@@ -16,12 +16,12 @@ import EditorContext from '@/editor/context'
 const Insert = () => {
   const [selectedName, setSelectedName] = useState('')
   const [tools, setTools] = useState<any[]>([])
-  const view = useContext(EditorContext)
+  const editor = useContext(EditorContext)
 
   useEffect(() => {
-    if (!view) return
+    if (!editor) return
 
-  }, [view])
+  }, [editor])
 
   const items: MenuProps['items'] = [
     {
@@ -30,11 +30,11 @@ const Insert = () => {
     },
     {
       key: '2',
-      label: <span className='text-12px ml-10px'>母线线</span>,
+      label: <span className='text-12px ml-10px'>导线</span>,
     },
     {
       key: '3',
-      label: <span className='text-12px ml-10px'>直线</span>,
+      label: <span className='text-12px ml-10px'>母线</span>,
     },
     {
       key: '4',

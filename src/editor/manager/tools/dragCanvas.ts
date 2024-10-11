@@ -6,13 +6,13 @@
  * @LastEditTime: 2024-08-28 17:01:17
  */
 
-import { EditorView } from '@/editor/view'
+import { EditorView } from '@/editor/editor'
 import ToolBase from './toolBase'
 export default class ToolDragCanvas extends ToolBase {
   readonly keyboard = 'h'
   readonly type = 'dragCanvas'
-  constructor(view: EditorView) {
-    super(view)
+  constructor(editor: EditorView) {
+    super(editor)
   }
   active() {
     this.app.config.move&&(this.app.config.move.drag = 'auto')

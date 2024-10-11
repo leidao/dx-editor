@@ -9,24 +9,24 @@ import { HideOutlined, LockFilled, ShowOutlined, UnlockFilled } from './icons'
 import { ChildEvent, RenderEvent } from 'leafer-ui'
 import { IUI } from '@leafer-ui/interface'
 const Layer = () => {
-  const view = useContext(EditorContext)
+  const editor = useContext(EditorContext)
   const [list, setList] = useState<IUI[]>([])
   const [selectId, setSetlectId] = useState<number>()
   const [hoverId, setHoverId] = useState<number>()
   const [, forceUpdate] = useState<object>()
   useEffect(() => {
-    if (!view) return
+    if (!editor) return
     const change = () => {
-      const list = view.app.tree.children || []
+      const list = editor.app.tree.children || []
       setList(list.slice())
     }
-    view.app.tree.on(RenderEvent.END, change)
-    // view.app.editor.on(ChildEvent.REMOVE, change)
+    editor.app.tree.on(RenderEvent.END, change)
+    // editor.app.editor.on(ChildEvent.REMOVE, change)
     return () => {
-      view.app.tree.off(RenderEvent.END, change)
-      // view.app.editor.off(ChildEvent.REMOVE, change)
+      editor.app.tree.off(RenderEvent.END, change)
+      // editor.app.editor.off(ChildEvent.REMOVE, change)
     }
-  }, [view])
+  }, [editor])
 
   return (
     <div className="w-240px h-100%">
@@ -49,13 +49,13 @@ const Layer = () => {
                   className="relative  border-1px  box-border border-solid"
                   onMouseEnter={() => {
                     setHoverId(obj.innerId)
-                    if (!view) return
-                    view.app.editor.hoverTarget = obj
+                    if (!editor) return
+                    editor.app.editor.hoverTarget = obj
                   }}
                   onMouseLeave={() => {
                     setHoverId(undefined)
-                    if (!view) return
-                    view.app.editor.hoverTarget = undefined
+                    if (!editor) return
+                    editor.app.editor.hoverTarget = undefined
                   }}
                   style={{
                     borderColor:
@@ -69,8 +69,8 @@ const Layer = () => {
                     className="h-32px px-24px flex justify-between items-center cursor-pointer"
                     onClick={() => {
                       setSetlectId(obj.innerId)
-                      if (!view) return
-                      view.app.editor.select(obj)
+                      if (!editor) return
+                      editor.app.editor.select(obj)
                     }}
                   >
                     <span

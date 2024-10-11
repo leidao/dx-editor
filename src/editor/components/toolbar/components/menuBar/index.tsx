@@ -21,12 +21,12 @@ import logo from '../../icons/logo.svg'
 const MenuBar = () => {
   const [selectedName, setSelectedName] = useState('')
   const [tools, setTools] = useState<any[]>([])
-  const view = useContext(EditorContext)
+  const editor = useContext(EditorContext)
 
   useEffect(() => {
-    if (!view) return
+    if (!editor) return
 
-  }, [view])
+  }, [editor])
 
 
   return (

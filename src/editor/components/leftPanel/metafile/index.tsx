@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2023-12-21 11:03:37
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-06 11:10:56
+ * @LastEditTime: 2024-10-10 09:54:14
  */
 import { useContext, useState } from 'react'
 
@@ -22,6 +22,7 @@ const PicAssets: React.FC<Props> = ({ className = '' }) => {
   const dragstart = (event: React.DragEvent<HTMLImageElement>) => {
     const img = event.target as HTMLImageElement | null
     if (!editor || !img) return
+    editor.manager.tools.setActiveTool('operationGraph')
     event.dataTransfer.setData('img',img.src)
     event.dataTransfer.setData('name',img.alt)
     const container = editor.domElement

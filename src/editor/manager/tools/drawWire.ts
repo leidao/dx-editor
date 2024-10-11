@@ -6,7 +6,7 @@
  * @LastEditTime: 2024-10-10 09:47:43
  */
 import { v4 } from 'uuid'
-import { EditorView } from '@/editor/view'
+import { EditorView } from '@/editor/editor'
 import ToolBase from './toolBase'
 import { Line, Image, Group, PointerEvent, Point, KeyEvent, LeafList, Ellipse } from 'leafer-ui'
 import { getClosestTimesVal, toFixed, traverse } from '@/editor/utils'
@@ -22,8 +22,8 @@ export default class ToolDrawWire extends ToolBase {
   /** 上一个目标 */
   ellipse!: Ellipse
   private angle = 0
-  constructor(view: EditorView) {
-    super(view)
+  constructor(editor: EditorView) {
+    super(editor)
     this.ellipse = new Ellipse({
       width: 6,
       height: 6,
@@ -35,7 +35,7 @@ export default class ToolDrawWire extends ToolBase {
         
       }
     })
-    this.view.layer.add(this.ellipse)
+    this.editor.layer.add(this.ellipse)
     // console.log('this.app.sky',this.app.sky);
     
   }
@@ -135,7 +135,7 @@ export default class ToolDrawWire extends ToolBase {
           this.ellipse.opacity = 0
         } else {
           this.inactive()
-          this.view.manager.tools.setActiveTool('operationGraph')
+          this.editor.manager.tools.setActiveTool('operationGraph')
         }
         break;
       default:
@@ -174,8 +174,8 @@ export default class ToolDrawWire extends ToolBase {
 
   active() {
     this.app.tree.hitChildren = false
-    this.view.selector.hitChildren = false
-    this.view.helpLine.visible = true
+    this.editor.selector.hitChildren = false
+    this.editor.helpLine.visible = true
     this.app.on(PointerEvent.TAP, this.tap)
     this.app.on(PointerEvent.MOVE, this.move)
     this.app.on(KeyEvent.HOLD, this.onKeydown)
@@ -187,8 +187,8 @@ export default class ToolDrawWire extends ToolBase {
       this.ellipse.opacity = 0
     }
     this.app.tree.hitChildren = true
-    this.view.selector.hitChildren = true
-    this.view.helpLine.visible = false
+    this.editor.selector.hitChildren = true
+    this.editor.helpLine.visible = false
     this.app.off(PointerEvent.TAP, this.tap)
     this.app.off(PointerEvent.MOVE, this.move)
     this.app.off(KeyEvent.HOLD, this.onKeydown)

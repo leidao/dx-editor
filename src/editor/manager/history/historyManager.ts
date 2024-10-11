@@ -3,10 +3,10 @@
  * @Author: ldx
  * @Date: 2023-12-09 18:58:58
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-09 17:42:34
+ * @LastEditTime: 2024-10-11 15:53:10
  */
 import { DragEvent, KeyEvent } from 'leafer-ui'
-import { EditorView } from '../../view'
+import { EditorView } from '../../editor'
 import { produce, enablePatches, applyPatches, Patch } from "immer"
 import { InnerEditorEvent } from 'leafer-editor'
 import _ from 'lodash'
@@ -42,31 +42,24 @@ export default class HistoryManager {
   maxQueueValue = 50 // 最大存放数
   queue: Queue = {} //  存放所有的操作命令
   initialState: { [key: string]: any } = {}
-  constructor(private view: EditorView) {
+  constructor(private editor: EditorView) {
     enablePatches()
     this.listen()
   }
   listen() {
-    // 文本内部编辑器关闭事件/文本的添加也会触发该事件
-    // this.view.app.editor.on(InnerEditorEvent.CLOSE, this.change)
     // 直接监听ChildEvent.ADD不合适，比如文字的添加/线段的绘制，都是当前绘制完成后才发布add事件
-    this.view.app.tree.on('add', this.change)
+    this.editor.app.tree.on('add', this.change)
     // set(json)会触发add事件，所以需要自己在需要的地方发布remove事件
-    this.view.app.tree.on('reomve', this.change)
+    this.editor.app.tree.on('reomve', this.change)
     // 直接监听PropertyEvent.CHANGE的话图形的拖拽/旋转等操作会多次触发，因此也是自己在合适的时机去手动发布update事件
-    this.view.app.tree.on('update', this.change)
-    // DragEvent.END目前还是合适的，在change事件中有比较补丁是否存在，所以如果点击后没有操作，也不用担心会被收集操作
-    // this.view.app.editor.on(DragEvent.END, this.change)
-    // 监听键盘事件
-    // this.view.app.on(KeyEvent.DOWN, this.onKeydown)
+    this.editor.app.tree.on('update', this.change)
+
+
   }
   destroy() {
-    // this.view.app.editor.off(InnerEditorEvent.CLOSE, this.change)
-    this.view.app.tree.off('add', this.change)
-    this.view.app.tree.off('reomve', this.change)
-    this.view.app.tree.off('update', this.change)
-    // this.view.app.editor.off(DragEvent.END, this.change)
-    // this.view.app.off(KeyEvent.DOWN, this.onKeydown)
+    this.editor.app.tree.off('add', this.change)
+    this.editor.app.tree.off('reomve', this.change)
+    this.editor.app.tree.off('update', this.change)
   }
   onKeydown = (event: IKeyEvent) => {
     if (
@@ -95,11 +88,17 @@ export default class HistoryManager {
       this.redo()
     }
   }
+  patch(){
+    const json = _.cloneDeep(this.editor.app.tree.toJSON())
+    this.initialState = produce(this.initialState, draft => {
+      json.children?.forEach((child: any) => draft[child.id] = child)
+    })
+  }
   change = () => {
-    const json = _.cloneDeep(this.view.app.tree.toJSON())
+    const json = _.cloneDeep(this.editor.app.tree.toJSON())
     const data: { [key: string]: any } = {}
     json.children?.forEach((child: any) => data[child.id] = child)
-
+    
     this.initialState = produce(this.initialState, draft => {
 
       deepCompareAndMerge(draft, data)
@@ -120,7 +119,7 @@ export default class HistoryManager {
       // console.log('inversePatches', inversePatches);
       // console.log('this.queue', this.queue);
     })
-    this.view.app.emit('historyChange', { queue: this.queue, current: this.current })
+    this.editor.app.emit('historyChange', { queue: this.queue, current: this.current })
     // console.log('nextState', this.initialState);
   }
 
@@ -137,18 +136,18 @@ export default class HistoryManager {
         tag: "Leafer",
         children: _.cloneDeep(Object.values(this.initialState))
       }
-      // const listId = this.view.selector.list.map(item => item.id!)
-      // const hoverId = this.view.selector.hoverTarget?.id
-      this.view.app.tree.set(data)
+      // const hoverId = this.editor.selector.hoverTarget?.id
+      this.editor.app.tree.set(data)
       this.current++
-      // if (listId.length > 0) {
-      //   const list = listId.map((id: string) => this.view.app.tree.findId(id)).filter(v => !!v)
-      //   this.view.selector.select(list)
-      // }
-      // if (hoverId) {
-      //   this.view.selector.setHoverTarget(this.view.app.tree.findId(hoverId))
-      // }
-      this.view.app.emit('historyChange', { queue: this.queue, current: this.current })
+      const selectChildren = data.children.filter(item=>item.data.state === 'select')
+      if (selectChildren.length > 0) {
+        const list = selectChildren.map(item => this.editor.app.tree.findId(item.id)).filter(v => !!v)
+        this.editor.selector.select(list)
+      }else{
+        this.editor.selector.cancel()
+      }
+      this.editor.app.emit('selectChange')
+      this.editor.app.emit('historyChange', { queue: this.queue, current: this.current })
     }
   }
   undo = () => {
@@ -163,18 +162,17 @@ export default class HistoryManager {
         tag: "Leafer",
         children: _.cloneDeep(Object.values(this.initialState))
       }
-      // const listId = this.view.selector.list.map(item => item.id!)
-      // const hoverId = this.view.selector.hoverTarget?.id
-      this.view.app.tree.set(data)
+      this.editor.app.tree.set(data)
       this.current--
-      // if (listId.length > 0) {
-      //   const list = listId.map((id: string) => this.view.app.tree.findId(id)).filter(v => !!v)
-      //   this.view.selector.select(list)
-      // }
-      // if (hoverId) {
-      //   this.view.selector.setHoverTarget(this.view.app.tree.findId(hoverId))
-      // }
-      this.view.app.emit('historyChange', { queue: this.queue, current: this.current })
+      const selectChildren = data.children.filter(item=>item.data.state === 'select')
+      if (selectChildren.length > 0) {
+        const list = selectChildren.map(item => this.editor.app.tree.findId(item.id)).filter(v => !!v)
+        this.editor.selector.select(list)
+      }else{
+        this.editor.selector.cancel()
+      }
+      this.editor.app.emit('selectChange')
+      this.editor.app.emit('historyChange', { queue: this.queue, current: this.current })
     }
   }
 }

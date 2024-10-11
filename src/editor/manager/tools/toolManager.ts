@@ -3,12 +3,12 @@
  * @Author: ldx
  * @Date: 2023-12-09 09:38:54
  * @LastEditors: ldx
- * @LastEditTime: 2024-08-27 14:46:37
+ * @LastEditTime: 2024-10-11 17:59:49
  */
 
 import { App } from 'leafer-ui'
 import ToolBase from './toolBase'
-import { EditorView } from '@/editor/view'
+import { EditorView } from '@/editor/editor'
 class ToolManager {
   toolMap = new Map<string, ToolBase>()
   /**
@@ -19,7 +19,7 @@ class ToolManager {
   activeTool: ToolBase | null = null
   /** 切换选中toolbar */
   setSelectedName!: (toolName: string) => void
-  constructor(public view: EditorView) {}
+  constructor(public editor: EditorView) {}
   /** 注册 */
   register(tool: ToolBase) {
     if (!tool.type) {
@@ -38,10 +38,10 @@ class ToolManager {
   /** 设置工具激活 */
   setActiveTool(toolName: string) {
     const prevTool = this.activeTool
-    if (prevTool?.enableSwitchTool || this.getActiveToolName() === toolName) {
-      // 禁止切换tool
-     return
-   }
+  //   if (prevTool?.enableSwitchTool || this.getActiveToolName() === toolName) {
+  //     // 禁止切换tool
+  //    return
+  //  }
     const activeTool = (this.activeTool = this.toolMap.get(toolName) || null)
     if (!activeTool) {
       throw new Error(`没有 ${toolName} 对应的工具对象`)

@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2023-12-21 11:28:43
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-10 09:30:22
+ * @LastEditTime: 2024-10-10 09:56:05
  */
 import { useClickAway } from 'ahooks'
 import { InputNumber, Space } from 'antd'
@@ -17,7 +17,7 @@ import { DownOutlined } from '../../icons/down-outlined'
 import { LayoutEvent, ZoomEvent } from 'leafer-ui'
 import { isWindows } from '@/editor/utils'
 const ToolZoom = () => {
-  const view = useContext(EditorContext)
+  const editor = useContext(EditorContext)
   const [open, setOpen] = useState(false)
   const [rulerVisible, setRulerVisible] = useState(true)
   const [zoom, setZoom] = useState(100)
@@ -28,12 +28,12 @@ const ToolZoom = () => {
   }, containerRef)
 
   useEffect(() => {
-    if (!view) return
+    if (!editor) return
     const zoomChange = () => {
-      const zoom = typeof view.app.tree.scale === 'number' ? Math.trunc(view.app.tree.scale * 100) : 100
+      const zoom = typeof editor.app.tree.scale === 'number' ? Math.trunc(editor.app.tree.scale * 100) : 100
       setZoom(zoom)
     }
-    view.app.tree.on(LayoutEvent.AFTER, zoomChange)
+    editor.app.tree.on(LayoutEvent.AFTER, zoomChange)
 
     const tools = [
       {
@@ -41,52 +41,52 @@ const ToolZoom = () => {
         rightText: isWindows ? 'Ctrl+=' : '⌘+',
         name: 'zoomIn',
         // keyboard: 'ctrl+=',
-        action: view?.manager.keybord.hotkeys.zoomIn
+        action: editor?.manager.keybord.hotkeys.zoomIn
       },
       {
         leftText: '缩小',
         rightText: isWindows ? 'Ctrl+-' : '⌘-',
         name: 'zoomOut',
         // keyboard: 'ctrl+-',
-        action: view?.manager.keybord.hotkeys.zoomOut
+        action: editor?.manager.keybord.hotkeys.zoomOut
       },
       {
         leftText: '显示全部',
         rightText: isWindows ? 'Ctrl+1' : '⌘1',
         name: 'showAll',
         // keyboard: 'ctrl+1',
-        action: view?.manager.keybord.hotkeys.showAll
+        action: editor?.manager.keybord.hotkeys.showAll
       },
       {
         leftText: '显示选中内容',
         rightText: isWindows ? 'Ctrl+2' : '⌘2',
         name: 'showSelectGraph',
         keyboard: 'ctrl+2',
-        action: view?.manager.keybord.hotkeys.showSelectGraph
+        action: editor?.manager.keybord.hotkeys.showSelectGraph
       },
       {
         leftText: '50%',
         rightText: '',
         name: '50%',
-        action: view?.manager.keybord.hotkeys['50%']
+        action: editor?.manager.keybord.hotkeys['50%']
       },
       {
         leftText: '100%',
         rightText: isWindows ? 'Ctrl+0' : '⌘0',
         name: '100%',
         keyboard: 'ctrl+0',
-        action: view?.manager.keybord.hotkeys['100%']
+        action: editor?.manager.keybord.hotkeys['100%']
       },
       {
         leftText: '200%',
         rightText: '',
         name: '200%',
-        action:view?.manager.keybord.hotkeys['200%']
+        action:editor?.manager.keybord.hotkeys['200%']
       },
     ]
     tools.forEach(tool => {
       if (!tool.keyboard) return
-      view.manager.keybord && view.manager.keybord.register({
+      editor.manager.keybord && editor.manager.keybord.register({
         keyboard: tool.keyboard,
         name: tool.name,
         action: tool.action
@@ -95,13 +95,13 @@ const ToolZoom = () => {
     setTools(tools)
 
     return () => {
-      view.app.tree.off(LayoutEvent.AFTER, zoomChange)
+      editor.app.tree.off(LayoutEvent.AFTER, zoomChange)
       tools.forEach(tool => {
         if (!tool.keyboard) return
-        view.manager.keybord && view.manager.keybord.unRegister(tool.name)
+        editor.manager.keybord && editor.manager.keybord.unRegister(tool.name)
       })
     }
-  }, [view])
+  }, [editor])
 
   return (
     <div className="relative" ref={containerRef}>
@@ -130,21 +130,21 @@ const ToolZoom = () => {
             controls={false}
             className="w-130px mx-18px"
             onPressEnter={(event: any) => {
-              if (!view) return
+              if (!editor) return
               const value = event.target?.value
               if (value < 1 || value > 25600) return
-              view.app.tree.scale = value / 100
+              editor.app.tree.scale = value / 100
             }}
             onStep={(value) => {
-              if (!view) return
+              if (!editor) return
               setZoom(value)
-              view.app.tree.scale = value / 100
+              editor.app.tree.scale = value / 100
             }}
             onBlur={(event: any) => {
-              if (!view) return
+              if (!editor) return
               const value = event.target?.value
               if (value < 1 || value > 25600) return
-              view.app.tree.scale = value / 100
+              editor.app.tree.scale = value / 100
             }}
             suffix="%"
           />
@@ -171,8 +171,8 @@ const ToolZoom = () => {
           <div
             className="flex justify-between items-center text-12px h-24px cursor-pointer hover:bg-#e1f2ff"
             onClick={() => {
-              if (!view) return
-              view.ruler.visible = !rulerVisible
+              if (!editor) return
+              editor.ruler.visible = !rulerVisible
               setRulerVisible(!rulerVisible)
             }}
           >

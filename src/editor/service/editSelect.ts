@@ -3,11 +3,11 @@
  * @Author: ldx
  * @Date: 2024-09-27 16:04:35
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-09 17:53:32
+ * @LastEditTime: 2024-10-11 15:53:27
  */
-import { ILeafList, IObject, IPointerEvent, IUI } from "@leafer-in/interface"
+import { IGroup, ILeaf, ILeafList, IObject, IPointerEvent, IUI } from "@leafer-in/interface"
 import { EditToolCreator } from "leafer-editor"
-import { App, LeafList, PointerEvent, DragEvent } from "leafer-ui"
+import { App, LeafList, PointerEvent, DragEvent, Rect, Bounds } from "leafer-ui"
 import EditTool, { HoverEvent } from "./editTool"
 
 
@@ -31,12 +31,24 @@ export default class EditSelect {
 
   // 状态
   get multiple(): boolean { return this.list.length > 1 }
+  get single(): boolean { return this.list.length === 1 }
   dragging: boolean = false
   hitChildren: boolean = true
   downData: any
+  editing = false
 
   // 组件
-  get element() { return this.multiple ? this.list : this.list[0] as IUI }
+  get element() {
+    if (this.multiple) {
+      this.simulateTarget.remove()
+      this.list.forEach(item => this.simulateTarget.add(item))
+      this.simulate()
+      return this.simulateTarget
+    } else {
+      return this.list[0] as IUI
+    }
+  }
+  simulateTarget: IUI = new Rect({ visible: false })
   needRemoveItem: IUI | null = null
 
 
@@ -44,9 +56,18 @@ export default class EditSelect {
     this.listen()
   }
 
+  simulate() {
+    const { simulateTarget, list } = this
+    const { x, y, width, height } = new Bounds().setListWithFn(list, (leaf: ILeaf) => leaf.worldBoxBounds)
+    const parent = simulateTarget.parent = list[0].leafer?.zoomLayer as IGroup // follow zoomLayer zoom / move
+    const { scaleX, scaleY, e: worldX, f: worldY } = parent.__world
+    simulateTarget.reset({ x: (x - worldX) / scaleX, y: (y - worldY) / scaleY, width: width / scaleX, height: height / scaleY })
+    simulateTarget.parent.updateLayout()
+  }
+
   setHoverTarget(target?: IUI) {
-    if(!target) return
-    if(this.hoverTarget){
+    if (!target) return
+    if (this.hoverTarget) {
       this.app.emit('EditSelect.hover', { element: this.hoverTarget, type: 'hoverLeave', event: null })
     }
     this.app.emit('EditSelect.hover', { element: target, type: 'hoverEnter', event: null })
@@ -54,7 +75,7 @@ export default class EditSelect {
   }
   // select 
   select(target?: IUI | IUI[]): void {
-    if(!target) return
+    if (!target) return
     const array = Array.isArray(target) ? target : [target]
     const oldList = this.leafList.clone()
     this.leafList.reset()
@@ -140,11 +161,12 @@ export default class EditSelect {
   }
 
   onDown = (e: PointerEvent) => {
-    // 不允许选中
-    if (!this.hitChildren) return
+    // 不允许选中 或者编辑中
+    if (!this.hitChildren || this.editing) return
     const { app } = this
     const oldList = this.leafList.clone()
     const find = this.findUI(e)
+   
     // 如果hover元素和选中的元素一致，则将hover元素设为null
     // if (this.hoverTarget === find) this.hoverTarget = null
     if (find && find.visible) {
@@ -157,6 +179,9 @@ export default class EditSelect {
           this.addItem(find)
         }
       } else {
+        // if(this.multiple && this.hasItem(find)){
+        //   TODO 可以做多个选中平移优化
+        // }
         this.leafList.reset()
         this.addItem(find)
       }
@@ -195,7 +220,46 @@ export default class EditSelect {
     }
   }
   onDragEnd = (e: DragEvent) => {
+    if (this.dragging) {
+      this.app.tree.emit('update')
+    }
     this.dragging = false
+
+  }
+  onDoubleTap = (e: PointerEvent) => {
+    const find = this.findUI(e)
+    if (find && find.visible) {
+      this.openInnerEditor()
+    }
+  }
+  openInnerEditor(target?: IUI) {
+    if (target) {
+      this.leafList.reset()
+      this.addItem(target)
+    }
+    // debugger
+    if (this.single) {
+      const editTarget = this.element
+      const tag = editTarget.editOuter
+      const editTool = this.editToolList[tag] = this.editToolList[tag] || EditToolCreator.get(tag, this as any)
+      this.editing = true
+      editTool.openInnerEditor()
+    }
+  }
+  closeInnerEditor() {
+    if (this.single) {
+      const editTarget = this.element
+      const tag = editTarget.editOuter
+      const editTool = this.editToolList[tag] = this.editToolList[tag] || EditToolCreator.get(tag, this as any)
+      this.editing = false
+      editTool.closeInnerEditor()
+      const oldList = this.leafList.clone()
+      this.leafList.reset()
+      this.target = null
+      this.app.emit('EditSelect.select', { value: this.leafList, oldValue: oldList, type: 'select', event: null })
+      this.app.emit('selectChange')
+      this.app.emit('closeInnerEditor')
+    }
   }
   onHover = (event: HoverEvent) => {
     const { element, type } = event
@@ -223,7 +287,7 @@ export default class EditSelect {
       const element = value.indexAt(i) as IUI
       const oldElement = oldValue.indexAt(i) as IUI
       // 新的有，老的列表中也存在新的，这个元素什么也不用做
-      if (element && oldValue.has(element)) continue
+      if (element && oldValue.has(element) && oldElement && value.has(oldElement)) continue
       // 新的有，老的列表中没有新的，需要添加新的元素
       if (element && !oldValue.has(element)) {
         const tag = element.editOuter as string
@@ -246,6 +310,7 @@ export default class EditSelect {
     this.app.on(DragEvent.START, this.onDragStart)
     this.app.on(DragEvent.DRAG, this.onDrag)
     this.app.on(DragEvent.END, this.onDragEnd)
+    this.app.on(PointerEvent.DOUBLE_TAP, this.onDoubleTap)
 
     this.app.on('EditSelect.hover', this.onHover)
     this.app.on('EditSelect.select', this.onSelect)

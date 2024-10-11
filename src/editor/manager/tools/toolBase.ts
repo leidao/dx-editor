@@ -6,7 +6,7 @@
  * @LastEditTime: 2024-10-10 09:31:57
  */
 
-import { EditorView } from '@/editor/view'
+import { EditorView } from '@/editor/editor'
 import { App } from 'leafer-ui'
 
 abstract class ToolBase {
@@ -15,8 +15,8 @@ abstract class ToolBase {
   /** 类型 */
   type = 'base'
   app:App
-  constructor(public view: EditorView) { 
-    this.app = view.app
+  constructor(public editor: EditorView) { 
+    this.app = editor.app
   }
   /** 激活 */
   abstract active(): void
@@ -24,7 +24,7 @@ abstract class ToolBase {
   abstract inactive(): void
   /** 禁止切换tool */
   get enableSwitchTool(){
-    return this.view.selector.dragging 
+    return this.editor.selector.dragging 
   }
 }
 

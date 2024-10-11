@@ -18,12 +18,12 @@ import { CheckOutlined } from '../../icons/check-outlined'
 const View = () => {
   const [selectedName, setSelectedName] = useState('')
   const [tools, setTools] = useState<any[]>([])
-  const view = useContext(EditorContext)
+  const editor = useContext(EditorContext)
 
   useEffect(() => {
-    if (!view) return
+    if (!editor) return
 
-  }, [view])
+  }, [editor])
 
   const items: MenuProps['items'] = [
     {

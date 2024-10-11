@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2024-08-20 14:33:49
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-30 13:41:55
+ * @LastEditTime: 2024-10-11 14:37:41
  */
 
 import { useEffect, useRef, useState } from 'react'
@@ -17,7 +17,7 @@ import LeftPanel from '@/editor/components/leftPanel'
 import RightPanel from '@/editor/components/rightPanel'
 import ToolBar from '@/editor/components/toolbar'
 import EditorContext from '@/editor/context'
-import { EditorView } from '@/editor/view'
+import { EditorView } from '@/editor/editor'
 const Home = () => {
   const [editor, setEditor] = useState<EditorView | null>(null)
 
@@ -43,20 +43,21 @@ const Home = () => {
       <div className='h-70px border-b-1 box-border border-#e6e6e6 border-b-solid px-10px'>
         <ToolBar className="text-#202020"></ToolBar>
       </div>
-      <div className="flex w-100% overflow-hidden" style={{
+      <div className="flex w-100% overflow-hidden box-border" style={{
         height: 'calc(100% - 70px)'
       }}>
-        <div className='w-240px h-100% bg-#fafafa'>
+        <div className='w-240px h-100% bg-#fafafa border-r-solid border-r-1px border-#dadadc99'>
           <LeftPanel></LeftPanel>
         </div>
-        <div className="flex-1 relative box-border h-100%">
+        <div className="flex-1 relative h-100% overflow-hidden">
           <div
-            className="absolute left-0px box-border w-100% h-100% bg-#fff border-solid border-t-0px border-b-0px border-#dadadc99"
+            className="absolute left-0px w-100% h-100% bg-#fff"
             ref={container}
           >
           </div>
+          {/* <div className='absolute left-0px bottom-0px w-100% h-20px bg-#b0aeae45'></div> */}
         </div>
-        <div className="w-280px h-100% bg-#fafafa">
+        <div className="w-280px h-100% bg-#fafafa border-l-solid border-l-1px border-#dadadc99">
           <RightPanel></RightPanel>
         </div>
       </div>

@@ -3,9 +3,9 @@
  * @Author: ldx
  * @Date: 2023-12-09 18:58:58
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-09 18:24:39
+ * @LastEditTime: 2024-10-11 09:27:32
  */
-import { EditorView } from '@/editor/view'
+import { EditorView } from '@/editor/editor'
 import { KeyboardCode } from './keybord-code'
 import { Keyboard, KeyEvent } from 'leafer-ui'
 import Hotkeys from './hotkeys'
@@ -15,7 +15,7 @@ type CommandMap = {
   name: string
   keyboard: string[] | string
 
-  action: (event: KeyboardEvent, view: EditorView) => void
+  action: (event: KeyboardEvent, editor: EditorView) => void
 }
 
 export default class KeybordManager {
@@ -23,7 +23,7 @@ export default class KeybordManager {
   // [key: string]: any
   KeybordMap = new Map<string, CommandMap>() // 存放所有的命令
 
-  constructor(private view: EditorView) {
+  constructor(private editor: EditorView) {
     // 监听键盘事件
     this.listen()
     // 注册默认快捷键
@@ -31,16 +31,10 @@ export default class KeybordManager {
   }
   /** 注册默认快捷键 */
   initKeybord() {
-    const hotkeys = new Hotkeys(this.view)
-    // 删除选中
-    // this.register({
-    //   name: 'deleteSelected',
-    //   keyboard: ['backspace', 'delete'],
-    //   action: hotkeys.deleteSelected
-    // })
+    const hotkeys = new Hotkeys(this.editor)
     // 全选
     this.register({
-      name: 'selectAll',
+      name: '全选',
       keyboard: ['ctrl+a'],
       action: hotkeys.selectAll
     })
@@ -65,7 +59,8 @@ export default class KeybordManager {
   onKeydown = (event: IKeyEvent) => {
     if (
       event.origin?.target instanceof HTMLInputElement ||
-      event.origin?.target instanceof HTMLTextAreaElement
+      event.origin?.target instanceof HTMLTextAreaElement||
+      event.origin?.target instanceof HTMLDivElement
     ) {
       // event.stop && event.stop()
       // event.stopDefault && event.stopDefault()
@@ -97,17 +92,17 @@ export default class KeybordManager {
       if (keys.indexOf(keyNames) > -1) {
         event.origin?.stopPropagation()
         event.origin?.preventDefault()
-        action(event.origin as KeyboardEvent, this.view)
+        action(event.origin as KeyboardEvent, this.editor)
       }
     })
   }
 
   // 初始化事件
   listen() {
-    this.view.app.on(KeyEvent.DOWN, this.onKeydown)
+    this.editor.app.on(KeyEvent.DOWN, this.onKeydown)
   }
   // 销毁事件
   destroy() {
-    this.view.app.off(KeyEvent.DOWN, this.onKeydown)
+    this.editor.app.off(KeyEvent.DOWN, this.onKeydown)
   }
 }

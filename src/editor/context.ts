@@ -7,7 +7,7 @@
  */
 import { createContext } from 'react'
 
-import { EditorView } from './view'
+import { EditorView } from './editor'
 
 const EditorContext = createContext<EditorView | null>(null)
 

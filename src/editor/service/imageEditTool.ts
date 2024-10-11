@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2024-09-27 16:04:35
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-09 15:03:12
+ * @LastEditTime: 2024-10-10 16:31:21
  */
 import globalConfig from '../config'
 import { traverse } from '../utils';
@@ -13,12 +13,12 @@ import { registerEditTool } from "leafer-editor";
 import { Image, LeafList, Line } from "leafer-ui";
 @registerEditTool()
 export default class ImageEditTool extends EditTool {
-  public get tag() { return 'ImageEditTool' }
+  public get tag() { return 'imageEditTool' }
   leafList = new LeafList()
   // onMove(event: any) {
   //   super.onMove(event)
   //   const { list, app } = this.selector
-  
+
   //   // 导线的跟随移动
   //   list.forEach(target => {
   //     if (target instanceof Image && target.data.ellipseData) {
@@ -49,7 +49,7 @@ export default class ImageEditTool extends EditTool {
   //     }
   //   })
   // }
-  
+
   onHoverEnter(event: HoverEvent) {
     const { element } = event
     element.cursor = 'all-scroll';
@@ -59,7 +59,7 @@ export default class ImageEditTool extends EditTool {
   }
   onHoverLeave(event: HoverEvent) {
     const { element } = event
-    if(this.selector.leafList.has(element)) return
+    if (this.selector.leafList.has(element)) return
     element.cursor = 'auto';
     (element as Image).url = element.data?.sourceUrl || ''
   }
@@ -68,7 +68,7 @@ export default class ImageEditTool extends EditTool {
     const { element } = event
     element.cursor = 'all-scroll';
     (element as Image).url = element.data?.selectUrl || ''
-
+    element.data && (element.data.state = 'select')
     // 收集所有的导线
     this.leafList.reset()
     traverse(this.selector.app.tree, (item) => {
@@ -80,6 +80,7 @@ export default class ImageEditTool extends EditTool {
   onUnSelect(event: SelectEvent) {
     const { element } = event;
     (element as Image).url = element.data?.sourceUrl || ''
+    element.data && (element.data.state = 'none')
   }
   onLoad() {
     console.log('onLoad');

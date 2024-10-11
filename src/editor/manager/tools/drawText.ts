@@ -3,63 +3,72 @@
  * @Author: ldx
  * @Date: 2023-12-09 10:21:06
  * @LastEditors: ldx
- * @LastEditTime: 2024-08-30 10:27:23
+ * @LastEditTime: 2024-10-11 17:58:26
  */
 import { v4 } from 'uuid'
-import { EditorView } from '@/editor/view'
+import { EditorView } from '@/editor/editor'
 import ToolBase from './toolBase'
+import globalConfig from '@/editor/config'
 import { App, PointerEvent, Text, InnerEditorEvent } from 'leafer-editor'
+import { getClosestTimesVal } from '@/editor/utils'
 export default class ToolDrawText extends ToolBase {
   readonly keyboard = 't'
   readonly type = 'drawText'
   text: Text | null = null
 
 
-  constructor(view: EditorView) {
-    super(view)
+  constructor(editor: EditorView) {
+    super(editor)
   }
 
-  start = (e: PointerEvent) => {
-    const { x, y } = this.app.getPagePoint({ x: e.x, y: e.y })
+  onTap = (event: PointerEvent) => {
+    const pagePoint = this.app.getPagePoint({ x: event.x, y: event.y })
+    let x = getClosestTimesVal(pagePoint.x, globalConfig.moveSize)
+    let y = getClosestTimesVal(pagePoint.y, globalConfig.moveSize)
+
     if (!this.text) {
       this.text = new Text({
         x,
-        y,
+        y: y - 9,
         text: '',
+        id: v4(),
         name: '文字',
         editable: true,
-        id: v4()
+        data: {
+          sourceColor: '#000000',
+          hoverColor: '#ff0000',
+          selectColor: '#ff0000',
+        }
       })
       this.app.tree.add(this.text)
       // 打开内部编辑
-      this.app.editor.openInnerEditor(this.text)
-    }
+      this.editor.helpLine.visible = false
+      this.editor.selector.openInnerEditor(this.text)
 
-    this.app.off(PointerEvent.CLICK, this.start);
+    }
+    this.app.off(PointerEvent.TAP, this.onTap);
   }
 
+
   innerEditorClose = () => {
-    // 内部编辑器关闭时
-    this.app.editor.visible = true
+    this.editor.app.emit('update')
     // 设置toolbar为默认并且关闭监听鼠标点击事件
-    this.view.manager.tools.setSelectedName('operationGraph')
-    this.view.manager.tools.setActiveTool('operationGraph')
-    this.app.editor.off(InnerEditorEvent.CLOSE, this.innerEditorClose)
+    this.editor.manager.tools.setActiveTool('operationGraph')
+    this.inactive()
   }
 
   active() {
-    this.text = null
-    this.app.tree.hitChildren = true
-    this.app.on(PointerEvent.CLICK, this.start);
-    this.app.editor.on(InnerEditorEvent.CLOSE, this.innerEditorClose)
+    this.inactive()
+    this.editor.helpLine.visible = true
+    this.app.on(PointerEvent.TAP, this.onTap);
+    this.app.on('closeInnerEditor', this.innerEditorClose)
   }
   inactive() {
-    this.app.off(PointerEvent.CLICK, this.start);
-    // 内部编辑器关闭时
-    this.app.editor.visible = true
-    this.app.editor.off(InnerEditorEvent.CLOSE, this.innerEditorClose)
-    this.app.editor.closeInnerEditor()
+    this.text = null
+    this.editor.helpLine.visible = false
+    this.app.off(PointerEvent.TAP, this.onTap);
+    this.app.off('closeInnerEditor', this.innerEditorClose)
+    this.editor.selector.closeInnerEditor()
   }
-
 }
 

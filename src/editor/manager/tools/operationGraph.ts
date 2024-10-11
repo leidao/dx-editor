@@ -6,21 +6,21 @@
  * @LastEditTime: 2024-10-09 16:22:20
  */
 
-import { EditorView } from '@/editor/view'
+import { EditorView } from '@/editor/editor'
 import ToolBase from './toolBase'
 export default class ToolOperationGraph extends ToolBase {
   readonly keyboard = 'a'
   readonly type = 'operationGraph'
-  constructor(view: EditorView) {
-    super(view)
+  constructor(editor: EditorView) {
+    super(editor)
   }
   active() {
-    this.view.selector.hitChildren = true
+    this.editor.selector.hitChildren = true
     this.app.tree.hitChildren = true
   }
   inactive() {
-    this.view.selector.hitChildren = false
+    this.editor.selector.hitChildren = false
     this.app.tree.hitChildren = false
-    this.view.selector.cancel()
+    this.editor.selector.cancel()
   }
 }

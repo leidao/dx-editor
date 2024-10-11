@@ -8,16 +8,16 @@
 
 import ToolManager from './tools/toolManager'
 import KeybordManger from './keybord/keybordManger'
-import { EditorView } from '../view'
+import { EditorView } from '../editor'
 import HistoryManager from './history/historyManager'
 export default class Manager {
   tools: ToolManager
   keybord: KeybordManger
   history: HistoryManager
-  constructor(public view: EditorView) {
-    this.tools = new ToolManager(view)
-    this.keybord = new KeybordManger(view)
-    this.history = new HistoryManager(view)
+  constructor(public editor: EditorView) {
+    this.tools = new ToolManager(editor)
+    this.keybord = new KeybordManger(editor)
+    this.history = new HistoryManager(editor)
   }
 
   destroy() {

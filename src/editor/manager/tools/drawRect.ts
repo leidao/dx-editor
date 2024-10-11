@@ -6,15 +6,15 @@
  * @LastEditTime: 2024-10-06 20:25:40
  */
 import { v4 } from 'uuid'
-import { EditorView } from '@/editor/view'
+import { EditorView } from '@/editor/editor'
 import ToolBase from './toolBase'
 import { DragEvent, Rect } from 'leafer-ui'
 export default class ToolDrawRect extends ToolBase {
   readonly keyboard = 'r'
   readonly type = 'drawRect'
   rect!: Rect
-  constructor(view: EditorView) {
-    super(view)
+  constructor(editor: EditorView) {
+    super(editor)
   }
 
   start = (e: DragEvent) => {
@@ -36,8 +36,8 @@ export default class ToolDrawRect extends ToolBase {
     }
   }
   end = () => {
-    this.view.manager.tools.setSelectedName('operationGraph')
-    this.view.manager.tools.setActiveTool('operationGraph')
+    this.editor.manager.tools.setSelectedName('operationGraph')
+    this.editor.manager.tools.setActiveTool('operationGraph')
     this.app.tree.emit('add')
   }
 
