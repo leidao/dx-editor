@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2024-08-20 14:33:49
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-12 11:27:38
+ * @LastEditTime: 2024-10-31 10:16:12
 -->
 
 **dx-editor 图形编辑器**，一款开源的基于 [leaferjs](https://www.leaferjs.com/ui/) 实现的矢量图形编辑器。
@@ -22,8 +22,7 @@
 6.  图层面板、属性面板；
 7.  标尺功能；
 8.  导入导出图纸；
-9.  极轴锁定
-10. 辅助线
+9.  工具栏
 
 下一步计划
 
