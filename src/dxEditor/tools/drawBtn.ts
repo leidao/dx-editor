@@ -12,7 +12,6 @@ import { PointerEvent, Box, KeyEvent } from 'leafer-ui'
 import { getClosestTimesVal } from '@/dxEditor/utils'
 import { v4 } from 'uuid'
 export default class ToolDrawBtn extends ToolBase {
-  readonly keyboard = 'b'
   readonly type = 'drawBtn'
   btn: Box | null = null
 

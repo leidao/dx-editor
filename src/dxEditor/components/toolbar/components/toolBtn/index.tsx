@@ -3,10 +3,10 @@
  * @Author: ldx
  * @Date: 2023-12-21 11:13:40
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-29 16:20:31
+ * @LastEditTime: 2024-10-31 16:22:48
  */
 
-import { Button, Divider, Tooltip } from 'antd'
+import { Button, Divider, Tooltip, Upload } from 'antd'
 import { useContext, useEffect, useState } from 'react'
 import { isWindows } from '@/dxEditor/utils'
 import EditorContext from '@/dxEditor/context'
@@ -41,6 +41,7 @@ import 导线 from '@/dxEditor/components/toolbar/icons/导线.svg?react'
 import 母线 from '@/dxEditor/components/toolbar/icons/母线.svg?react'
 import 文字 from '@/dxEditor/components/toolbar/icons/文字.svg?react'
 import 按钮 from '@/dxEditor/components/toolbar/icons/按钮.svg?react'
+import 图片 from '@/dxEditor/components/toolbar/icons/图片.svg?react'
 
 import ToolDrawWire from '@/dxEditor/tools/drawWire'
 import ToolBase from '@/dxEditor/tools/toolBase'
@@ -53,6 +54,7 @@ import ToolDrawBtn from '@/dxEditor/tools/drawBtn'
 import ToolPasteGraph from '@/dxEditor/tools/pasteGraph'
 import { EditorEvent } from '@/dxEditor/event'
 import { degToRad } from '@/dxCanvas'
+import ToolAddPic from '@/dxEditor/tools/addPic'
 
 type Tool = {
   name: string
@@ -187,7 +189,7 @@ const ToolBtn = () => {
           icon: 顺时针旋转90度,
           keyboard: 'ctrl+arrowright',
           disabled: true,
-          action: () =>  editor.keybord.hotkeys.rotate(degToRad(90))
+          action: () => editor.keybord.hotkeys.rotate(degToRad(90))
         },
         {
           name: '水平翻转',
@@ -341,7 +343,7 @@ const ToolBtn = () => {
         action: tool.action
       })
     })
-
+    editor.tool.register(new ToolAddPic(editor))
     setTools(tools)
     // 存储栈发生变化
     const historyChange = () => {
@@ -354,7 +356,7 @@ const ToolBtn = () => {
       重做 && (重做.disabled = !redoCmd)
       setTools(tools.slice())
     }
-    const paste = (event:EditorEvent) => {
+    const paste = (event: EditorEvent) => {
       editor.pastetype = event.type
       const 粘贴 = tools.flat().find(tool => tool.name === '粘贴')
       粘贴 && (粘贴.disabled = !(editor.pasteData.children.length > 0))
@@ -409,6 +411,13 @@ const ToolBtn = () => {
     }
   }, [editor])
 
+
+  const customRequest = (options: any) => {
+    const url = URL.createObjectURL(options.file)
+    editor?.tool.setActiveTool('addPic',url)
+    
+  }
+
   return (
     <div className="flex-1 flex items-center ">
       {
@@ -424,6 +433,18 @@ const ToolBtn = () => {
           </div>
         ))
       }
+      <div>
+        <Upload
+          showUploadList={false}
+          maxCount={1}
+          accept="image/svg"
+          customRequest={customRequest}>
+          <Tooltip placement="bottom" title='上传图片' arrow={false}>
+            <Button type='text' className='w-28px h-28px p-6px mx-2px'
+              icon={<图片 style={{ fill: '#000' }} />} />
+          </Tooltip>
+        </Upload>
+      </div>
     </div>
   )
 }

@@ -11,7 +11,6 @@ import ToolBase from './toolBase'
 import { DragEvent, PointerEvent } from '@/dxEditor/event'
 import { IPointerEvent } from '@/dxCanvas/event'
 export default class ToolDragCanvas extends ToolBase {
-  readonly keyboard = 'h'
   readonly type = 'dragCanvas'
   constructor(editor: EditorView) {
     super(editor)

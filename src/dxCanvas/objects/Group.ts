@@ -30,13 +30,6 @@ class Group extends Object2D {
     this.setOption(attr)
   }
 
-  get isEnableCamera() {
-    const { parent } = this
-    if (!this.enableCamera) return false
-    if (!parent?.enableCamera) return false
-    return this.enableCamera
-  }
-
   /* 添加元素 */
   add(...objs: Object2D[]) {
     for (const obj of objs) {

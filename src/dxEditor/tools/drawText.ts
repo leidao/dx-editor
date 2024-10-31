@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2023-12-09 10:21:06
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-30 14:21:49
+ * @LastEditTime: 2024-10-31 16:06:10
  */
 import { v4 } from 'uuid'
 import { EditorView } from '@/dxEditor'
@@ -14,7 +14,6 @@ import { getClosestTimesVal } from '@/dxEditor/utils'
 import { EditorEvent, PointerEvent } from '@/dxEditor/event'
 import { IPointerEvent } from '@/dxCanvas/event'
 export default class ToolDrawText extends ToolBase {
-  readonly keyboard = 't'
   readonly type = 'drawText'
 
 

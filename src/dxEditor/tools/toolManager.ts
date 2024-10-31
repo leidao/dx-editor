@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2023-12-09 09:38:54
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-30 09:23:46
+ * @LastEditTime: 2024-10-31 16:16:20
  */
 
 import ToolBase from './toolBase'
@@ -35,7 +35,7 @@ class ToolManager {
   }
  
   /** 设置工具激活 */
-  setActiveTool(toolName: string) {
+  setActiveTool(toolName: string,data?:any) {
     const prevTool = this.activeTool
   //   if (prevTool?.enableSwitchTool || this.getActiveToolName() === toolName) {
   //     // 禁止切换tool
@@ -49,7 +49,7 @@ class ToolManager {
     if (prevTool) {
       prevTool.inactive()
     }
-    activeTool.active()
+    activeTool.active(data)
   }
   getActiveToolName() {
     return this.activeTool?.type

@@ -9,7 +9,6 @@
 import { EditorView } from '@/dxEditor'
 import ToolBase from './toolBase'
 export default class ToolOperationGraph extends ToolBase {
-  readonly keyboard = 'a'
   readonly type = 'operationGraph'
   constructor(editor: EditorView) {
     super(editor)

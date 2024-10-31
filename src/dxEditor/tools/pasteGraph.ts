@@ -14,7 +14,6 @@ import { IObject, IPointerEvent, Line } from '@/dxCanvas'
 import { EditorEvent, KeyEvent, PointerEvent } from '../event'
 /** 绘制母线 */
 export default class ToolPasteGraph extends ToolBase {
-  readonly keyboard = 'ctrl+v'
   readonly type = 'pasteGraph'
   busbar: Line | null = null
   pasteData?: IObject

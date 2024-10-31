@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2024-08-28 14:10:14
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-28 16:32:17
+ * @LastEditTime: 2024-10-31 13:54:02
  */
 import { EditorView } from '..'
 import { Object2D, OrbitEvent } from '../../dxCanvas'
@@ -37,7 +37,7 @@ export class Grid extends Object2D {
     const endX = getClosestTimesVal(x2, stepInScene) + stepInScene
     // startX = startX % globalConfig.gridSize ? startX - globalConfig.gridSize / 2 : startX - globalConfig.gridSize
     while (startX % globalConfig.gridSize) {
-      startX += stepInScene
+      startX -= stepInScene
     }
     // console.log('drawXLine', startX, endX, stepInScene,globalConfig.gridSize);
     ctx.save()
@@ -66,7 +66,7 @@ export class Grid extends Object2D {
     const endY = getClosestTimesVal(y2, stepInScene) + stepInScene
     // startY = startY % globalConfig.gridSize ? startY - globalConfig.gridSize / 2 : startY - globalConfig.gridSize
     while (startY % globalConfig.gridSize) {
-      startY += stepInScene
+      startY -= stepInScene
     }
     // console.log('startY', endY);
     ctx.save()

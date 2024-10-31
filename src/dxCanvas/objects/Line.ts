@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2023-11-15 12:21:19
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-30 16:46:00
+ * @LastEditTime: 2024-10-31 14:18:01
  */
 import { Vector2 } from '../math/Vector2'
 import { StandStyle, StandStyleType } from '../style/StandStyle'
@@ -38,7 +38,7 @@ export class Line extends Object2D {
       switch (key) {
         case 'position':
         case 'scale':
-          this[key] = new Vector2(...val)
+          this[key].fromArray(val)
           break
         case 'tag':
           break

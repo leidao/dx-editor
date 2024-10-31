@@ -14,7 +14,6 @@ import { EditorEvent, KeyEvent, PointerEvent } from '../event'
 import { LeafList } from '../selector/leafList'
 /** 绘制导线 */
 export default class ToolDrawWire extends ToolBase {
-  readonly keyboard = 'l'
   readonly type = 'drawWire'
   wire: Line | null = null
   /** 重新计算 */

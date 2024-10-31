@@ -3,13 +3,14 @@
  * @Author: ldx
  * @Date: 2023-11-15 12:21:19
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-30 16:47:32
+ * @LastEditTime: 2024-10-31 14:17:56
  */
 
 import { IObject, Object2D, Object2DType } from './Object2D'
 import { Line, LineType } from './Line'
 import { StandStyle, StandStyleType } from '../style'
 import { Vector2 } from '../math'
+import { Creator } from '../utils'
 
 export type RectType = Object2DType & {
   style?: StandStyleType
@@ -21,7 +22,7 @@ export type RectType = Object2DType & {
 }
 
 export class Rect extends Object2D {
-  name = 'Rect'
+  name = '矩形'
   width = 0
   height = 0
   _style: StandStyle = new StandStyle()
@@ -37,7 +38,7 @@ export class Rect extends Object2D {
       switch (key) {
         case 'position':
         case 'scale':
-          this[key] = new Vector2(...val)
+          this[key].fromArray(val)
           break
         case 'tag':
           break
@@ -105,3 +106,5 @@ export class Rect extends Object2D {
     return new Rect(data)
   }
 }
+
+Creator.register(Rect)

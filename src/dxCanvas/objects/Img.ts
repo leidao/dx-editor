@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2023-11-15 12:21:19
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-30 17:50:31
+ * @LastEditTime: 2024-10-31 15:50:14
  */
 import { Matrix3 } from '../math/Matrix3'
 import { Vector2 } from '../math/Vector2'
@@ -11,7 +11,7 @@ import { BasicStyle, BasicStyleType } from '../style/BasicStyle'
 import { Object2D, Object2DType, IObject } from './Object2D'
 import { ImgEvent } from '../event'
 import { copyPrimitive, Creator } from '../utils'
-type ImgType = Object2DType & {
+export type ImgType = Object2DType & {
   image?: CanvasImageSource
   offset?: [number, number]
   size?: [number, number]
@@ -19,7 +19,7 @@ type ImgType = Object2DType & {
   src?: string
 }
 
-type View = {
+export type View = {
   x: number
   y: number
   width: number
@@ -70,7 +70,7 @@ export class Img extends Object2D {
         case 'scale':
         case 'offset':
         case 'size':
-          this[key] = new Vector2(...val)
+          this[key].fromArray(val)
           break
         case 'tag':
           break

@@ -139,7 +139,7 @@ abstract class Object2D extends EventDispatcher {
       switch (key) {
         case 'position':
         case 'scale':
-          this[key] = new Vector2(...val)
+          this[key].fromArray(val)
           break
         case 'tag':
           break

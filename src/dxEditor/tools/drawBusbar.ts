@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2023-12-09 10:21:06
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-30 10:12:00
+ * @LastEditTime: 2024-10-31 16:06:21
  */
 import { EditorView } from '@/dxEditor'
 import ToolBase from './toolBase'
@@ -13,7 +13,7 @@ import { IPointerEvent, Line } from '@/dxCanvas'
 import { EditorEvent, KeyEvent, PointerEvent } from '@/dxEditor/event'
 /** 绘制母线 */
 export default class ToolDrawBusbar extends ToolBase {
-  readonly keyboard = 'm'
+  readonly  = 'm'
   readonly type = 'drawBusbar'
   busbar: Line | null = null
 

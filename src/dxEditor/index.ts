@@ -4,14 +4,14 @@
  * @Author: ldx
  * @Date: 2024-08-20 14:50:58
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-30 17:35:09
+ * @LastEditTime: 2024-10-31 15:22:21
  */
 
 
 import _ from 'lodash'
 import globalConfig from './config'
 import { loadSVG, getClosestTimesVal, toURL } from './utils'
-import { OrbitEvent, OrbitControler, Vector2, Img, Camera, Scene, IObject, Group } from '@/dxCanvas'
+import { OrbitEvent, OrbitControler, Vector2, Img, Camera, Scene, IObject, Group, Ellipse } from '@/dxCanvas'
 import { Ruler, Grid, Guideline } from './objects'
 import { EventDispatcher } from '@/dxCanvas/event'
 import Selector from './selector'
@@ -77,6 +77,7 @@ export class EditorView extends EventDispatcher {
     this.listen()
     this.guideline = new Guideline(this)
     this.ruler = new Ruler(this)
+
     this.render()
   }
   render = () => {

@@ -79,7 +79,7 @@ class Text extends Object2D {
         case 'position':
         case 'scale':
         case 'offset':
-          this[key] = new Vector2(...val)
+          this[key].fromArray(val)
           break
         case 'tag':
           break
