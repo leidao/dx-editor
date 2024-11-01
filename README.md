@@ -3,17 +3,16 @@
  * @Author: ldx
  * @Date: 2024-08-20 14:33:49
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-31 10:16:12
+ * @LastEditTime: 2024-11-01 14:02:58
 -->
 
-**dx-editor 图形编辑器**，一款开源的基于 [leaferjs](https://www.leaferjs.com/ui/) 实现的矢量图形编辑器。
+**dx-editor 图形编辑器**，一款开源矢量图形编辑器。
 
 [体验网址](https://leidao.github.io/dx-editor/)
 
 ![Screenshot](screenshot.png)
 
 ## 特性
-
 1.  图形的创建和编辑，包括：图元、线、文本；
 2.  丰富的工具：选中工具、绘制图形工具、画布工具、抓手工具；
 3.  无限画布，可以缩放和拖拽画布；
@@ -30,6 +29,13 @@
 - [ ] 丰富更多图形；
 - [ ] 丰富属性面板。
 - [ ] 线和图元的关联。
+
+### 架构图
+- https://www.yuque.com/renshengzhiruchujian/xvhcwk/wuskgwy42ohzyx9i?singleDoc# 《编辑器架构思路》
+
+### 思考
+- https://www.yuque.com/renshengzhiruchujian/xvhcwk/sggvx89i9l8nwcfc?singleDoc# 《思考》
+
 
 ## 环境依赖
 
