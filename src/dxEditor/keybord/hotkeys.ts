@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2024-08-27 15:19:15
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-29 15:34:50
+ * @LastEditTime: 2024-11-01 10:59:58
  */
 import { generateUUID, Vector2 } from "@/dxCanvas";
 import { EditorView } from "@/dxEditor";
@@ -241,10 +241,11 @@ export default class Hotkeys {
     }, 0)
     // 剩余宽度等距分布
     const equallyWidth = (width - usedWidth) / size
+    // 对列表进行排序，以便按照顺序设置元素位置
     const sortList = list.slice().sort((a, b) => a.bounds.x - b.bounds.x)
     sortList.forEach((item, i) => {
       if (item.bounds.minX === minX || item.bounds.maxX === maxX) return
-      item.position.x = sortList[i-1].bounds.maxX + equallyWidth * i
+      item.position.x = sortList[i-1].bounds.maxX + equallyWidth 
       item.computeBoundsBox(true)
     })
     element.computeBoundsBox()
@@ -266,7 +267,7 @@ export default class Hotkeys {
     const sortList = list.slice().sort((a, b) => a.bounds.y - b.bounds.y)
     sortList.forEach((item, i) => {
       if (item.bounds.minY === minY || item.bounds.maxY === maxY) return
-      item.position.y = sortList[i-1].bounds.maxY + equallyHeight * i
+      item.position.y = sortList[i-1].bounds.maxY + equallyHeight 
       item.computeBoundsBox(true)
     })
     element.computeBoundsBox()

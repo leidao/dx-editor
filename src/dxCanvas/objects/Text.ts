@@ -164,6 +164,7 @@ class Text extends Object2D {
     max.addVectors(min, size)
     min.applyMatrix3(this.worldMatrix)
     max.applyMatrix3(this.worldMatrix)
+    this.bounds.expand(min.clone(),max.clone())
     updateParentBoundsBox && this.parent?.computeBoundsBox()
   }
 

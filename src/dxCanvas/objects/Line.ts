@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2023-11-15 12:21:19
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-31 14:18:01
+ * @LastEditTime: 2024-11-01 09:24:43
  */
 import { Vector2 } from '../math/Vector2'
 import { StandStyle, StandStyleType } from '../style/StandStyle'
@@ -96,6 +96,7 @@ export class Line extends Object2D {
     max.y+=pickingBuffer/2
     min.applyMatrix3(this.worldMatrix)
     max.applyMatrix3(this.worldMatrix)
+    this.bounds.expand(min.clone(),max.clone())
     updateParentBoundsBox && this.parent?.computeBoundsBox()
   }
   /** 点位是否在图形中 */

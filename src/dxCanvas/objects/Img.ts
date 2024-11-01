@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2023-11-15 12:21:19
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-31 15:50:14
+ * @LastEditTime: 2024-11-01 09:24:12
  */
 import { Matrix3 } from '../math/Matrix3'
 import { Vector2 } from '../math/Vector2'
@@ -141,6 +141,7 @@ export class Img extends Object2D {
     max.addVectors(offset, size)
     min.applyMatrix3(this.worldMatrix)
     max.applyMatrix3(this.worldMatrix)
+    this.bounds.expand(min.clone(),max.clone())
     updateParentBoundsBox && this.parent?.computeBoundsBox()
   }
 

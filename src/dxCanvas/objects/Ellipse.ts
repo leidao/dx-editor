@@ -50,7 +50,7 @@ export class Ellipse extends Object2D {
 
   /* 绘图 */
   drawShape(ctx: CanvasRenderingContext2D) {
-    const { width, height, innerRadius, startAngle, endAngle, _style, shapeType } = this;
+    const { width, height, innerRadius, startAngle, endAngle, _style } = this;
     // 应用样式
     this.applyStyle(ctx);
 
@@ -96,6 +96,7 @@ export class Ellipse extends Object2D {
     max.set(Math.abs(width) / 2, Math.abs(height) / 2)
     min.applyMatrix3(this.worldMatrix);
     max.applyMatrix3(this.worldMatrix);
+    this.bounds.expand(min.clone(),max.clone())
     updateParentBoundsBox && this.parent?.computeBoundsBox();
   }
 

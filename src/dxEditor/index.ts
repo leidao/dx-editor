@@ -4,7 +4,7 @@
  * @Author: ldx
  * @Date: 2024-08-20 14:50:58
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-31 15:22:21
+ * @LastEditTime: 2024-11-01 09:40:23
  */
 
 
@@ -264,6 +264,9 @@ export class EditorView extends EventDispatcher {
         },
         selectStyle: {
           src: hoverSrc
+        },
+        userData:{
+          ellipseData: data
         }
       })
       this.tree.add(image)

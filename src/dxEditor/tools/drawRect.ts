@@ -8,9 +8,10 @@
 import { v4 } from 'uuid'
 import { EditorView } from '@/dxEditor'
 import ToolBase from './toolBase'
+import { Rect } from '@/dxCanvas'
 export default class ToolDrawRect extends ToolBase {
   readonly type = 'drawRect'
-  rect!: Rect
+  rect?: Rect
   constructor(editor: EditorView) {
     super(editor)
   }
@@ -25,7 +26,7 @@ export default class ToolDrawRect extends ToolBase {
       name: '矩形',
       id: v4()
     })
-    this.app.tree.add(this.rect)
+    this.editor.tree.add(this.rect)
   }
 
   drag = (e: DragEvent) => {

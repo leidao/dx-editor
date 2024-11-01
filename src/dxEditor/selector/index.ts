@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2024-09-27 16:04:35
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-31 09:12:29
+ * @LastEditTime: 2024-10-31 16:45:44
  */
 import { EditorView } from "../index"
 import { getClosestTimesVal } from "../utils"
@@ -275,6 +275,7 @@ export default class Selector {
         event.target = element
         editTool?.onDragEnd && editTool.onDragEnd(event)
       })
+      this.editor.dispatchEvent(EditorEvent.UPDATE, new EditorEvent('update', { target: this.list }))
     } else {
       this.selectArea.clear()
     }
