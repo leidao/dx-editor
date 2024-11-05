@@ -3,12 +3,12 @@
  * @Author: ldx
  * @Date: 2024-09-27 16:04:35
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-31 16:45:44
+ * @LastEditTime: 2024-11-05 10:39:21
  */
 import { EditorView } from "../index"
 import { getClosestTimesVal } from "../utils"
 import globalConfig from '../config'
-import { Bounds, Img, IObject, Object2D, Rect, Text } from "@/dxCanvas"
+import { Bounds, Box, Img, IObject, Object2D, Rect, Text } from "@/dxCanvas"
 import { PointerEvent, DragEvent, EditorEvent } from '../event'
 import { LeafList } from "./leafList"
 import { EditToolCreator } from "./editTool/EditToolCreator"
@@ -19,6 +19,7 @@ import ImgEditOuter from "./editOuter/imgEditOuter"
 import TextEditOuter from "./editOuter/textEditOuter"
 import TextEditInner from "./editInner/textEditInner"
 import { SelectArea } from "./selectArea"
+import BoxEditInner from "./editInner/boxEditInner"
 
 
 Object2D.setEditOuter = function (toolName: string): void {
@@ -79,6 +80,8 @@ export default class Selector {
     // Text.setEditOuter('TextEditOuter')
     TextEditInner.registerEditTool()
     Text.setEditInner('TextEditInner')
+    BoxEditInner.registerEditTool()
+    Box.setEditInner('BoxEditInner')
 
     this.selectArea = new SelectArea(editor)
   }

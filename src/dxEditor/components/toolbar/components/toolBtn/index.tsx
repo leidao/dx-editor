@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2023-12-21 11:13:40
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-31 16:22:48
+ * @LastEditTime: 2024-11-04 15:15:26
  */
 
 import { Button, Divider, Tooltip, Upload } from 'antd'
@@ -323,16 +323,16 @@ const ToolBtn = () => {
             editor.tool.setActiveTool('drawText')
           }
         },
-        // {
-        //   name: '按钮',
-        //   tip: `按钮 B`,
-        //   icon: 按钮,
-        //   keyboard: 'b',
-        //   instance: new ToolDrawBtn(editor),
-        //   action: () => {
-        //     editor.tool.setActiveTool('drawBtn')
-        //   }
-        // },
+        {
+          name: '按钮',
+          tip: `按钮 B`,
+          icon: 按钮,
+          keyboard: 'b',
+          instance: new ToolDrawBtn(editor),
+          action: () => {
+            editor.tool.setActiveTool('drawBtn')
+          }
+        },
       ],
     ]
     tools.flat().forEach(tool => {

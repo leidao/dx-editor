@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2024-10-20 10:41:20
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-30 17:23:51
+ * @LastEditTime: 2024-11-04 10:06:10
  */
 import globalConfig from '../config'
 import { getClosestTimesVal, getStepByZoom } from '../utils';
@@ -213,10 +213,12 @@ export class Ruler {
     this.editor.orbitControler.addEventListener(OrbitEvent.CHANGE, this.drawShape)
     this.editor.addEventListener(EditorEvent.SELECT, this.drawShape)
     this.editor.addEventListener(EditorEvent.DRAG,this.drawShape)
+    this.editor.addEventListener(EditorEvent.HISTORY_CHANGE,this.drawShape)
   }
   destroy() {
     this.editor.orbitControler.removeEventListener(OrbitEvent.CHANGE, this.drawShape)
     this.editor.removeEventListener(EditorEvent.SELECT, this.drawShape)
     this.editor.removeEventListener(EditorEvent.DRAG,this.drawShape)
+    this.editor.removeEventListener(EditorEvent.HISTORY_CHANGE,this.drawShape)
   }
 }

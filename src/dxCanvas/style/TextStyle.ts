@@ -3,12 +3,12 @@
  * @Author: ldx
  * @Date: 2023-12-12 14:32:31
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-15 22:04:42
+ * @LastEditTime: 2024-11-04 13:50:20
  */
 import { StandStyle, StandStyleType } from './StandStyle'
 
-type FontStyle = '' | 'italic'
-type FontWeight = '' | 'bold'
+type FontStyle = 'normal' | 'italic'
+type FontWeight = 100|200|300|400|500|600|700|800|900
 
 export type TextStyleType = {
   fontStyle?: FontStyle
@@ -20,8 +20,8 @@ export type TextStyleType = {
 } & StandStyleType
 
 class TextStyle extends StandStyle {
-  fontStyle: FontStyle = ''
-  fontWeight: FontWeight = ''
+  fontStyle: FontStyle = 'normal'
+  fontWeight: FontWeight = 400
   fontSize = 12
   fontFamily = 'arial'
   textAlign: CanvasTextAlign = 'start'

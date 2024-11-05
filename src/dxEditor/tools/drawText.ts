@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2023-12-09 10:21:06
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-31 16:06:10
+ * @LastEditTime: 2024-11-05 11:04:49
  */
 import { v4 } from 'uuid'
 import { EditorView } from '@/dxEditor'
@@ -23,17 +23,17 @@ export default class ToolDrawText extends ToolBase {
 
   onTap = (event: PointerEvent) => {
     const { clientX, clientY } = event.origin as IPointerEvent
-    const pagePoint = this.editor.tree.getWorldByClient(clientX, clientY)
-    let x = getClosestTimesVal(pagePoint.x, globalConfig.moveSize)
-    let y = getClosestTimesVal(pagePoint.y, globalConfig.moveSize)
+    const worldPoint = this.editor.tree.getWorldByClient(clientX, clientY)
+    let x = getClosestTimesVal(worldPoint.x, globalConfig.moveSize)
+    let y = getClosestTimesVal(worldPoint.y, globalConfig.moveSize)
     const text = new Text({
-      position: [x, y+1],
+      position: [x, y],
       text: '',
       style: {
         fontSize: 12,
         fillStyle: '#000',
         textAlign: 'left',
-        textBaseline: 'middle'
+        textBaseline: 'top'
       },
       hoverStyle: {
         fillStyle: '#ff0000',

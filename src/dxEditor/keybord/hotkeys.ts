@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2024-08-27 15:19:15
  * @LastEditors: ldx
- * @LastEditTime: 2024-11-01 10:59:58
+ * @LastEditTime: 2024-11-04 17:34:12
  */
 import { generateUUID, Vector2 } from "@/dxCanvas";
 import { EditorView } from "@/dxEditor";
@@ -14,10 +14,9 @@ export default class Hotkeys {
   /** 删除选中 */
   deleteSelected = () => {
     const list = this.editor.selector.list || []
-    // this.editor.selector.cancel()
-    // this.editor.history.patch()
+    this.editor.selector.cancel()
     list.forEach(item => {
-      item.remove()
+      item.parent?.remove(item)
     })
     this.editor.tree.render()
     if (list.length > 0) {

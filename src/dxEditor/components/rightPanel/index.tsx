@@ -3,17 +3,18 @@
  * @Author: ldx
  * @Date: 2023-12-21 15:26:11
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-24 13:54:38
+ * @LastEditTime: 2024-11-04 13:40:31
  */
 import { Collapse, Empty, Slider } from 'antd'
 import { useContext, useEffect, useState } from 'react'
 import EditorContext from '@/dxEditor/context'
 import { Text, Line, Img } from '@/dxCanvas'
+import { EditorEvent } from '@/dxEditor/event'
 // import CanvasSettings from './canvasSetting'
-// import BusbarSetting from './busbar'
-// import WireSetting from './wire'
-// import TextSetting from './text'
-// import ModeSetting from './mode'
+import BusbarSetting from './busbar'
+import WireSetting from './wire'
+import TextSetting from './text'
+import CircuitSetting from './circuit'
 
 const Panel = () => {
   const editor = useContext(EditorContext)
@@ -25,9 +26,9 @@ const Panel = () => {
   }
   useEffect(() => {
     if (!editor) return
-    // editor.app.on('selectChange', change)
+    editor.addEventListener(EditorEvent.SELECT, change)
     return () => {
-      // editor.app.off('selectChange', change)
+      editor.removeEventListener(EditorEvent.SELECT, change)
     }
   }, [editor])
 
@@ -36,10 +37,10 @@ const Panel = () => {
       return <BusbarSetting selectList={selectList} />
     } else if (selectList.every(element => element instanceof Line && element.name === '导线')) {
       return <WireSetting selectList={selectList} />
-    } else if (selectList.every(element => element instanceof Text && element.name === '文字')) {
+    } else if (selectList.every(element => element instanceof Text && element.name === '文本')) {
       return <TextSetting selectList={selectList} />
     } else if (selectList.every(element => element instanceof Img)) {
-      return <ModeSetting selectList={selectList} />
+      return <CircuitSetting selectList={selectList} />
     } else {
       return <div className="w-100% h-100% flex justify-center items-center">
         <Empty
@@ -62,8 +63,7 @@ const Panel = () => {
         </div>
       ) : (
         <div className="w-100% h-100% box-border">
-          {/* {renderComponent()} */}
-          123
+          {renderComponent()}
         </div>
       )}
     </div>

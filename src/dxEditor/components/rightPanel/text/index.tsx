@@ -3,18 +3,23 @@
  * @Author: ldx
  * @Date: 2023-12-21 15:26:11
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-24 13:54:58
+ * @LastEditTime: 2024-11-04 14:03:00
  */
 import '../index.scss'
 import { Collapse, ColorPicker, Empty, Select, Slider } from 'antd'
 import { useContext, useEffect, useState } from 'react'
 import EditorContext from '@/dxEditor/context'
-import { Text } from '@/dxCanvas'
+import { Text, TextStyleType } from '@/dxCanvas'
 // import { IFontWeight, ITextDecoration } from '@leafer-ui/interface'
 import FontSize from './fontSize'
 import NumberInput from '../components/numberInput'
+import { EditorEvent } from '@/dxEditor/event'
 
 const fontWeightOptions = [100, 200, 300, 400, 500, 600, 700, 800, 900].map(item => ({ value: item, label: item }))
+const textStyleOptions = [
+  { value: 'normal', label: '正常' },
+  { value: 'italic', label: '斜体' },
+]
 const textDecorationOptions = [
   { value: 'under', label: '下划线' },
   { value: 'delete', label: '删除线' },
@@ -23,9 +28,8 @@ const textDecorationOptions = [
 
 const fontFamilyOptions = [
   {
-    value: 'L', label: '默认字体',
+    value: 'arial', label: '默认字体',
   },
-
   {
     value: 'AlimamaDaoLiTi', label: '刀隶体',
   },
@@ -37,17 +41,6 @@ const fontFamilyOptions = [
   },
 ]
 
-enum FontWeight {
-  'thin' = 100,
-  'extra-light' = 200,
-  'light' = 300,
-  'normal' = 400,
-  'medium' = 500,
-  'semi-bold' = 600,
-  'bold' = 700,
-  'extra-bold' = 800,
-  'black' = 900
-}
 
 type Props = {
   selectList: Text[]
@@ -55,7 +48,7 @@ type Props = {
 const TextSetting: React.FC<Props> = ({ selectList }) => {
   const editor = useContext(EditorContext)
   // 颜色
-  const [color, setColor] = useState('#000')
+  const [color, setColor] = useState<string>()
   // 字体， 同 css，多个字体用逗号隔开。
   const [fontFamily, setFontFamily] = useState<string>()
   // 文字大小。
@@ -63,9 +56,9 @@ const TextSetting: React.FC<Props> = ({ selectList }) => {
   // 文字粗细。
   const [fontWeight, setFontWeight] = useState<number>()
   // 文字下划线或删除线。
-  const [textDecoration, setTextDecoration] = useState<ITextDecoration|undefined>()
+  const [textDecoration, setTextDecoration] = useState()
   // 文字是否倾斜
-  // const [italic, setItalic] = useState(false)
+  const [fontStyle, setFontStyle] = useState<string>()
   // 字间距
   const [letterSpacing, setLetterSpacing] = useState<number>()
   // 行间距
@@ -73,32 +66,33 @@ const TextSetting: React.FC<Props> = ({ selectList }) => {
 
   useEffect(() => {
     if (selectList.length === 0) return
-    const colors = selectList.map(element => element.data.sourceColor)
+    const colors = selectList.map(element => element.style.fillStyle as string)
     setColor(colors.every(color => color === colors[0]) ? colors[0] : undefined)
-    const fontFamilys = selectList.map(element => element.fontFamily || '')
+    const fontFamilys = selectList.map(element => element._style.fontFamily || '')
     setFontFamily(fontFamilys.every(fontFamily => fontFamily === fontFamilys[0]) ? fontFamilys[0] : undefined)
-    const fontSizes = selectList.map(element => element.fontSize || 12)
+    const fontSizes = selectList.map(element => element._style.fontSize || 12)
     setFontSize(fontSizes.every(fontSize => fontSize === fontSizes[0]) ? fontSizes[0] : undefined)
-    const fontWeights = selectList.map(element => typeof element.fontWeight === 'string' ? FontWeight[element.fontWeight] : element.fontWeight as number)
+    const fontWeights = selectList.map(element => element._style.fontWeight)
     setFontWeight(fontWeights.every(fontWeight => fontWeight === fontWeights[0]) ? fontWeights[0] : undefined)
-    const textDecorations = selectList.map(element => element.textDecoration || 'none')
-    setTextDecoration(textDecorations.every(textDecoration => textDecoration === textDecorations[0]) ? textDecorations[0] : undefined)
-    const letterSpacings = selectList.map(element => typeof element.letterSpacing === 'number' ? element.letterSpacing : element.letterSpacing?.value || 0)
-    setLetterSpacing(letterSpacings.every(letterSpacing => letterSpacing === letterSpacings[0]) ? letterSpacings[0] : undefined)
-    const lineHeights = selectList.map(element => typeof element.lineHeight === 'number' ? element.lineHeight : element.lineHeight?.value || 0)
-    setLineHeight(lineHeights.every(lineHeight => lineHeight === lineHeights[0]) ? lineHeights[0] : undefined)
+    const fontStyles = selectList.map(element => element._style.fontStyle)
+    setFontStyle(fontStyles.every(fontStyle => fontStyle === fontStyles[0]) ? fontStyles[0] : undefined)
+    // const textDecorations = selectList.map(element => element.textDecoration || 'none')
+    // setTextDecoration(textDecorations.every(textDecoration => textDecoration === textDecorations[0]) ? textDecorations[0] : undefined)
+    // const letterSpacings = selectList.map(element => typeof element.letterSpacing === 'number' ? element.letterSpacing : element.letterSpacing?.value || 0)
+    // setLetterSpacing(letterSpacings.every(letterSpacing => letterSpacing === letterSpacings[0]) ? letterSpacings[0] : undefined)
+    // const lineHeights = selectList.map(element => typeof element.lineHeight === 'number' ? element.lineHeight : element.lineHeight?.value || 0)
+    // setLineHeight(lineHeights.every(lineHeight => lineHeight === lineHeights[0]) ? lineHeights[0] : undefined)
   }, [selectList])
 
-  type Attr = 'fontFamily' | 'fontSize' | 'fontWeight' | 'textDecoration' | 'textAlign' | 'verticalAlign' | 'italic' | 'textOverflow' | 'letterSpacing' | 'lineHeight' | 'fill'
+  type Attr = keyof TextStyleType
   const changeAttr = (attr: Attr, value: any) => {
     selectList.forEach(item => {
-      if (item instanceof Text && item.__tag === 'Text') {
-        item[attr] = value
+      if (item instanceof Text) {
+        item.style[attr] = value
       }
     })
+    editor?.tree.render()
   }
-  console.log('color', color);
-
 
   return (
     <div className="w-100% h-100%">
@@ -121,17 +115,12 @@ const TextSetting: React.FC<Props> = ({ selectList }) => {
                     // mode={['single', 'gradient']}
                     onChange={(value) => {
                       setColor(value.toRgbString())
-                      changeAttr('fill', value.toRgbString())
-                      selectList.forEach(item => {
-                        item.data.sourceColor = value.toRgbString()
-                      })
+                      changeAttr('fillStyle', value.toRgbString())
+                     
                     }}
                     onOpenChange={(value) => {
                       if (!value) {
-                        selectList.forEach(item => {
-                          item.fill = item.data.selectColor
-                        })
-                        editor?.app.tree.emit('update')
+                        editor?.dispatchEvent(EditorEvent.UPDATE, new EditorEvent('update'))
                       }
                     }}
                   />
@@ -149,7 +138,7 @@ const TextSetting: React.FC<Props> = ({ selectList }) => {
                     onChange={(value) => {
                       setFontFamily(value)
                       changeAttr('fontFamily', value)
-                      editor?.app.tree.emit('update')
+                      editor?.dispatchEvent(EditorEvent.UPDATE, new EditorEvent('update'))
                     }}
                   />
                 </div>
@@ -161,7 +150,7 @@ const TextSetting: React.FC<Props> = ({ selectList }) => {
                     onChange={(value) => {
                       setFontSize(value)
                       changeAttr('fontSize', value)
-                      editor?.app.tree.emit('update')
+                      editor?.dispatchEvent(EditorEvent.UPDATE, new EditorEvent('update'))
                     }}
                   />
                 </div>
@@ -178,7 +167,7 @@ const TextSetting: React.FC<Props> = ({ selectList }) => {
                     onChange={(value) => {
                       setFontWeight(value)
                       changeAttr('fontWeight', value)
-                      editor?.app.tree.emit('update')
+                      editor?.dispatchEvent(EditorEvent.UPDATE, new EditorEvent('update'))
                     }}
                   />
                 </div>
@@ -190,17 +179,17 @@ const TextSetting: React.FC<Props> = ({ selectList }) => {
                     className='w-180px bg-#fff'
                     size='small'
                     placeholder='混合'
-                    value={textDecoration}
-                    options={textDecorationOptions}
+                    value={fontStyle}
+                    options={textStyleOptions}
                     onChange={(value) => {
-                      setTextDecoration(value)
-                      changeAttr('textDecoration', value)
-                      editor?.app.tree.emit('update')
+                      setFontStyle(value)
+                      changeAttr('fontStyle', value)
+                      editor?.dispatchEvent(EditorEvent.UPDATE, new EditorEvent('update'))
                     }}
                   />
                 </div>
               </div>
-              <div className='flex my-10px'>
+              {/* <div className='flex my-10px'>
                 <div className='w-60px text-12px text-#00000099 mt-2px'>字间距</div>
                 <div className='ml-14px flex items-center'>
                   <NumberInput
@@ -215,12 +204,12 @@ const TextSetting: React.FC<Props> = ({ selectList }) => {
                         type: 'percent',
                         value: value,
                       })
-                      editor?.app.tree.emit('update')
+                      // editor?.app.tree.emit('update')
                     }}
                   />
                 </div>
-              </div>
-              <div className='flex my-10px'>
+              </div> */}
+              {/* <div className='flex my-10px'>
                 <div className='w-60px text-12px text-#00000099 mt-2px'>行间距</div>
                 <div className='ml-14px flex items-center'>
                   <NumberInput
@@ -235,11 +224,11 @@ const TextSetting: React.FC<Props> = ({ selectList }) => {
                         type: 'percent',
                         value: value,
                       })
-                      editor?.app.tree.emit('update')
+                      // editor?.app.tree.emit('update')
                     }}
                   />
                 </div>
-              </div>
+              </div> */}
 
             </div>
           ),

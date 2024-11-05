@@ -194,6 +194,21 @@ abstract class Object2D extends EventDispatcher {
     }
   }
 
+  /* 基于矩阵变换 */
+	transformByMatrix(ctx: CanvasRenderingContext2D, matrix: Matrix3) {
+		const { position, rotate, scale } = matrix.decompose()
+		ctx.translate(position.x, position.y)
+		ctx.rotate(rotate)
+		ctx.scale(scale.x, scale.y)
+    return this
+	}
+
+	/* 将矩阵分解到当期对象的position, rotate, scale中 */
+	decomposeModelMatrix(m: Matrix3) {
+		m.decompose(this)
+    return this
+	}
+
   /* 绘图 */
   draw(ctx: CanvasRenderingContext2D) {
     if (!this.visible) return
@@ -202,12 +217,10 @@ abstract class Object2D extends EventDispatcher {
       if (!scene) return
       // 判断是否在视口内
       if (!scene.bounds.hit(this.bounds)) return
-      // 视图投影矩阵
-      scene.camera.transformInvert(ctx)
     }
     ctx.save()
     /*  矩阵变换 */
-    this.transform(ctx)
+    this.transformByMatrix(ctx,this.worldMatrix)
     /* 绘制图形 */
     this.drawShape(ctx)
     ctx.restore()
@@ -249,7 +262,7 @@ abstract class Object2D extends EventDispatcher {
     object.name = this.name
     object.index = this.index
     object.uuid = this.uuid
-    object.state = this.state
+    // object.state = this.state
     object.userData = JSON.parse(JSON.stringify(this.userData))
     object.style = JSON.parse(JSON.stringify(this.style))
     object.hoverStyle = JSON.parse(JSON.stringify(this.hoverStyle))

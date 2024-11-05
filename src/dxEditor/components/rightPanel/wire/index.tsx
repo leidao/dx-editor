@@ -3,15 +3,15 @@
  * @Author: ldx
  * @Date: 2023-12-21 15:26:11
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-14 10:15:15
+ * @LastEditTime: 2024-11-04 14:18:05
  */
 import { Collapse, ColorPicker, Empty, Select, Slider } from 'antd'
 import { useContext, useEffect, useState } from 'react'
 import EditorContext from '@/dxEditor/context'
-import { IStroke, IUI } from '@leafer-ui/interface'
-import { EditorEvent, EditorMoveEvent, EditorRotateEvent, EditorScaleEvent, Line } from 'leafer-editor'
 import _ from 'lodash'
 import NumberInput from '../components/numberInput'
+import { Line, StandStyleType } from '@/dxCanvas'
+import { EditorEvent } from '@/dxEditor/event'
 
 const patternOptions = [
   { value: 'solid', label: '实线' },
@@ -25,9 +25,9 @@ const Wire: React.FC<Props> = ({ selectList }) => {
   const editor = useContext(EditorContext)
 
   // 颜色
-  const [color, setColor] = useState<string>()
+  const [strokeStyle, setStrokeStyle] = useState<string>()
   // 线宽
-  const [strokeWidth, setStrokeWidth] = useState<number>()
+  const [lineWidth, setLineWidth] = useState<number>()
 
   // 样式
   const [pattern, setPattern] = useState<string>('solid')
@@ -35,27 +35,28 @@ const Wire: React.FC<Props> = ({ selectList }) => {
 
   useEffect(() => {
     if (!editor) return
-    const colors = selectList.map(element => element.stroke as string)
-    setColor(colors.every(color => color === colors[0]) ? colors[0] : undefined)
-    const strokeWidths = selectList.map(element => element.strokeWidth || 1) as number[]
-    setStrokeWidth(strokeWidths.every(strokeWidth => strokeWidth === strokeWidths[0]) ? strokeWidths[0] : undefined)
-    const dashOffsets = selectList.map(element => element.dashOffset)
-    const dashPatterns = selectList.map(element => element.dashPattern)
-    const flag1 = dashOffsets.every(dashOffset=>typeof dashOffset !== 'undefined')
-    const flag2 = dashPatterns.every(dashPattern=>dashPattern)
-    if(flag1 && flag2){
+    const colors = selectList.map(element => element.style.strokeStyle as string)
+    setStrokeStyle(colors.every(color => color === colors[0]) ? colors[0] : undefined)
+    const lineWidths = selectList.map(element => element.style.lineWidth || 1) as number[]
+    setLineWidth(lineWidths.every(lineWidth => lineWidth === lineWidths[0]) ? lineWidths[0] : undefined)
+    // const dashOffsets = selectList.map(element => element.dashOffset)
+    const lineDashs = selectList.map(element => element.style.lineDash)
+    // const flag1 = dashOffsets.every(dashOffset => typeof dashOffset !== 'undefined')
+    const flag = lineDashs.every(lineDash => lineDash)
+    if (flag) {
       setPattern('dash')
-    }else{
+    } else {
       setPattern('solid')
     }
-    
+
   }, [editor])
 
-  type Attr = 'fill' | 'stroke' | 'strokeWidth' | 'strokeAlign' | 'strokeWidthFixed' | 'dashPattern' | 'dashOffset'
+  type Attr = keyof StandStyleType
   const changeAttr = (attr: Attr, value: any) => {
     selectList.forEach(item => {
-      item[attr] = value
+      item.style[attr] = value
     })
+    editor?.tree.render()
   }
 
 
@@ -72,25 +73,19 @@ const Wire: React.FC<Props> = ({ selectList }) => {
                 <div className='ml-14px flex items-center'>
                   <ColorPicker
                     className='w-180px'
-                    value={color}
+                    value={strokeStyle}
                     size='small'
                     // allowClear
                     // showText
-                    showText={() => color ? <span>{color}</span> : <span style={{ color: '#00000040' }}>混合</span>}
+                    showText={() => strokeStyle ? <span>{strokeStyle}</span> : <span style={{ color: '#00000040' }}>混合</span>}
                     // mode={['single', 'gradient']}
                     onChange={(value) => {
-                      setColor(value.toHexString())
-                      changeAttr('stroke', value.toHexString())
-                      selectList.forEach(item => {
-                        item.data.sourceColor = value.toHexString()
-                      })
+                      setStrokeStyle(value.toHexString())
+                      changeAttr('strokeStyle', value.toHexString())
                     }}
                     onOpenChange={(value) => {
                       if (!value) {
-                        selectList.forEach(item => {
-                          item.stroke = item.data.selectColor
-                        })
-                        editor?.app.tree.emit('update')
+                        editor?.dispatchEvent(EditorEvent.UPDATE, new EditorEvent('update'))
                       }
                     }}
                   />
@@ -101,13 +96,13 @@ const Wire: React.FC<Props> = ({ selectList }) => {
                 <div className='ml-14px flex items-center'>
                   <NumberInput
                     className="w-180px"
-                    value={strokeWidth}
+                    value={lineWidth}
                     min={0.5}
                     step={1}
                     onChange={(value) => {
-                      setStrokeWidth(value)
-                      changeAttr('strokeWidth', value)
-                      editor?.app.tree.emit('update')
+                      setLineWidth(value)
+                      changeAttr('lineWidth', value)
+                      editor?.dispatchEvent(EditorEvent.UPDATE, new EditorEvent('update'))
                     }}
                   />
                 </div>
@@ -124,18 +119,18 @@ const Wire: React.FC<Props> = ({ selectList }) => {
                     onChange={(value) => {
                       setPattern(value)
                       if (value === 'solid') {
-                        changeAttr('dashPattern', undefined)
-                        changeAttr('dashOffset', 0)
+                        changeAttr('lineDash', undefined)
+                        changeAttr('lineDashOffset', 0)
                       } else {
-                        changeAttr('dashPattern', [20,10])
-                        changeAttr('dashOffset', 0)
+                        changeAttr('lineDash', [20, 10])
+                        changeAttr('lineDashOffset', 0)
                       }
-                      editor?.app.tree.emit('update')
+                      editor?.dispatchEvent(EditorEvent.UPDATE, new EditorEvent('update'))
                     }}
                   />
                 </div>
               </div>
-           
+
 
             </div>
           ),

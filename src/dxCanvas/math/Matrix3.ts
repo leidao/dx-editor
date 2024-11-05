@@ -1,3 +1,13 @@
+import { Vector2 } from "./Vector2"
+
+type TransformType = {
+	position: Vector2
+	rotate: number
+	scale: Vector2
+}
+
+const pi2 = Math.PI * 2
+
 export class Matrix3 {
   elements: number[] = [1, 0, 0, 0, 1, 0, 0, 0, 1]
   set(
@@ -293,5 +303,36 @@ export class Matrix3 {
   clone() {
     return new Matrix3().fromArray(this.elements)
   }
+
+  decompose(
+		transform: TransformType = {
+			position: new Vector2(),
+			rotate: 0,
+			scale: new Vector2(),
+		}
+	) {
+		const e = [...this.elements]
+
+		// 位移量
+		transform.position.set(e[6], e[7])
+
+		// 缩放量
+		let sx = new Vector2(e[0], e[1]).length()
+		const sy = new Vector2(e[3], e[4]).length()
+		const det = this.determinant()
+		if (det < 0) {
+			sx = -sx
+		}
+		transform.scale.set(sx, sy)
+
+		// 旋转量
+		let rotate = Math.atan2(e[1] / sx, e[0] / sx)
+		if (rotate < 0) {
+			rotate += pi2
+		}
+		transform.rotate = rotate
+
+		return transform
+	}
 }
 const _m3 = new Matrix3()

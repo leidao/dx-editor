@@ -1,3 +1,10 @@
+/*
+ * @Description: 
+ * @Author: ldx
+ * @Date: 2024-10-18 15:33:30
+ * @LastEditors: ldx
+ * @LastEditTime: 2024-11-04 10:59:47
+ */
 /** 解析svg路径为dom */
 export const loadSVG = (svgUrl: string): Promise<Document> => {
   return new Promise((resolve, reject) => {
@@ -66,3 +73,11 @@ export const getStepByZoom = (zoom: number) => {
 export const isWindows =
   navigator.platform.toLowerCase().includes('win') ||
   navigator.userAgent.includes('Windows')
+
+
+  /** 兼容了精度问题的保留小数方法 */
+export const toFixed = (num: string | number | undefined, digits: number = 2): number | string => {
+  if (!num) return ''
+  const factor = Math.pow(10, digits);
+  return Math.round(+num * factor) / factor;
+}

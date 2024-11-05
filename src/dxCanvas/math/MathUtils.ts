@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2024-10-13 19:17:31
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-18 16:17:18
+ * @LastEditTime: 2024-11-04 09:31:06
  */
 const _lut = [
   '00',
@@ -298,7 +298,7 @@ function generateUUID() {
     _lut[(d3 >> 24) & 0xff]
 
   // .toLowerCase() here flattens concatenated strings to save heap memory space.
-  return uuid.toLowerCase()
+  return 'id:'+uuid.toLowerCase()
 }
 
 function clamp(value: number, min: number, max: number) {

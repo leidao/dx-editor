@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2024-10-13 19:14:05
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-30 17:36:36
+ * @LastEditTime: 2024-11-04 17:43:11
  */
 
 
@@ -11,9 +11,10 @@ import { ChildEvent, IEventListenerId } from "../event";
 import { Vector2 } from "../math";
 import { TextStyle } from "../style";
 import { copyPrimitive, Creator } from "../utils";
-import { IObject, Object2D, Object2DType } from "./Object2D";
+import { IObject, Object2D } from "./Object2D";
+import { TextType } from "./Text";
 
-type GroupType = Object2DType & { hitChildren?: boolean }
+type GroupType = TextType & { hitChildren?: boolean }
 
 class Group extends Object2D {
   // 子集

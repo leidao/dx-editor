@@ -3,9 +3,10 @@
  * @Author: ldx
  * @Date: 2023-12-09 18:58:58
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-29 15:38:21
+ * @LastEditTime: 2024-11-04 10:21:22
  */
 // import { DragEvent, KeyEvent } from 'leafer-ui'
+import { Object2D } from '@/dxCanvas'
 import { EditorView } from '@/dxEditor'
 import { EditorEvent } from '@/dxEditor/event'
 import { produce, enablePatches, applyPatches, Patch } from "immer"
@@ -43,6 +44,7 @@ export default class HistoryManager {
   maxQueueValue = 50 // 最大存放数
   queue: Queue = {} //  存放所有的操作命令
   initialState: { [key: string]: any } = {}
+  collect = new Map<string,Object2D>()
   constructor(private editor: EditorView) {
     enablePatches()
     this.listen()
@@ -79,6 +81,19 @@ export default class HistoryManager {
       // 超出最大队列的删除
       delete this.queue[this.current - this.maxQueueValue];
       // console.log('patches', patches);
+      // patches.forEach(item => {
+      //   const { op, path, value } = item
+      //   if (op === 'remove') {
+      //     for (let i = 0; i < path.length; i++) {
+      //       const key = path[i] as string;
+      //       if (key.startsWith('id:') && path.length - 1 === i) {
+      //         const element = this.editor.tree.getObjectById(key)
+      //         if(!element) return
+      //         this.collect.set(key,element)
+      //       }
+      //     }
+      //   }
+      // })
       // console.log('inversePatches', inversePatches);
       // console.log('this.queue', this.queue);
     })
@@ -88,55 +103,77 @@ export default class HistoryManager {
 
   redo = () => {
     const cmd = this.queue[this.current + 1] // 找到当前的下一步还原操作
-    // console.log('redo=====',cmd?.redo,cmd);
+    // console.log('redo=====', cmd?.redo, cmd);
 
     if (cmd) {
+    //   cmd.redo.forEach(item => {
+    //     const { op, path, value } = item
+    //     if (op === 'replace') {
+    //       let element: any
+    //       for (let i = 0; i < path.length - 1; i++) {
+    //         const key = path[i] as string;
+    //         if (key.startsWith('id:')) {
+    //           element = this.editor.tree.getObjectById(key)
+    //         } else {
+    //           element = element[key]
+    //         }
+    //       }
+    //       element[path[path.length - 1]] = value
+    //     } else if (op === 'add') {
+    //       for (let i = 0; i < path.length; i++) {
+    //         const key = path[i] as string;
+    //         if (key.startsWith('id:') && path.length - 1 === i) {
+    //           const element = this.collect.get(key)
+    //           if(!element) return
+    //           if(path.length === 1){
+    //             this.editor.tree.add(element)
+    //           }
+    //           element.parent?.add(element)
+    //         }
+    //       }
+          
+    //     }
+    //   })
       this.initialState = produce(this.initialState, draft => {
         applyPatches(draft, cmd.redo);
       })
-      // const data = {
-      //   hitChildren: true,
-      //   tag: "Leafer",
-      //   children: _.cloneDeep(Object.values(this.initialState))
-      // }
-      // const hoverId = this.editor.selector.hoverTarget?.id
-      // this.editor.tree.set(data)
-      this.editor.exportJson(Object.values(this.initialState))
+      const children = Object.values(this.initialState)
+      this.editor.exportJson(children)
       this.current++
-      // const selectChildren = data.children.filter(item => item.data.state === 'select')
+      this.editor.selector.cancel()
+      // const selectChildren = children.filter(item => item.state === 'select')
       // if (selectChildren.length > 0) {
       //   const list = selectChildren.map(item => this.editor.tree.getObjectById(item.uuid)).filter(v => !!v)
+      //   console.log('list',list);
+        
       //   this.editor.selector.select(...list)
       // } else {
       //   this.editor.selector.cancel()
       // }
-      // this.editor.dispatchEvent('selectChange')
+      // this.editor.tree.render()
       this.editor.dispatchEvent(EditorEvent.HISTORY_CHANGE, new EditorEvent('redo'))
     }
   }
   undo = () => {
     const cmd = this.queue[this.current] // 找到上一步还原
-    // console.log('undo=====',cmd?.undo,cmd);
+    // console.log('undo=====', cmd?.undo, cmd);
     if (cmd) {
       this.initialState = produce(this.initialState, draft => {
         applyPatches(draft, cmd.undo);
       })
-      // const data = {
-      //   hitChildren: true,
-      //   tag: "Leafer",
-      //   children: _.cloneDeep(Object.values(this.initialState))
-      // }
-
-      this.editor.exportJson(Object.values(this.initialState))
+      const children = Object.values(this.initialState)
+      this.editor.exportJson(children)
       this.current--
-      // const selectChildren = data.children.filter(item => item.data.state === 'select')
+      this.editor.selector.cancel()
+      // const selectChildren = children.filter(item => item.state === 'select')
       // if (selectChildren.length > 0) {
       //   const list = selectChildren.map(item => this.editor.tree.getObjectById(item.uuid)).filter(v => !!v)
+      //   console.log('list22',list);
       //   this.editor.selector.select(...list)
       // } else {
       //   this.editor.selector.cancel()
       // }
-      // this.editor.app.emit('selectChange')
+      // this.editor.tree.render()
       this.editor.dispatchEvent(EditorEvent.HISTORY_CHANGE, new EditorEvent('undo'))
     }
   }

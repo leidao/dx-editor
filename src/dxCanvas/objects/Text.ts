@@ -1,22 +1,21 @@
-import { Matrix3, Vector2 } from '../math'
-import { BasicStyle, TextStyle, TextStyleType } from '../style'
-import { copyPrimitive, Creator } from '../utils'
-import { IObject, Object2D, Object2DType } from './Object2D'
-const chineseRegex = /[\u4e00-\u9fa5]/
+import { Matrix3, Vector2 } from '../math';
+import { BasicStyle, TextStyle, TextStyleType } from '../style';
+import { copyPrimitive, Creator } from '../utils';
+import { IObject, Object2D, Object2DType } from './Object2D';
+const chineseRegex = /[\u4e00-\u9fa5]/;
+
 /* 构造参数的类型 */
-type TextType = Object2DType & {
-  text?: string
-  maxWidth?: number | undefined
-  style?: TextStyleType
-  hoverStyle?: TextStyleType
-  selectStyle?: TextStyleType
-  offset?: [number, number]
-}
+export type TextType = Object2DType & {
+  text?: string;
+  maxWidth?: number | undefined;
+  style?: TextStyleType;
+  hoverStyle?: TextStyleType;
+  selectStyle?: TextStyleType;
+  offset?: [number, number];
+};
 
 /* 虚拟上下文对象 */
-const virtuallyCtx = document
-  .createElement('canvas')
-  .getContext('2d') as CanvasRenderingContext2D
+const virtuallyCtx = document.createElement('canvas').getContext('2d') as CanvasRenderingContext2D;
 
 /* 文字对齐方式引起的偏移量 */
 export const alignRatio = {
@@ -25,7 +24,7 @@ export const alignRatio = {
   center: -0.5,
   end: -1,
   right: -1
-}
+};
 export const baselineRatio = {
   top: 0,
   middle: -0.5,
@@ -33,43 +32,45 @@ export const baselineRatio = {
   hanging: -0.05,
   alphabetic: -0.78,
   ideographic: -1
-}
+};
 
-class Text extends Object2D {
-  private text = ''
-  maxWidth: number | undefined
-  _style: TextStyle = new TextStyle()
-  offset = new Vector2(0, 0)
-  pickingBuffer = 4
-  name = '文本'
+export class Text extends Object2D {
+  private text = '';
+  maxWidth: number | undefined;
+  _style: TextStyle = new TextStyle();
+  style: TextStyleType = {};
+  offset = new Vector2(0, 0);
+  pickingBuffer = 4;
+  name = '文本';
   /** 类型 */
-  public get tag() { return 'Text' }
+  public get tag() { return 'Text'; }
+
   constructor(attr: TextType = {}) {
-    super()
-    this.setOption(attr)
+    super();
+    this.setOption(attr);
   }
+
   /* 世界模型矩阵*偏移矩阵 */
   get worldMatrix(): Matrix3 {
-    const {
-      offset: { x, y }
-    } = this
-    return super.worldMatrix.multiply(new Matrix3().makeTranslation(x, y))
+    const { offset: { x, y } } = this;
+    return super.worldMatrix.multiply(new Matrix3().makeTranslation(x, y));
   }
+
   /** 设置文字内容 */
   setText(text: string) {
-    this.text = text
-    this.computeBoundsBox()
+    this.text = text;
+    this.computeBoundsBox();
   }
+
   /** 获取文字内容 */
   getText(): string {
-    return this.text
+    return this.text;
   }
+
   /* 视图投影矩阵*世界模型矩阵*偏移矩阵  */
   get pvmMatrix(): Matrix3 {
-    const {
-      offset: { x, y }
-    } = this
-    return super.pvmMatrix.multiply(new Matrix3().makeTranslation(x, y))
+    const { offset: { x, y } } = this;
+    return super.pvmMatrix.multiply(new Matrix3().makeTranslation(x, y));
   }
 
   /* 属性设置 */
@@ -79,46 +80,50 @@ class Text extends Object2D {
         case 'position':
         case 'scale':
         case 'offset':
-          this[key].fromArray(val)
-          break
+          this[key].fromArray(val);
+          break;
         case 'tag':
-          break
+          break;
+        case 'style':
+          this.style = val
+          this._style.setOption(val)
+          break;
         default:
-          this[key] = val
+          this[key] = val;
       }
     }
   }
 
   /* 文本尺寸 */
   get size(): Vector2 {
-    const { _style, text, maxWidth } = this
-    _style.setFont(virtuallyCtx)
+    const { _style, text, maxWidth } = this;
+    _style.setFont(virtuallyCtx);
 
-    // const width = virtuallyCtx.measureText(text).width
-    // const w = maxWidth === undefined ? width : Math.min(width, maxWidth)
-    let width = 0
-    let fontSize = _style.fontSize || 12
-    // text.split('\n').forEach((item, i) => {
-    //   let currentWidth = 0
-    //   for (let i = 0; i < item.length; i++) {
-    //     const char = item[i]
-    //     const flag = chineseRegex.test(char)
-    //     const charWidth = virtuallyCtx.measureText(char).width
-    //     currentWidth += flag ? charWidth : Number(charWidth.toFixed(2))
-    //   }
-    //   width = Math.max(currentWidth, width)
-    //   fontSize = fontSize*(i+1)
-    // })
-    for (let i = 0; i < text.length; i++) {
-      const char = text[i]
-      const flag = chineseRegex.test(char)
-      const charWidth = virtuallyCtx.measureText(char).width
-      width += flag ? charWidth : Number(charWidth.toFixed(2))
+    let width = 0;
+    let height = 0;
+    let currentLineWidth = 0;
+    let maxLineWidth = 0;
+    const fontSize = _style.fontSize || 12;
+
+    const lines = text.split('\n');
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      let lineWidth = 0;
+
+      for (let j = 0; j < line.length; j++) {
+        const char = line[j];
+        const charWidth = virtuallyCtx.measureText(char).width;
+        lineWidth += charWidth;
+      }
+
+      maxLineWidth = Math.max(maxLineWidth, lineWidth);
+      width = Math.max(width, lineWidth);
+      height += fontSize;
     }
 
-    const w = maxWidth === undefined ? width : Math.min(width, maxWidth)
+    const w = maxWidth === undefined ? maxLineWidth : Math.min(maxLineWidth, maxWidth);
 
-    return new Vector2(w, fontSize)
+    return new Vector2(w, height);
   }
 
   /* 绘图 */
@@ -128,25 +133,19 @@ class Text extends Object2D {
       offset: { x, y },
       maxWidth,
       _style
-    } = this
+    } = this;
     // 应用样式
-    this.applyStyle(ctx)
-    // const { x: scaleX, y: scaleY } = this.worldScale
-    // let textScale = Math.max(Math.abs(scaleX), Math.abs(scaleY))
+    this.applyStyle(ctx);
 
-    // const fontSize = (style.fontSize || 12) * textScale
-    // if (fontSize < 12) textScale *= 12 / fontSize
-    // const [, , , , d] = new Matrix3().copy(this.pvmMatrix).scale(1 / textScale, 1 / textScale).elements
-    // 绘图
-    // text.split('\n').forEach((item, i) => {
-    //   for (const method of style.drawOrder) {
-    //     style[`${method}Style`] && ctx[`${method}Text`](item, x, y + i * 10, maxWidth)
-    //   }
-    // })
-    for (const method of _style.drawOrder) {
-      _style[`${method}Style`] && ctx[`${method}Text`](text, x, y, maxWidth)
+    const lines = text.split('\n');
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      const lineY = y + i * (_style.fontSize || 12)+1;
+
+      for (const method of _style.drawOrder) {
+        _style[`${method}Style`] && ctx[`${method}Text`](line, x, lineY, maxWidth);
+      }
     }
-
   }
 
   /* 计算边界盒子 */
@@ -155,42 +154,53 @@ class Text extends Object2D {
       bounds: { min, max },
       size,
       offset,
-      _style: { textAlign, textBaseline },
-    } = this
+      _style: { textAlign, textBaseline,fontSize=12 }
+    } = this;
+   
+    // 根据文本对齐方式计算水平偏移
+    const horizontalOffset = size.x * alignRatio[textAlign];
+    // 根据文本基线方式计算垂直偏移
+    const verticalOffset = fontSize * baselineRatio[textBaseline];
+
     min.set(
-      offset.x + size.x * alignRatio[textAlign],
-      offset.y + size.y * baselineRatio[textBaseline]
-    )
-    max.addVectors(min, size)
-    min.applyMatrix3(this.worldMatrix)
-    max.applyMatrix3(this.worldMatrix)
-    this.bounds.expand(min.clone(),max.clone())
-    updateParentBoundsBox && this.parent?.computeBoundsBox()
+      offset.x + horizontalOffset,
+      offset.y + verticalOffset
+    );
+    max.addVectors(min, size);
+
+    // 先将包围盒的原始坐标应用世界矩阵变换
+    min.applyMatrix3(this.worldMatrix);
+    max.applyMatrix3(this.worldMatrix);
+
+    // 扩展包围盒以包含所有可能的情况（例如旋转等变换后的情况）
+    this.bounds.expand(min.clone(), max.clone());
+    updateParentBoundsBox && this.parent?.computeBoundsBox();
   }
 
   /** 点位是否在图形中 */
   isPointInGraph(point: Vector2) {
-    const isPointInBounds = this.isPointInBounds(point)
-    return isPointInBounds ? this : false
+    const isPointInBounds = this.isPointInBounds(point);
+    return isPointInBounds ? this : false;
   }
 
   toJSON() {
     const object = super.toJSON();
-    object.offset = this.offset.toArray()
-    object.text = this.text
+    object.offset = this.offset.toArray();
+    object.text = this.text;
     // object.style = JSON.parse(JSON.stringify(this.style))
-    return object
+    return object;
   }
+
   clone(): Text {
-    const data = this.toJSON()
-    return new Text(data)
+    const data = this.toJSON();
+    return new Text(data);
   }
-  one(data: IObject): Text {
-    return new Text(data)
+
+  static one(data: IObject): Text {
+    return new Text(data);
   }
+
 
 }
 
-Creator.register(Text)
-
-export { Text }
+Creator.register(Text);

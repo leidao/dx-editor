@@ -3,15 +3,13 @@
  * @Author: ldx
  * @Date: 2024-10-13 19:15:15
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-30 17:35:44
+ * @LastEditTime: 2024-11-04 17:59:33
  */
 
 
-import { Matrix3 } from "../math/Matrix3";
 import { Vector2 } from "../math/Vector2";
 import { Group } from "../objects/Group";
-import { IObject, Object2D } from "../objects/Object2D";
-import { copyPrimitive, getDprScale } from "../utils";
+import { getDprScale } from "../utils";
 import { Camera } from "./Camera";
 
 type SceneType = {
@@ -68,16 +66,17 @@ class Scene extends Group {
 
   render = () => {
     requestAnimationFrame(() => {
-      const { ctx, children, autoClear, camera } = this
+      const { ctx, children, autoClear, camera,_style } = this
       const { width, height } = this.viewPort
       this.computeBoundsBox()
       ctx.save()
       autoClear && ctx.clearRect(0, 0, width, height)
       ctx.scale(this.dpr, this.dpr);
       // 渲染子对象
-      for (let i = 0; i < children.length; i++) {
-        const obj = children[i]
+      for (let obj of children) {
         ctx.save()
+         // 视图投影矩阵
+         obj.enableCamera && camera.transformInvert(ctx)
         // 绘图
         obj.draw(ctx)
         ctx.restore()

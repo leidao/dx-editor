@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2023-12-09 10:21:06
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-31 16:06:21
+ * @LastEditTime: 2024-11-01 16:35:15
  */
 import { EditorView } from '@/dxEditor'
 import ToolBase from './toolBase'
@@ -13,7 +13,7 @@ import { IPointerEvent, Line } from '@/dxCanvas'
 import { EditorEvent, KeyEvent, PointerEvent } from '@/dxEditor/event'
 /** 绘制母线 */
 export default class ToolDrawBusbar extends ToolBase {
-  readonly  = 'm'
+  readonly = 'm'
   readonly type = 'drawBusbar'
   busbar: Line | null = null
 
@@ -38,13 +38,16 @@ export default class ToolDrawBusbar extends ToolBase {
           lineJoin: 'round',
           strokeStyle: '#008800',
         },
+        hoverStyle: {
+          strokeStyle: '#ff0000',
+        },
+        selectStyle: {
+          strokeStyle: '#ff0000',
+        },
         userData: {
           // 记录真实page点位坐标
           _points: [{ x, y }],
           _movePoints: [],
-          sourceColor: '#008800',
-          hoverColor: '#ff0000',
-          selectColor: '#ff0000',
         },
       })
       this.editor.tree.add(this.busbar)

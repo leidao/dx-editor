@@ -3,23 +3,25 @@
  * @Author: ldx
  * @Date: 2024-09-27 16:04:35
  * @LastEditors: ldx
- * @LastEditTime: 2024-11-05 11:18:39
+ * @LastEditTime: 2024-11-05 10:54:30
  */
 
 import { alignRatio, baselineRatio, IEventListenerId, IPointerEvent, Matrix3, OrbitEvent, Text } from "@/dxCanvas"
 import { PointerEvent } from "@/dxEditor/event"
 import EditTool from "../editTool/editTool"
+import { updateStyle } from "./textEditInner"
 
-export default class TextEditInner extends EditTool {
+export default class BoxEditInner extends EditTool {
 
-  public get tag() { return 'TextEditInner' }
+  public get tag() { return 'BoxEditInner' }
   editDom?: HTMLDivElement
   container?: HTMLDivElement
   textScale: number = 1
   eventIds: IEventListenerId[] = []
 
   openInnerEditor() {
-    const text = this.editor.selector.element as any as Text
+    const element = this.editor.selector.element 
+    const text = element.children[0] as Text
     text.visible = false
 
     const { left, top, width, height } = this.editor.domElement.getBoundingClientRect()
@@ -84,9 +86,12 @@ export default class TextEditInner extends EditTool {
   }
   onInput = () => {
     const { editDom } = this
-    const text = this.editor.selector.element as any as Text
+    const element = this.editor.selector.element 
+    const text = element.children[0] as Text
     text.setText(editDom!.innerText.replace(/\n\n/, '\n'))
     this.onUpdate()
+    text.computeBoundsBox(true)
+    this.editor.tree.render()
   }
 
   onFocus = () => {
@@ -97,12 +102,11 @@ export default class TextEditInner extends EditTool {
     if (e.code === 'Escape') this.editor.selector.closeInnerEditor()
   }
   onUpdate = () => {
-    const { textScale } = this
-    const { selector } = this.editor
-    const text = selector.element as any as Text
+    const element = this.editor.selector.element 
+    const text = element.children[0] as Text
     const { style } = this.editDom!
     const { x = 0, y = 0 } = this.editor.domElement.getBoundingClientRect() || {}
-
+    const { textScale } = this
     const [a, b, , c, d, , e, f] = new Matrix3().copy(text.pvmMatrix).scale(1 / textScale, 1 / textScale).elements
     let { width, height } = text.bounds
     const fontSize = text._style.fontSize||12
@@ -119,7 +123,8 @@ export default class TextEditInner extends EditTool {
   }
 
   closeInnerEditor() {
-    const text = this.editor.selector.element as any as Text
+    const element = this.editor.selector.element 
+    const text = element.children[0] as Text
     if (text) { text.visible = true; this.onInput() }
     this.editor.off(this.eventIds)
     this.editDom!.removeEventListener("focus", this.onFocus)
@@ -135,24 +140,3 @@ export default class TextEditInner extends EditTool {
   }
 }
 
-export const updateStyle = (textDom: HTMLDivElement, text: Text, textScale: number) => {
-  const { style } = textDom
-  const { fillStyle, fontSize, fontStyle, fontWeight, textAlign, fontFamily } = text._style
-
-  style.fontFamily = fontFamily
-  style.fontSize = (fontSize || 12) * textScale + 'px'
-  setFill(style, fillStyle as string)
-
-  style.fontStyle = fontStyle
-  style.fontWeight = fontWeight + ''
-  // style.padding = '5px 5px'
-  // style.textDecoration = textDecoration === 'delete' ? 'line-through' : textDecoration || ''
-  // style.textTransform = textCaseMap[text.style.textCase as ITextCase]
-
-  style.textAlign = textAlign
-}
-export const setFill = (style: CSSStyleDeclaration, fill: string) => {
-  let color: string = fill || 'black'
-  color = fill
-  style.color = color
-}

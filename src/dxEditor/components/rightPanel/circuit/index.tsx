@@ -3,19 +3,18 @@
  * @Author: ldx
  * @Date: 2023-12-21 15:26:11
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-11 16:21:53
+ * @LastEditTime: 2024-11-04 13:39:32
  */
 import { useContext, useEffect, useState } from 'react'
 import EditorContext from '@/dxEditor/context'
-import { IUI } from '@leafer-ui/interface'
-import { Image } from 'leafer-ui'
+import { Img, Object2D } from '@/dxCanvas'
 
 type Props = {
-  selectList: Image[]
+  selectList: Img[]
 }
-const ModeSetting:React.FC<Props> = () => {
+const CircuitSetting:React.FC<Props> = () => {
   const editor = useContext(EditorContext)
-  const [selectList, setSelectList] = useState<(IUI[])>([])
+  const [selectList, setSelectList] = useState<(Img[])>([])
 
 
   useEffect(() => {
@@ -32,4 +31,4 @@ const ModeSetting:React.FC<Props> = () => {
     </div>
   )
 }
-export default ModeSetting
+export default CircuitSetting

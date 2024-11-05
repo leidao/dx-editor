@@ -3,17 +3,18 @@
  * @Author: ldx
  * @Date: 2023-12-09 10:21:06
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-24 09:34:57
+ * @LastEditTime: 2024-11-05 09:22:32
  */
 import { EditorView } from '@/dxEditor'
 import ToolBase from './toolBase'
 import globalConfig from '@/dxEditor/config'
-import { PointerEvent, Box, KeyEvent } from 'leafer-ui'
 import { getClosestTimesVal } from '@/dxEditor/utils'
-import { v4 } from 'uuid'
+import { EditorEvent, KeyEvent, PointerEvent } from '@/dxEditor/event'
+import { Group, IPointerEvent, Line, Text } from '@/dxCanvas'
+import { Box } from '@/dxCanvas/objects/Box'
 export default class ToolDrawBtn extends ToolBase {
   readonly type = 'drawBtn'
-  btn: Box | null = null
+  btn: Group | null = null
 
 
   constructor(editor: EditorView) {
@@ -21,42 +22,56 @@ export default class ToolDrawBtn extends ToolBase {
   }
 
   onTap = (event: PointerEvent) => {
-    const pagePoint = this.app.getPagePoint({ x: event.x, y: event.y })
-    let x = getClosestTimesVal(pagePoint.x, globalConfig.moveSize)
-    let y = getClosestTimesVal(pagePoint.y, globalConfig.moveSize)
+    const { clientX, clientY } = event.origin as IPointerEvent
+    const worldPoint = this.editor.tree.getWorldByClient(clientX, clientY)
+    let x = getClosestTimesVal(worldPoint.x, globalConfig.moveSize)
+    let y = getClosestTimesVal(worldPoint.y, globalConfig.moveSize)
     this.btn = new Box({
-      x: x,
-      y: y,
-      fill: '#32cd79',
-      cornerRadius: 5,
+      position: [x, y],
+      cornerRadius: 6,
+      padding: [10, 10],
+      style: {
+        fillStyle: '#32cd79',
+      },
+      hoverStyle: {
+        fillStyle: '#ff0000',
+      },
+      selectStyle: {
+        fillStyle: '#ff0000',
+      },
       name: '按钮',
-      // origin: 'center', // 从中心缩放
-      hitChildren:false,
-      editable: true,
-      id:v4(),
-      children: [{
-        tag: 'Text',
-        text: 'Text',
-        fontSize: 16,
-        fontWeight: 'bold',
-        padding: [3, 13],
-        fill: '#000',
-        textAlign: 'center',
-        verticalAlign: 'middle',
-        hitChildren:false,
-        editable: false,
-      }],
-      data: {
-        sourceColor: '#32cd79',
-        hoverColor: '#ff0000',
-        selectColor: '#ff0000',
-      }
+      hitChildren: false,
     })
-    this.app.tree.add(this.btn)
+    const text = new Text({
+      // position: [x, y],
+      text: 'Text',
+      style: {
+        fontSize: 16,
+        fontWeight: 700,
+        fillStyle: '#000',
+        textAlign: 'center',
+        textBaseline: 'middle'
+      },
+      hitable: false,
+    })
+    this.btn.add(text)
+    const line = new Line({
+      position: [x, y],
+      points:[[0, 0],[50,50]],
+      style: {
+        lineWidth: 2,
+        lineCap: 'round',
+        lineJoin: 'round',
+        strokeStyle: '#aa8800',
+      },
+    })
+    // this.editor.tree.add(line)
+    this.editor.tree.add(this.btn)
+    this.editor.tree.render()
   }
 
   onKeydown = (event: KeyEvent) => {
-    const { code } = event
+    const { code } = event.origin as KeyboardEvent
     switch (code) {
       case 'Escape':
         this.editor.tool.setActiveTool('operationGraph')
@@ -68,17 +83,15 @@ export default class ToolDrawBtn extends ToolBase {
 
   active() {
     this.editor.guideline.visible = true
-    this.app.tree.hitChildren = false
-    this.editor.selector.hitChildren = false
-    this.app.on(PointerEvent.TAP, this.onTap);
-    this.app.on(KeyEvent.HOLD, this.onKeydown)
+    this.editor.selector.hittable = false
+    this.editor.addEventListener(PointerEvent.TAP, this.onTap)
+    this.editor.addEventListener(KeyEvent.HOLD, this.onKeydown)
   }
   inactive() {
     this.editor.guideline.visible = false
-    this.app.tree.hitChildren = true
-    this.editor.selector.hitChildren = true
-    this.app.off(PointerEvent.TAP, this.onTap);
-    this.app.off(KeyEvent.HOLD, this.onKeydown)
+    this.editor.selector.hittable = true
+    this.editor.removeEventListener(PointerEvent.TAP, this.onTap)
+    this.editor.removeEventListener(KeyEvent.HOLD, this.onKeydown)
   }
 }
 

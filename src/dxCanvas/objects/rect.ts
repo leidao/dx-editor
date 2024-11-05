@@ -83,6 +83,7 @@ export class Rect extends Object2D {
     min.applyMatrix3(this.worldMatrix)
     max.applyMatrix3(this.worldMatrix)
     this.bounds.expand(min.clone(),max.clone())
+    
     updateParentBoundsBox && this.parent?.computeBoundsBox()
   }
 
