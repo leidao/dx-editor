@@ -136,11 +136,24 @@ export class Text extends Object2D {
     } = this;
     // 应用样式
     this.applyStyle(ctx);
-
+    const textBaseline = _style.textBaseline
     const lines = text.split('\n');
+    let n = 0
+    switch (textBaseline) {
+      case 'top':
+        n = 0
+        break;
+      case 'bottom':
+        n = lines.length - 1
+        break;
+      default:
+        n = Math.floor(lines.length / 2)
+        break;
+    }
+
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
-      const lineY = y + i * (_style.fontSize || 12)+1;
+      const lineY = y - (n - i) * (_style.fontSize || 12) + 1;
 
       for (const method of _style.drawOrder) {
         _style[`${method}Style`] && ctx[`${method}Text`](line, x, lineY, maxWidth);
@@ -154,13 +167,13 @@ export class Text extends Object2D {
       bounds: { min, max },
       size,
       offset,
-      _style: { textAlign, textBaseline,fontSize=12 }
+      _style: { textAlign, textBaseline, fontSize = 12 }
     } = this;
-   
+
     // 根据文本对齐方式计算水平偏移
     const horizontalOffset = size.x * alignRatio[textAlign];
     // 根据文本基线方式计算垂直偏移
-    const verticalOffset = fontSize * baselineRatio[textBaseline];
+    const verticalOffset = size.y * baselineRatio[textBaseline];
 
     min.set(
       offset.x + horizontalOffset,

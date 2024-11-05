@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2024-09-27 16:04:35
  * @LastEditors: ldx
- * @LastEditTime: 2024-11-05 10:54:30
+ * @LastEditTime: 2024-11-05 13:45:52
  */
 
 import { alignRatio, baselineRatio, IEventListenerId, IPointerEvent, Matrix3, OrbitEvent, Text } from "@/dxCanvas"
@@ -20,7 +20,7 @@ export default class BoxEditInner extends EditTool {
   eventIds: IEventListenerId[] = []
 
   openInnerEditor() {
-    const element = this.editor.selector.element 
+    const element = this.editor.selector.element
     const text = element.children[0] as Text
     text.visible = false
 
@@ -86,7 +86,7 @@ export default class BoxEditInner extends EditTool {
   }
   onInput = () => {
     const { editDom } = this
-    const element = this.editor.selector.element 
+    const element = this.editor.selector.element
     const text = element.children[0] as Text
     text.setText(editDom!.innerText.replace(/\n\n/, '\n'))
     this.onUpdate()
@@ -102,19 +102,18 @@ export default class BoxEditInner extends EditTool {
     if (e.code === 'Escape') this.editor.selector.closeInnerEditor()
   }
   onUpdate = () => {
-    const element = this.editor.selector.element 
+    const element = this.editor.selector.element
     const text = element.children[0] as Text
     const { style } = this.editDom!
     const { x = 0, y = 0 } = this.editor.domElement.getBoundingClientRect() || {}
     const { textScale } = this
     const [a, b, , c, d, , e, f] = new Matrix3().copy(text.pvmMatrix).scale(1 / textScale, 1 / textScale).elements
     let { width, height } = text.bounds
-    const fontSize = text._style.fontSize||12
     width = width * textScale + 10
     height = height * textScale + 0
-    const textBaseline = text.style.textBaseline||'top'
-    const textAlign = text.style.textAlign||'start'
-    style.transform = `matrix(${a},${b},${c},${d},${e + ((width) * d) * alignRatio[textAlign]},${f + ((fontSize-0.5) * d) * baselineRatio[textBaseline]})`
+    const textBaseline = text.style.textBaseline || 'top'
+    const textAlign = text.style.textAlign || 'start'
+    style.transform = `matrix(${a},${b},${c},${d},${e + ((width) * d) * alignRatio[textAlign]},${f + ((height - 0.5) * d) * baselineRatio[textBaseline]})`
     style.left = x - window.scrollX + 'px'
     style.top = y - window.scrollY + 'px'
     style.width = width + 'px'
@@ -123,7 +122,7 @@ export default class BoxEditInner extends EditTool {
   }
 
   closeInnerEditor() {
-    const element = this.editor.selector.element 
+    const element = this.editor.selector.element
     const text = element.children[0] as Text
     if (text) { text.visible = true; this.onInput() }
     this.editor.off(this.eventIds)

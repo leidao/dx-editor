@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2023-12-09 10:21:06
  * @LastEditors: ldx
- * @LastEditTime: 2024-11-05 09:22:32
+ * @LastEditTime: 2024-11-05 13:45:13
  */
 import { EditorView } from '@/dxEditor'
 import ToolBase from './toolBase'
@@ -43,7 +43,6 @@ export default class ToolDrawBtn extends ToolBase {
       hitChildren: false,
     })
     const text = new Text({
-      // position: [x, y],
       text: 'Text',
       style: {
         fontSize: 16,
@@ -55,17 +54,6 @@ export default class ToolDrawBtn extends ToolBase {
       hitable: false,
     })
     this.btn.add(text)
-    const line = new Line({
-      position: [x, y],
-      points:[[0, 0],[50,50]],
-      style: {
-        lineWidth: 2,
-        lineCap: 'round',
-        lineJoin: 'round',
-        strokeStyle: '#aa8800',
-      },
-    })
-    // this.editor.tree.add(line)
     this.editor.tree.add(this.btn)
     this.editor.tree.render()
   }

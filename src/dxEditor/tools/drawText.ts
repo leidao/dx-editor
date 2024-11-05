@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2023-12-09 10:21:06
  * @LastEditors: ldx
- * @LastEditTime: 2024-11-05 11:04:49
+ * @LastEditTime: 2024-11-05 13:43:47
  */
 import { v4 } from 'uuid'
 import { EditorView } from '@/dxEditor'
@@ -27,7 +27,7 @@ export default class ToolDrawText extends ToolBase {
     let x = getClosestTimesVal(worldPoint.x, globalConfig.moveSize)
     let y = getClosestTimesVal(worldPoint.y, globalConfig.moveSize)
     const text = new Text({
-      position: [x, y],
+      position: [x, y-1],
       text: '',
       style: {
         fontSize: 12,

@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2023-11-15 12:21:19
  * @LastEditors: ldx
- * @LastEditTime: 2024-11-05 10:55:57
+ * @LastEditTime: 2024-11-05 13:45:21
  */
 
 import { IObject, Object2D, Object2DType } from './Object2D'
@@ -59,8 +59,6 @@ export class Box extends Group {
     this.applyStyle(ctx)
     const { width, height } = this.bounds
     const x = -width/2, y = -height/2
-    console.log('===', width, height,x,y);
-    
     ctx.beginPath();
     ctx.moveTo(x + cornerRadius, y); // 移动到左上角
     ctx.lineTo(x + width - cornerRadius, y); // 画线到右上角
