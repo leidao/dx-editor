@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2023-11-15 12:21:19
  * @LastEditors: ldx
- * @LastEditTime: 2024-11-04 16:38:50
+ * @LastEditTime: 2024-11-05 16:56:01
  */
 import { Matrix3 } from '../math/Matrix3'
 import { Vector2 } from '../math/Vector2'
@@ -11,6 +11,7 @@ import { BasicStyle, BasicStyleType } from '../style/BasicStyle'
 import { Object2D, Object2DType, IObject } from './Object2D'
 import { ImgEvent } from '../event'
 import { copyPrimitive, Creator } from '../utils'
+import { generateUUID } from '../math'
 export type ImgType = Object2DType & {
   image?: CanvasImageSource
   offset?: [number, number]
@@ -161,7 +162,8 @@ export class Img extends Object2D {
   }
   clone() {
     const data = this.toJSON()
-    return new Img(data)
+    data.uuid = generateUUID()
+    return Img.one(data)
   }
   static one(data: IObject) {
     return new Img(data)

@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2024-08-20 14:33:49
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-24 13:50:34
+ * @LastEditTime: 2024-11-06 11:05:16
  */
 
 import { useEffect, useRef, useState } from 'react'
@@ -51,6 +51,7 @@ const Home = () => {
         </div>
         <div className="flex-1 relative h-100% overflow-hidden">
           <div
+            id='dx_container'
             className="absolute left-0px w-100% h-100% bg-#fff"
             ref={container}
           >

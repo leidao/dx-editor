@@ -3,50 +3,31 @@
  * @Author: ldx
  * @Date: 2023-12-21 15:26:11
  * @LastEditors: ldx
- * @LastEditTime: 2024-11-06 09:37:09
+ * @LastEditTime: 2024-11-06 09:47:09
  */
 import '../index.scss'
 import { Collapse, ColorPicker, Empty, Select, Slider } from 'antd'
 import { useContext, useEffect, useState } from 'react'
 import EditorContext from '@/dxEditor/context'
-import { Text, TextStyleType } from '@/dxCanvas'
+import { Box, Text, TextStyleType } from '@/dxCanvas'
 // import { IFontWeight, ITextDecoration } from '@leafer-ui/interface'
-import FontSize from './fontSize'
-import NumberInput from '../components/numberInput'
+import FontSize from '../text/fontSize'
 import { EditorEvent } from '@/dxEditor/event'
+import NumberInput from '../components/numberInput'
+import { fontFamilyOptions, fontWeightOptions, textStyleOptions } from '../text'
 
-export const fontWeightOptions = [100, 200, 300, 400, 500, 600, 700, 800, 900].map(item => ({ value: item, label: item }))
-export const textStyleOptions = [
-  { value: 'normal', label: '正常' },
-  { value: 'italic', label: '斜体' },
-]
-export const textDecorationOptions = [
-  { value: 'under', label: '下划线' },
-  { value: 'delete', label: '删除线' },
-  { value: 'none', label: '默认' },
-]
 
-export const fontFamilyOptions = [
-  {
-    value: 'arial', label: '默认字体',
-  },
-  {
-    value: 'AlimamaDaoLiTi', label: '刀隶体',
-  },
-  {
-    value: 'AlimamaFangYuanTiVF', label: '方圆体',
-  },
-  {
-    value: 'bailufeiyunshouxieti', label: '白路飞云手写体',
-  },
-]
 
 
 type Props = {
-  selectList: Text[]
+  selectList: Box[]
 }
 const TextSetting: React.FC<Props> = ({ selectList }) => {
   const editor = useContext(EditorContext)
+  // 背景颜色
+  const [bgcolor, setBgColor] = useState<string>()
+  // 圆角
+  const [radius, setRadius] = useState<number>()
   // 颜色
   const [color, setColor] = useState<string>()
   // 字体， 同 css，多个字体用逗号隔开。
@@ -66,27 +47,29 @@ const TextSetting: React.FC<Props> = ({ selectList }) => {
 
   useEffect(() => {
     if (selectList.length === 0) return
-    const colors = selectList.map(element => element.style.fillStyle as string)
+    const bgColors = selectList.map(element => element.style.fillStyle as string)
+    setBgColor(bgColors.every(color => color === bgColors[0]) ? bgColors[0] : undefined)
+    const radiuss = selectList.map(element => element.cornerRadius)
+    setRadius(radiuss.every(radius => radius === radiuss[0]) ? radiuss[0] : undefined)
+
+    const child = selectList.map(element=>element.children[0]) as Text[]
+    const colors = child.map(element => element.style.fillStyle as string)
     setColor(colors.every(color => color === colors[0]) ? colors[0] : undefined)
-    const fontFamilys = selectList.map(element => element._style.fontFamily || '')
+    const fontFamilys = child.map(element => element._style.fontFamily || '')
     setFontFamily(fontFamilys.every(fontFamily => fontFamily === fontFamilys[0]) ? fontFamilys[0] : undefined)
-    const fontSizes = selectList.map(element => element._style.fontSize || 12)
+    const fontSizes = child.map(element => element._style.fontSize || 12)
     setFontSize(fontSizes.every(fontSize => fontSize === fontSizes[0]) ? fontSizes[0] : undefined)
-    const fontWeights = selectList.map(element => element._style.fontWeight)
+    const fontWeights = child.map(element => element._style.fontWeight)
     setFontWeight(fontWeights.every(fontWeight => fontWeight === fontWeights[0]) ? fontWeights[0] : undefined)
-    const fontStyles = selectList.map(element => element._style.fontStyle)
+    const fontStyles = child.map(element => element._style.fontStyle)
     setFontStyle(fontStyles.every(fontStyle => fontStyle === fontStyles[0]) ? fontStyles[0] : undefined)
-    // const textDecorations = selectList.map(element => element.textDecoration || 'none')
-    // setTextDecoration(textDecorations.every(textDecoration => textDecoration === textDecorations[0]) ? textDecorations[0] : undefined)
-    // const letterSpacings = selectList.map(element => typeof element.letterSpacing === 'number' ? element.letterSpacing : element.letterSpacing?.value || 0)
-    // setLetterSpacing(letterSpacings.every(letterSpacing => letterSpacing === letterSpacings[0]) ? letterSpacings[0] : undefined)
-    // const lineHeights = selectList.map(element => typeof element.lineHeight === 'number' ? element.lineHeight : element.lineHeight?.value || 0)
-    // setLineHeight(lineHeights.every(lineHeight => lineHeight === lineHeights[0]) ? lineHeights[0] : undefined)
+    
   }, [selectList])
 
   type Attr = keyof TextStyleType
-  const changeAttr = (attr: Attr, value: any) => {
-    selectList.forEach(item => {
+  const changeChildAttr = (attr: Attr, value: any) => {
+    const child = selectList.map(element=>element.children[0]) as Text[]
+    child.forEach(item => {
       if (item instanceof Text) {
         item.style[attr] = value
       }
@@ -96,12 +79,62 @@ const TextSetting: React.FC<Props> = ({ selectList }) => {
 
   return (
     <div className="w-100% h-100%">
-      <Collapse defaultActiveKey={['文本']} ghost expandIconPosition='end' items={[
+      <Collapse defaultActiveKey={['按钮']} ghost expandIconPosition='end' items={[
         {
-          key: '文本',
-          label: '文本',
+          key: '按钮',
+          label: '按钮',
           children: (
             <div>
+              <div className='flex mb-10px pt-10px'>
+                <div className='w-60px text-12px text-#00000099 mt-2px'>背景颜色</div>
+                <div className='ml-14px flex items-center'>
+                  <ColorPicker
+                    className='w-180px'
+                    value={bgcolor}
+                    size='small'
+                    // allowClear
+                    // showText
+                    showText={() => bgcolor ? <span>{bgcolor}</span> : <span style={{ color: '#00000040' }}>混合</span>}
+                    // mode={['single', 'gradient']}
+                    onChange={(value) => {
+                      const color = value.toHexString()
+                      setBgColor(color)
+                      selectList.forEach(item => {
+                        if (item instanceof Box) {
+                          item.style.fillStyle = color
+                        }
+                      })
+                      editor?.tree.render()
+                    }}
+                    onOpenChange={(value) => {
+                      if (!value) {
+                        editor?.dispatchEvent(EditorEvent.UPDATE, new EditorEvent('update'))
+                      }
+                    }}
+                  />
+                </div>
+              </div>
+              <div className='flex my-10px'>
+                <div className='w-60px text-12px text-#00000099 mt-2px'>圆角大小</div>
+                <div className='ml-14px flex items-center'>
+                  <NumberInput
+                    min={1}
+                    className='w-180px h-24px'
+                    size='small'
+                    value={radius}
+                    placeholder='混合'
+                    onChange={(value) => {
+                      selectList.forEach(item => {
+                        if (item instanceof Box) {
+                          item.cornerRadius = value
+                        }
+                      })
+                      editor?.tree.render()
+                      editor?.dispatchEvent(EditorEvent.UPDATE, new EditorEvent('update'))
+                    }}
+                  />
+                </div>
+              </div>
               <div className='flex mb-10px pt-10px'>
                 <div className='w-60px text-12px text-#00000099 mt-2px'>颜色</div>
                 <div className='ml-14px flex items-center'>
@@ -115,8 +148,7 @@ const TextSetting: React.FC<Props> = ({ selectList }) => {
                     // mode={['single', 'gradient']}
                     onChange={(value) => {
                       setColor(value.toHexString())
-                      changeAttr('fillStyle', value.toHexString())
-                     
+                      changeChildAttr('fillStyle', value.toHexString())
                     }}
                     onOpenChange={(value) => {
                       if (!value) {
@@ -137,7 +169,7 @@ const TextSetting: React.FC<Props> = ({ selectList }) => {
                     placeholder='混合'
                     onChange={(value) => {
                       setFontFamily(value)
-                      changeAttr('fontFamily', value)
+                      changeChildAttr('fontFamily', value)
                       editor?.dispatchEvent(EditorEvent.UPDATE, new EditorEvent('update'))
                     }}
                   />
@@ -149,7 +181,7 @@ const TextSetting: React.FC<Props> = ({ selectList }) => {
                   <FontSize value={fontSize}
                     onChange={(value) => {
                       setFontSize(value)
-                      changeAttr('fontSize', value)
+                      changeChildAttr('fontSize', value)
                       editor?.dispatchEvent(EditorEvent.UPDATE, new EditorEvent('update'))
                     }}
                   />
@@ -166,7 +198,7 @@ const TextSetting: React.FC<Props> = ({ selectList }) => {
                     placeholder='混合'
                     onChange={(value) => {
                       setFontWeight(value)
-                      changeAttr('fontWeight', value)
+                      changeChildAttr('fontWeight', value)
                       editor?.dispatchEvent(EditorEvent.UPDATE, new EditorEvent('update'))
                     }}
                   />
@@ -183,7 +215,7 @@ const TextSetting: React.FC<Props> = ({ selectList }) => {
                     options={textStyleOptions}
                     onChange={(value) => {
                       setFontStyle(value)
-                      changeAttr('fontStyle', value)
+                      changeChildAttr('fontStyle', value)
                       editor?.dispatchEvent(EditorEvent.UPDATE, new EditorEvent('update'))
                     }}
                   />
@@ -200,7 +232,7 @@ const TextSetting: React.FC<Props> = ({ selectList }) => {
                     placeholder='混合'
                     onChange={(value) => {
                       setLetterSpacing(value)
-                      changeAttr('letterSpacing', {
+                      changeChildAttr('letterSpacing', {
                         type: 'percent',
                         value: value,
                       })
@@ -220,7 +252,7 @@ const TextSetting: React.FC<Props> = ({ selectList }) => {
                     placeholder='混合'
                     onChange={(value) => {
                       setLineHeight(value)
-                      changeAttr('lineHeight', {
+                      changeChildAttr('lineHeight', {
                         type: 'percent',
                         value: value,
                       })

@@ -3,31 +3,27 @@
  * @Author: ldx
  * @Date: 2024-08-28 14:10:14
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-31 13:54:02
+ * @LastEditTime: 2024-11-06 14:36:28
  */
-import { EditorView } from '..'
-import { Object2D, OrbitEvent } from '../../dxCanvas'
+import { IObject, Object2D, Scene, StandStyle, StandStyleType } from '@/dxCanvas'
 import globalConfig from '../config'
 import { getClosestTimesVal, getStepByZoom } from '../utils'
 export class Grid extends Object2D {
-  tag = 'Grid'
   name = '网格'
   hittable = false
   editable = false
   index = -Infinity
   enableCamera = false
-
-  // constructor(private editor: EditorView) {
-  //   super()
-  // }
-
+  style: StandStyleType = {}
+  _style: StandStyle = new StandStyle()
+  get tag() { return 'Grid' }
   drawShape = (ctx: CanvasRenderingContext2D) => {
-    this.drawXLine(ctx)
-    this.drawYLine(ctx)
-  }
-  drawXLine(ctx: CanvasRenderingContext2D) {
     const scene = this.getScene()
     if (!scene) return
+    this.drawXLine(ctx, scene)
+    this.drawYLine(ctx, scene)
+  }
+  drawXLine(ctx: CanvasRenderingContext2D, scene: Scene) {
     const { viewportWidth, viewportHeight } = scene.viewPort
     const zoom = scene.camera.zoom
     const stepInScene = getStepByZoom(zoom)
@@ -39,6 +35,7 @@ export class Grid extends Object2D {
     while (startX % globalConfig.gridSize) {
       startX -= stepInScene
     }
+    // startX -= stepInScene
     // console.log('drawXLine', startX, endX, stepInScene,globalConfig.gridSize);
     ctx.save()
     while (startX <= endX) {
@@ -54,9 +51,7 @@ export class Grid extends Object2D {
     }
     ctx.restore()
   }
-  drawYLine(ctx: CanvasRenderingContext2D) {
-    const scene = this.getScene()
-    if (!scene) return
+  drawYLine(ctx: CanvasRenderingContext2D, scene: Scene) {
     const { viewportWidth, viewportHeight } = scene.viewPort
     const zoom = scene.camera.zoom
     const stepInScene = getStepByZoom(zoom)
@@ -68,6 +63,7 @@ export class Grid extends Object2D {
     while (startY % globalConfig.gridSize) {
       startY -= stepInScene
     }
+    // startY -= stepInScene
     // console.log('startY', endY);
     ctx.save()
     while (startY <= endY) {

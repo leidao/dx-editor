@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2024-09-27 16:04:35
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-31 17:12:32
+ * @LastEditTime: 2024-11-06 15:36:04
  */
 
 import { EditToolCreator, registerEditTool, } from "./EditToolCreator"
@@ -54,15 +54,19 @@ export default class EditTool {
     // this.moveData.y = moveY
     this.editor.selector.downData = origin
     // console.log('moveX, moveY',moveX, moveY);
-
-
     const coord = this.editor.tree.getWorldLenByPage(moveX, moveY)
-    event.target?.position.add(coord)
-    event.target?.computeBoundsBox(true)
-  
+
+    list.forEach(element => {
+      element.position.add(coord)
+      element.computeBoundsBox(true)
+    })
+    return true
   }
-  onDragEnd(event: DragEvent){
-    event.target?.computeBoundsBox()
+  onDragEnd(event: DragEvent) {
+    const { list } = this.editor.selector
+    list.forEach(element => {
+      element.computeBoundsBox(true)
+    })
   }
   onHoverEnter(event: EditorEvent) {
     const element = event.target as Object2D

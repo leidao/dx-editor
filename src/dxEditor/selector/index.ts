@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2024-09-27 16:04:35
  * @LastEditors: ldx
- * @LastEditTime: 2024-11-05 10:39:21
+ * @LastEditTime: 2024-11-06 14:33:03
  */
 import { EditorView } from "../index"
 import { getClosestTimesVal } from "../utils"
@@ -241,7 +241,6 @@ export default class Selector {
       this.list.forEach(element => {
         const tag = element.editOuter as string
         const editTool = this.editToolList[tag] = this.editToolList[tag] || EditToolCreator.get(tag, this.editor)
-        event.target = element
         editTool?.onDragStart && editTool.onDragStart(event)
       })
     } else {
@@ -257,7 +256,6 @@ export default class Selector {
       this.list.forEach(element => {
         const tag = element.editOuter as string
         const editTool = this.editToolList[tag] = this.editToolList[tag] || EditToolCreator.get(tag, this.editor)
-        event.target = element
         editTool?.onDrag && editTool.onDrag(event)
       })
       this.editor.dispatchEvent(EditorEvent.DRAG,new EditorEvent('drag',{target:this.list}))
@@ -275,7 +273,6 @@ export default class Selector {
       this.list.forEach(element => {
         const tag = element.editOuter as string
         const editTool = this.editToolList[tag] = this.editToolList[tag] || EditToolCreator.get(tag, this.editor)
-        event.target = element
         editTool?.onDragEnd && editTool.onDragEnd(event)
       })
       this.editor.dispatchEvent(EditorEvent.UPDATE, new EditorEvent('update', { target: this.list }))
@@ -319,6 +316,7 @@ export default class Selector {
         this.editing = false
         editTool.closeInnerEditor()
         this.editor.dispatchEvent(EditorEvent.CLOSEINNEREDIT, new EditorEvent('closeInnerEdit', { target: editTarget as Object2D }))
+        this.editor.dispatchEvent(EditorEvent.UPDATE, new EditorEvent('update'))
       }
     }
   }

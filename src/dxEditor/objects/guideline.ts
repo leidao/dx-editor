@@ -1,95 +1,70 @@
 /*
- * @Description: 辅助线
+ * @Description: 网格
  * @Author: ldx
  * @Date: 2024-08-28 14:10:14
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-29 16:53:54
+ * @LastEditTime: 2024-11-05 16:14:49
  */
-import { Group, Line, Object2D, OrbitEvent } from '@/dxCanvas';
+import { IObject, Object2D, Object2DType, StandStyle, StandStyleType, Vector2 } from '@/dxCanvas'
 import globalConfig from '../config'
-import { getClosestTimesVal } from '../utils';
-import _ from 'lodash';
-import { EditorView } from '@/dxEditor';
-import { PointerEvent } from '@/dxEditor/event'
-import { IPointerEvent } from '@/dxCanvas/event';
+import { getClosestTimesVal, getStepByZoom } from '../utils'
 
+export type GuidelineType = Object2DType & {
+  style?: StandStyleType
+  coord?:[number,number]
+}
 
-export class Guideline {
-  xLine!: Line
-  yLine!: Line
-  lineColor = '#f00'
-  private _visible = false
-  get visible(): boolean {
-    return this._visible && globalConfig.helpLineVisible
+export class Guideline extends Object2D {
+  name = '辅助线'
+  hittable = false
+  editable = false
+  index = Infinity
+  enableCamera = false
+  get tag() { return 'Guideline' }
+  _style: StandStyle = new StandStyle()
+  style: StandStyleType = {}
+  coord = new Vector2()
+  constructor(attr: GuidelineType = {}) {
+    super()
+    this.setOption(attr)
   }
-  set visible(visible: boolean) {
-    this._visible = visible
-    this.xLine.visible = this.visible
-    this.yLine.visible = this.visible
-    if (!this.visible) {
-      this.xLine.y = 0
-      this.yLine.x = 0
+
+  /* 属性设置 */
+  setOption(attr: GuidelineType) {
+    for (const [key, val] of Object.entries(attr)) {
+      switch (key) {
+        case 'position':
+        case 'scale':
+        case 'coord':
+          this[key].fromArray(val)
+          break
+        case 'tag':
+          break
+        default:
+          this[key] = val
+      }
     }
-    this.editor.sky.render()
-  }
-  constructor(public editor: EditorView) {
-    this.xLine = new Line({
-      enableCamera: false,
-      style: {
-        lineWidth: 1,
-        strokeStyle: globalConfig.helpLineColor,
-        lineDash: [5, 5],
-      },
-      points: [[0, 0], [editor.domElement.clientWidth, 0]],
-      visible: this.visible,
-      index: Infinity
-    })
-    this.yLine = new Line({
-      enableCamera: false,
-      style: {
-        lineWidth: 1,
-        strokeStyle: globalConfig.helpLineColor,
-        lineDash: [5, 5],
-      },
-      points: [[0, 0], [0, editor.domElement.clientHeight]],
-      visible: this.visible,
-      index: Infinity
-    })
-    this.editor.sky.add(this.xLine)
-    this.editor.sky.add(this.yLine)
-    this.listen()
-
   }
 
-  drawShape = (event: PointerEvent | OrbitEvent) => {
-    if (!this.visible) return
-    if (event instanceof PointerEvent || event.type === 'wheel' ) {
-      const origin = event.origin as IPointerEvent
-      const worldPoint = this.editor.sky.getWorldByClient(origin.clientX, origin.clientY)
-      let x = getClosestTimesVal(worldPoint.x, globalConfig.moveSize)
-      let y = getClosestTimesVal(worldPoint.y, globalConfig.moveSize)
-      const pagePoint = this.editor.sky.getPageByWorld(x,y)
-      this.xLine.position.y = pagePoint.y <= 20 ? 20 : pagePoint.y
-      this.yLine.position.x = pagePoint.x <= 20 ? 20 : pagePoint.x
-    } else if (event instanceof OrbitEvent) {
-      const origin = event.origin as IPointerEvent
-      if(!origin || event.type === 'wheel') return
-      this.xLine.position.y = (this.xLine.position.y || 0) + origin.clientY
-      this.yLine.position.x = (this.yLine.position.x || 0) + origin.clientX
-    }
-    this.editor.sky.render()
+  drawShape = (ctx: CanvasRenderingContext2D) => {
+    const scene = this.getScene()
+    if(!scene) return
+    if(!globalConfig.guidelineVisible) return
+    const { viewportWidth, viewportHeight } = scene.viewPort
+    // 应用样式
+    this.applyStyle(ctx)
+    const { coord } = this
+  
+    ctx.beginPath();
+    ctx.moveTo(0, coord.y);
+    ctx.lineTo(viewportWidth, coord.y);
+    ctx.stroke()
+    ctx.closePath()
+    ctx.beginPath();
+    ctx.moveTo(coord.x,0);
+    ctx.lineTo(coord.x, viewportHeight);
+    ctx.stroke()
+    ctx.closePath(); 
   }
-
-  listen() {
-    this.editor.addEventListener(PointerEvent.MOVE, this.drawShape)
-    this.editor.orbitControler.addEventListener(OrbitEvent.CHANGE, this.drawShape)
-  }
-  destroy() {
-    this.editor.removeEventListener(PointerEvent.MOVE, this.drawShape)
-    this.editor.orbitControler.removeEventListener(OrbitEvent.CHANGE, this.drawShape)
-  }
-
-
-
 
 }

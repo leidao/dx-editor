@@ -4,16 +4,16 @@
  * @Author: ldx
  * @Date: 2024-08-20 14:50:58
  * @LastEditors: ldx
- * @LastEditTime: 2024-11-04 14:04:07
+ * @LastEditTime: 2024-11-06 15:24:58
  */
 
 
 import _ from 'lodash'
 import globalConfig from './config'
 import { loadSVG, getClosestTimesVal, toURL } from './utils'
-import { OrbitEvent, OrbitControler, Vector2, Img, Camera, Scene, IObject, Group, Ellipse } from '@/dxCanvas'
+import { OrbitEvent, OrbitControler, Vector2, Img, Camera, Scene, IObject, Group, Ellipse, Rect } from '@/dxCanvas'
 import { Ruler, Grid, Guideline } from './objects'
-import { EventDispatcher } from '@/dxCanvas/event'
+import { EventDispatcher, IPointerEvent } from '@/dxCanvas/event'
 import Selector from './selector'
 import { MyPointerEvent, MyDragEvent, KeyEvent, EditorEvent } from './event'
 import ToolManager from './tools/toolManager'
@@ -21,6 +21,8 @@ import KeybordManger, { getkeyName } from './keybord/keybordManger'
 import HistoryManager from './history/historyManager'
 import CursorManger from './cursor/cursorManager'
 import { Creator } from '@/dxCanvas/utils'
+import data from './data.json'
+
 type Option = {
   container: HTMLDivElement
 }
@@ -36,9 +38,17 @@ export class EditorView extends EventDispatcher {
   sky!: Scene
   /** 控制器 */
   orbitControler!: OrbitControler
-  guideline!: Guideline
-  ruler!: Ruler
-  grid!: Grid
+  guideline = new Guideline({
+    visible: false,
+    style: {
+      lineWidth: 1,
+      strokeStyle: globalConfig.guidelineColor,
+      lineDash: [5, 5],
+    }
+  })
+  grid = new Grid()
+  ruler = new Ruler()
+  maskGroup = new Group({ name: '遮罩', index: Infinity, enableCamera: false, style: { globalAlpha: 0.6 } })
   /**  */
   selector = new Selector(this)
   downing: boolean = false
@@ -55,7 +65,7 @@ export class EditorView extends EventDispatcher {
   history = new HistoryManager(this)
   cursor = new CursorManger(this)
   pastetype = ''
-  pasteData = new Group({ name: '粘贴组', style: { globalAlpha: 0.3 } })
+  pasteData = new Group({ name: '粘贴组', hitBounds: false, style: { globalAlpha: 0.3 } })
   constructor(option: Option) {
     super()
     if (!option.container) return
@@ -65,20 +75,22 @@ export class EditorView extends EventDispatcher {
     this.ground = new Scene({ container: this.domElement, camera: this.camera })
     this.tree = new Scene({ container: this.domElement, camera: this.camera })
     this.sky = new Scene({ container: this.domElement, camera: this.camera })
-    this.grid = new Grid()
-    this.ground.add(this.grid)
     // 控制器相关
     this.orbitControler = new OrbitControler(this.tree)
     this.orbitControler.maxZoom = 50
     this.orbitControler.minZoom = 0.3
-    this.orbitControler.addEventListener(OrbitEvent.CHANGE, () => {
-      this.render()
-    })
-    this.listen()
-    this.guideline = new Guideline(this)
-    this.ruler = new Ruler(this)
 
+    this.ground.add(this.grid)
+    this.sky.add(this.ruler)
+    this.sky.add(this.maskGroup)
+    this.sky.add(this.guideline)
+
+    this.exportJson(data.children)
+    this.keybord.hotkeys.showAll()
     this.render()
+
+    this.listen()
+
   }
   render = () => {
     requestAnimationFrame(() => {
@@ -265,7 +277,7 @@ export class EditorView extends EventDispatcher {
         selectStyle: {
           src: hoverSrc
         },
-        userData:{
+        userData: {
           ellipseData: data
         }
       })
@@ -281,6 +293,38 @@ export class EditorView extends EventDispatcher {
     this.tree.render()
   }
 
+  /** 选中图形的遮罩 */
+  private drawMask() {
+    this.maskGroup.clear()
+    const list = this.selector.list || []
+    for (let i = 0; i < list.length; i++) {
+      const element = list[i];
+      const { minX, minY, width, height } = element.bounds
+      const { x, y } = this.sky.getPageByWorld(minX, minY)
+      const { x: w, y: h } = this.sky.getPageLenByWorld(width, height)
+      const rectX = new Rect({
+        width: w,
+        height: 20,
+        style: {
+          fillStyle: globalConfig.rulerMaskColor,
+        },
+        position: [x, 0],
+        index: 20
+      })
+      this.maskGroup.add(rectX)
+      const rectY = new Rect({
+        width: 20,
+        height: h,
+        style: {
+          fillStyle: globalConfig.rulerMaskColor,
+        },
+        position: [0, y],
+        index: 20
+      })
+      this.maskGroup.add(rectY)
+    }
+  }
+
   listen() {
     /* 滑动滚轮缩放 */
     this.domElement.addEventListener('wheel', this.onWheel, { passive: false })
@@ -290,6 +334,45 @@ export class EditorView extends EventDispatcher {
     window.addEventListener('contextmenu', this.onContextMenu)
     window.addEventListener('keydown', this.onKeyDown)
     window.addEventListener('keyup', this.onKeyUp)
+
+    this.addEventListener(MyPointerEvent.MOVE, (event) => {
+      if (!globalConfig.guidelineVisible || !this.guideline.visible) return
+      const origin = event.origin as IPointerEvent
+      const worldPoint = this.sky.getWorldByClient(origin.clientX, origin.clientY)
+      let x = getClosestTimesVal(worldPoint.x, globalConfig.moveSize)
+      let y = getClosestTimesVal(worldPoint.y, globalConfig.moveSize)
+      const pagePoint = this.sky.getPageByWorld(x, y)
+      let pageX = pagePoint.x, pageY = pagePoint.y
+      if (pagePoint.x <= 20) pageX = 20
+      if (pagePoint.x >= this.sky.viewPort.viewportWidth) pageX = this.sky.viewPort.viewportWidth
+      if (pagePoint.y <= 20) pageY = 20
+      if (pagePoint.y >= this.sky.viewPort.viewportHeight) pageX = this.sky.viewPort.viewportHeight
+      this.guideline.coord.set(pageX, pageY)
+      this.sky.render()
+    })
+
+    this.orbitControler.addEventListener(OrbitEvent.CHANGE, (event) => {
+      const origin = event.origin as IPointerEvent
+      if (origin && event.type === 'wheel') {
+        this.guideline.coord.y += origin.clientY
+        this.guideline.coord.x += origin.clientX
+      }
+      this.drawMask()
+      this.render()
+    })
+
+    this.addEventListener(EditorEvent.SELECT, () => {
+      this.drawMask()
+      this.sky.render()
+    })
+    this.addEventListener(EditorEvent.DRAG, () => {
+      this.drawMask()
+      this.sky.render()
+    })
+    this.addEventListener(EditorEvent.HISTORY_CHANGE, () => {
+      this.drawMask()
+      this.sky.render()
+    })
   }
 
   destroy() {
@@ -306,6 +389,9 @@ export class EditorView extends EventDispatcher {
     this.sky.destroy()
     this.guideline.destroy()
     this.ruler.destroy()
+
+    this.removeAllListeners()
+    this.orbitControler.removeAllListeners()
   }
 
 

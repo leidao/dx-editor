@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2024-09-29 10:27:51
  * @LastEditors: ldx
- * @LastEditTime: 2024-09-30 14:10:11
+ * @LastEditTime: 2024-11-06 13:59:11
  */
 
 export enum MoveType {
@@ -34,9 +34,9 @@ class GlobalConfig {
   rulerMaskColor = '#e2ebff'
 
   /** 辅助线颜色 */
-  helpLineColor = '#ff0000'
+  guidelineColor = '#ff0000'
   /** 显示辅助线 */
-  helpLineVisible = true
+  guidelineVisible = true
 
   
 }

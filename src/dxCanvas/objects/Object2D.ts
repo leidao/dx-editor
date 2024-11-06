@@ -20,6 +20,7 @@ export type Object2DType = {
   parent?: Scene | Group | undefined
   enableCamera?: boolean
   userData?: { [key: string]: any }
+  hitBounds?: boolean
   hittable?: boolean
   editable?: boolean
   style?: BasicStyleType
@@ -53,6 +54,8 @@ abstract class Object2D extends EventDispatcher {
   abstract name: string
   // 边界盒子
   bounds = new Bounds()
+  /** 是否进行包围盒判断 */
+  hitBounds = true
   /** 元素是否响应交互事件，默认为 true */
   hittable = true
   /** editable 元素才能被选中 */
@@ -129,7 +132,14 @@ abstract class Object2D extends EventDispatcher {
   get isEnableCamera() {
     const { parent } = this
     if (!this.enableCamera) return false
-    if (!parent?.enableCamera) return false
+    if (!parent?.isEnableCamera) return false
+    return this.enableCamera
+  }
+
+  get isHitBounds() {
+    const { parent } = this
+    if (!this.hitBounds) return false
+    if (!parent?.isHitBounds) return false
     return this.enableCamera
   }
 
@@ -212,7 +222,7 @@ abstract class Object2D extends EventDispatcher {
   /* 绘图 */
   draw(ctx: CanvasRenderingContext2D) {
     if (!this.visible) return
-    if (this.isEnableCamera) {
+    if (this.isEnableCamera && this.isHitBounds) {
       const scene = this.getScene()
       if (!scene) return
       // 判断是否在视口内
@@ -220,7 +230,8 @@ abstract class Object2D extends EventDispatcher {
     }
     ctx.save()
     /*  矩阵变换 */
-    this.transformByMatrix(ctx,this.worldMatrix)
+    // this.transformByMatrix(ctx,this.worldMatrix)
+    this.transform(ctx)
     /* 绘制图形 */
     this.drawShape(ctx)
     ctx.restore()
@@ -275,9 +286,6 @@ abstract class Object2D extends EventDispatcher {
     if (!this.enableBoundsBoxOptimize) object.enableBoundsBoxOptimize = this.enableBoundsBoxOptimize
     return object
   }
-
-  /** 克隆 */
-  abstract clone(): Object2D
 
   destroy() {
     // 移除所有事件监听器

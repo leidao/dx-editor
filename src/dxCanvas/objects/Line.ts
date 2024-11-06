@@ -3,8 +3,9 @@
  * @Author: ldx
  * @Date: 2023-11-15 12:21:19
  * @LastEditors: ldx
- * @LastEditTime: 2024-11-04 16:38:36
+ * @LastEditTime: 2024-11-06 13:51:23
  */
+import { generateUUID } from '../math'
 import { Vector2 } from '../math/Vector2'
 import { StandStyle, StandStyleType } from '../style/StandStyle'
 import { copyPrimitive, Creator } from '../utils'
@@ -20,11 +21,11 @@ export type LineType = Object2DType & {
 }
 
 export class Line extends Object2D {
-  _style: StandStyle = new StandStyle()
   /** 图层拾取缓存机制，如 1px 宽度的线鼠标很难拾取(点击)到, 通过设置该参数可扩大拾取的范围 */
   pickingBuffer = 4
   name = '线段'
   style: StandStyleType = {}
+  _style: StandStyle = new StandStyle()
   private points: [number, number][] = []
   /** 类型 */
   public get tag() { return 'Line' }
@@ -136,7 +137,8 @@ export class Line extends Object2D {
   }
   clone(): Line {
     const data = this.toJSON()
-    return new Line(data)
+    data.uuid = generateUUID()
+    return Line.one(data)
   }
   static one(data: IObject): Line {
     return new Line(data)

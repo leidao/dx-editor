@@ -3,12 +3,12 @@
  * @Author: ldx
  * @Date: 2024-10-13 19:14:05
  * @LastEditors: ldx
- * @LastEditTime: 2024-11-04 17:43:11
+ * @LastEditTime: 2024-11-06 09:18:51
  */
 
 
 import { ChildEvent, IEventListenerId } from "../event";
-import { Vector2 } from "../math";
+import { generateUUID, Vector2 } from "../math";
 import { TextStyle } from "../style";
 import { copyPrimitive, Creator } from "../utils";
 import { IObject, Object2D } from "./Object2D";
@@ -37,7 +37,7 @@ class Group extends Object2D {
       if (obj === this) {
         return this
       }
-      obj.parent && obj.remove()
+      obj.parent && obj.parent.remove(obj)
       obj.parent = this
       this.children.push(obj)
       obj.computeBoundsBox()
@@ -184,13 +184,18 @@ class Group extends Object2D {
   }
   clone(): Group {
     const data = this.toJSON()
-    return Group.one(data)
+    data.uuid = generateUUID()
+    data.children = this.children.map(item => item.clone())
+    const group = new Group(data)
+    group.children = []
+    group.add(...data.children)
+    return group
   }
   static one(data: IObject): Group {
-    return new Group({
-      ...data,
-      children: data.children.map((item: IObject) => Creator.get(item.tag).one(item))
-    })
+    const group = new Group(data)
+    group.children = []
+    group.add(...data.children.map((item: IObject) => Creator.get(item.tag).one(item)))
+    return group
   }
 
 

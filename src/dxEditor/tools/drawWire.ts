@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2023-12-09 10:21:06
  * @LastEditors: ldx
- * @LastEditTime: 2024-11-01 10:04:42
+ * @LastEditTime: 2024-11-05 17:44:58
  */
 import { EditorView } from '@/dxEditor'
 import ToolBase from './toolBase'
@@ -177,6 +177,7 @@ export default class ToolDrawWire extends ToolBase {
     this.editor.selector.hittable = false
     this.editor.guideline.visible = true
     this.editor.sky.add(this.ellipse)
+    this.editor.sky.render()
     this.editor.addEventListener(PointerEvent.TAP, this.onTap)
     this.editor.addEventListener(PointerEvent.MOVE, this.onMove)
     this.editor.addEventListener(KeyEvent.HOLD, this.onKeydown)
@@ -190,6 +191,7 @@ export default class ToolDrawWire extends ToolBase {
     this.editor.sky.remove(this.ellipse)
     this.editor.selector.hittable = true
     this.editor.guideline.visible = false
+    this.editor.sky.render()
     this.editor.removeEventListener(PointerEvent.TAP, this.onTap)
     this.editor.removeEventListener(PointerEvent.MOVE, this.onMove)
     this.editor.removeEventListener(KeyEvent.HOLD, this.onKeydown)

@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2023-12-21 11:13:40
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-31 09:43:33
+ * @LastEditTime: 2024-11-05 16:15:39
  */
 import globalConfig from '@/dxEditor/config'
 import { Button, Divider, Dropdown, MenuProps, Popover, Tooltip } from 'antd'
@@ -39,6 +39,7 @@ const View = () => {
         isShow: () => editor.ruler.visible,
         action: () => {
           editor.ruler.visible = !editor.ruler.visible
+          editor.sky.render()
         }
       },
 
@@ -54,9 +55,9 @@ const View = () => {
       {
         name: '十字光标',
         icon: CheckOutlined,
-        isShow: () => globalConfig.helpLineVisible,
+        isShow: () => globalConfig.guidelineVisible,
         action: () => {
-          globalConfig.helpLineVisible = !globalConfig.helpLineVisible
+          globalConfig.guidelineVisible = !globalConfig.guidelineVisible
           editor.sky.render()
         }
       },

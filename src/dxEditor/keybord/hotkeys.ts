@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2024-08-27 15:19:15
  * @LastEditors: ldx
- * @LastEditTime: 2024-11-04 17:34:12
+ * @LastEditTime: 2024-11-05 17:30:52
  */
 import { generateUUID, Vector2 } from "@/dxCanvas";
 import { EditorView } from "@/dxEditor";
@@ -35,7 +35,7 @@ export default class Hotkeys {
     if (list.length === 0) return
     list.forEach(element => {
       const copyElement = element.clone()
-      copyElement.uuid = generateUUID()
+      // console.log('copyElement',copyElement,element);
       this.editor.pasteData.add(copyElement)
     })
     this.editor.dispatchEvent(EditorEvent.PASTE_CHANGE,new EditorEvent('copy'))
@@ -46,9 +46,6 @@ export default class Hotkeys {
     if (list.length === 0) return
     list.forEach(element => {
       this.editor.pasteData.add(element)
-      // const copyElement = element.clone()
-      // copyElement.uuid = generateUUID()
-      // this.editor.pasteData.add(copyElement)
     })
     this.editor.tree.render()
     this.editor.dispatchEvent(EditorEvent.PASTE_CHANGE,new EditorEvent('shear'))

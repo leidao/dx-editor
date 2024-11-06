@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2023-12-09 10:21:06
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-31 16:24:28
+ * @LastEditTime: 2024-11-05 16:21:13
  */
 
 import { EditorView } from '@/dxEditor'
@@ -117,6 +117,7 @@ export default class ToolAddPic extends ToolBase {
     })
     this.editor.selector.hittable = false
     this.editor.guideline.visible = true
+    this.editor.sky.render()
     this.editor.addEventListener(PointerEvent.TAP, this.onTap)
     this.editor.addEventListener(PointerEvent.MOVE, this.onMove)
     this.editor.addEventListener(KeyEvent.HOLD, this.onKeydown)
@@ -124,6 +125,7 @@ export default class ToolAddPic extends ToolBase {
   inactive() {
     this.editor.selector.hittable = true
     this.editor.guideline.visible = false
+    this.editor.sky.render()
     this.editor.removeEventListener(PointerEvent.TAP, this.onTap)
     this.editor.removeEventListener(PointerEvent.MOVE, this.onMove)
     this.editor.removeEventListener(KeyEvent.HOLD, this.onKeydown)

@@ -3,13 +3,13 @@
  * @Author: ldx
  * @Date: 2023-11-15 12:21:19
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-31 14:17:56
+ * @LastEditTime: 2024-11-06 09:41:04
  */
 
 import { IObject, Object2D, Object2DType } from './Object2D'
 import { Line, LineType } from './Line'
-import { StandStyle, StandStyleType } from '../style'
-import { Vector2 } from '../math'
+import { BasicStyleType, StandStyle, StandStyleType } from '../style'
+import { generateUUID, Vector2 } from '../math'
 import { Creator } from '../utils'
 
 export type RectType = Object2DType & {
@@ -26,6 +26,7 @@ export class Rect extends Object2D {
   width = 0
   height = 0
   _style: StandStyle = new StandStyle()
+  style: StandStyleType = {}
   public get tag() { return 'Rect' }
   constructor(attr: LineType = {}) {
     super()
@@ -82,13 +83,13 @@ export class Rect extends Object2D {
     max.set(width > 0 ? width : 0, height > 0 ? height : 0)
     min.applyMatrix3(this.worldMatrix)
     max.applyMatrix3(this.worldMatrix)
-    this.bounds.expand(min.clone(),max.clone())
-    
+    this.bounds.expand(min.clone(), max.clone())
+
     updateParentBoundsBox && this.parent?.computeBoundsBox()
   }
 
-   /** 点位是否在图形中 */
-   isPointInGraph(point: Vector2) {
+  /** 点位是否在图形中 */
+  isPointInGraph(point: Vector2) {
     const isPointInBounds = this.isPointInBounds(point)
     return isPointInBounds ? this : false
   }
@@ -102,7 +103,8 @@ export class Rect extends Object2D {
 
   clone(): Rect {
     const data = this.toJSON()
-    return new Rect(data)
+    data.uuid = generateUUID()
+    return Rect.one(data)
   }
   static one(data: IObject): Rect {
     return new Rect(data)

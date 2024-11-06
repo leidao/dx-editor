@@ -93,6 +93,7 @@ export default class ToolDrawBusbar extends ToolBase {
   active() {
     this.editor.selector.hittable = false
     this.editor.guideline.visible = true
+    this.editor.sky.render()
     this.editor.addEventListener(PointerEvent.TAP, this.onTap)
     this.editor.addEventListener(PointerEvent.MOVE, this.onMove)
     this.editor.addEventListener(KeyEvent.HOLD, this.onKeydown)
@@ -104,6 +105,7 @@ export default class ToolDrawBusbar extends ToolBase {
     }
     this.editor.selector.hittable = true
     this.editor.guideline.visible = false
+    this.editor.sky.render()
     this.editor.removeEventListener(PointerEvent.TAP, this.onTap)
     this.editor.removeEventListener(PointerEvent.MOVE, this.onMove)
     this.editor.removeEventListener(KeyEvent.HOLD, this.onKeydown)

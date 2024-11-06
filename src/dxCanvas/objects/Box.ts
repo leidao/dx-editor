@@ -3,13 +3,13 @@
  * @Author: ldx
  * @Date: 2023-11-15 12:21:19
  * @LastEditors: ldx
- * @LastEditTime: 2024-11-05 13:45:21
+ * @LastEditTime: 2024-11-06 09:41:31
  */
 
 import { IObject, Object2D, Object2DType } from './Object2D'
 import { Line, LineType } from './Line'
-import { StandStyle, StandStyleType } from '../style'
-import { Vector2 } from '../math'
+import { StandStyle, StandStyleType, TextStyle, TextStyleType } from '../style'
+import { generateUUID, Vector2 } from '../math'
 import { Creator } from '../utils'
 import { Group } from '.'
 
@@ -28,6 +28,8 @@ export class Box extends Group {
   height = 0
   padding = [0, 0]
   cornerRadius = 0
+  _style: TextStyle = new TextStyle();
+  style: TextStyleType = {};
   public get tag() { return 'Box' }
   constructor(attr: BoxType = {}) {
     super()
@@ -75,12 +77,10 @@ export class Box extends Group {
       _style[`${method}Style`] &&
         ctx[method]();
     }
-    ctx.restore()
     /* 绘制子对象 */
     for (const obj of children) {
       obj.draw(ctx)
     }
-    ctx.save()
   }
 
   /** 获取包围盒数据 */
@@ -114,10 +114,18 @@ export class Box extends Group {
 
   clone(): Box {
     const data = this.toJSON()
-    return new Box(data)
+    data.uuid = generateUUID()
+    data.children = this.children.map(item => item.clone())
+    const box = new Box(data)
+    box.children = []
+    box.add(...data.children)
+    return box
   }
   static one(data: IObject): Box {
-    return new Box(data)
+    const box = new Box(data)
+    box.children = []
+    box.add(...data.children.map((item: IObject) => Creator.get(item.tag).one(item)))
+    return box
   }
 }
 

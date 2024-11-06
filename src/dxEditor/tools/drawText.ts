@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2023-12-09 10:21:06
  * @LastEditors: ldx
- * @LastEditTime: 2024-11-05 13:43:47
+ * @LastEditTime: 2024-11-06 15:07:03
  */
 import { v4 } from 'uuid'
 import { EditorView } from '@/dxEditor'
@@ -53,7 +53,7 @@ export default class ToolDrawText extends ToolBase {
 
   onCloseInnerEditor = () => {
     this.editor.tree.render()
-    this.editor.dispatchEvent(EditorEvent.UPDATE, new EditorEvent('update'))
+    this.editor.dispatchEvent(EditorEvent.UPDATE, new EditorEvent('add'))
     // 设置toolbar为默认并且关闭监听鼠标点击事件
     this.editor.tool.setActiveTool('operationGraph')
   }
@@ -61,12 +61,14 @@ export default class ToolDrawText extends ToolBase {
   active() {
     this.editor.guideline.visible = true
     this.editor.selector.hittable = false
+    this.editor.sky.render()
     this.editor.addEventListener(PointerEvent.TAP, this.onTap);
     this.editor.addEventListener(EditorEvent.CLOSEINNEREDIT, this.onCloseInnerEditor)
   }
   inactive() {
     this.editor.guideline.visible = false
     this.editor.selector.hittable = true
+    this.editor.sky.render()
     this.editor.removeEventListener(PointerEvent.TAP, this.onTap);
     this.editor.removeEventListener(EditorEvent.CLOSEINNEREDIT, this.onCloseInnerEditor)
     this.editor.selector.editing && this.editor.selector.closeInnerEditor()

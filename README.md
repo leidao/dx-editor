@@ -3,14 +3,15 @@
  * @Author: ldx
  * @Date: 2024-08-20 14:33:49
  * @LastEditors: ldx
- * @LastEditTime: 2024-11-01 14:02:58
+ * @LastEditTime: 2024-11-06 15:29:15
 -->
 
 **dx-editor 图形编辑器**，一款开源矢量图形编辑器。
 
 [体验网址](https://leidao.github.io/dx-editor/)
 
-![Screenshot](screenshot.png)
+![Screenshot](image1.png)
+![Screenshot](image2.png)
 
 ## 特性
 1.  图形的创建和编辑，包括：图元、线、文本；

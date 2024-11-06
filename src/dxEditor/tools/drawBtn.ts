@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2023-12-09 10:21:06
  * @LastEditors: ldx
- * @LastEditTime: 2024-11-05 13:45:13
+ * @LastEditTime: 2024-11-05 17:42:04
  */
 import { EditorView } from '@/dxEditor'
 import ToolBase from './toolBase'
@@ -56,6 +56,7 @@ export default class ToolDrawBtn extends ToolBase {
     this.btn.add(text)
     this.editor.tree.add(this.btn)
     this.editor.tree.render()
+    this.editor.dispatchEvent(EditorEvent.UPDATE, new EditorEvent('add'))
   }
 
   onKeydown = (event: KeyEvent) => {
@@ -72,12 +73,14 @@ export default class ToolDrawBtn extends ToolBase {
   active() {
     this.editor.guideline.visible = true
     this.editor.selector.hittable = false
+    this.editor.sky.render()
     this.editor.addEventListener(PointerEvent.TAP, this.onTap)
     this.editor.addEventListener(KeyEvent.HOLD, this.onKeydown)
   }
   inactive() {
     this.editor.guideline.visible = false
     this.editor.selector.hittable = true
+    this.editor.sky.render()
     this.editor.removeEventListener(PointerEvent.TAP, this.onTap)
     this.editor.removeEventListener(KeyEvent.HOLD, this.onKeydown)
   }

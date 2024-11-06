@@ -1,4 +1,4 @@
-import { Matrix3, Vector2 } from '../math';
+import { generateUUID, Matrix3, Vector2 } from '../math';
 import { BasicStyle, TextStyle, TextStyleType } from '../style';
 import { copyPrimitive, Creator } from '../utils';
 import { IObject, Object2D, Object2DType } from './Object2D';
@@ -147,14 +147,13 @@ export class Text extends Object2D {
         n = lines.length - 1
         break;
       default:
-        n = Math.floor(lines.length / 2)
+        n = (lines.length-1) / 2
         break;
     }
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
       const lineY = y - (n - i) * (_style.fontSize || 12) + 1;
-
       for (const method of _style.drawOrder) {
         _style[`${method}Style`] && ctx[`${method}Text`](line, x, lineY, maxWidth);
       }
@@ -206,7 +205,8 @@ export class Text extends Object2D {
 
   clone(): Text {
     const data = this.toJSON();
-    return new Text(data);
+    data.uuid = generateUUID()
+    return Text.one(data);
   }
 
   static one(data: IObject): Text {

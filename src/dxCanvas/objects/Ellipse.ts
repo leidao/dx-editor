@@ -1,6 +1,6 @@
 import { IObject, Object2D, Object2DType } from './Object2D';
 import { StandStyle, StandStyleType } from '../style';
-import { Vector2 } from '../math';
+import { generateUUID, Vector2 } from '../math';
 import { Creator } from '../utils';
 
 export type EllipseType = Object2DType & {
@@ -118,7 +118,8 @@ export class Ellipse extends Object2D {
 
   clone(): Ellipse {
     const data = this.toJSON();
-    return new Ellipse(data);
+    data.uuid = generateUUID()
+    return Ellipse.one(data);
   }
   static one(data: IObject): Ellipse {
     return new Ellipse(data);

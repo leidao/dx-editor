@@ -3,14 +3,14 @@
  * @Author: ldx
  * @Date: 2023-12-09 10:21:06
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-30 15:21:13
+ * @LastEditTime: 2024-11-06 09:19:12
  */
 import { EditorView } from '@/dxEditor'
 import ToolBase from './toolBase'
 import { getClosestTimesVal } from '@/dxEditor/utils'
 import globalConfig from '@/dxEditor/config'
 import { EditToolCreator } from '@/dxEditor/selector/editTool/EditToolCreator'
-import { IObject, IPointerEvent, Line } from '@/dxCanvas'
+import { IObject, IPointerEvent, Line, Vector2 } from '@/dxCanvas'
 import { EditorEvent, KeyEvent, PointerEvent } from '../event'
 /** 绘制母线 */
 export default class ToolPasteGraph extends ToolBase {
@@ -29,6 +29,7 @@ export default class ToolPasteGraph extends ToolBase {
       const element = children[index];
       element.position.add(position)
       this.editor.tree.add(element)
+      element.computeBoundsBox(true)
     }
     this.editor.tree.render()
     this.editor.dispatchEvent(EditorEvent.PASTE_CHANGE,new EditorEvent('paste'))
@@ -43,7 +44,7 @@ export default class ToolPasteGraph extends ToolBase {
     const px = x - this.editor.pasteData.bounds.x 
     const py = y - this.editor.pasteData.bounds.y 
     this.editor.pasteData.position.set(px,py)
-    this.editor.tree.render()
+    this.editor.sky.render()
   }
   onKeydown = (event: KeyEvent) => {
     const { code } = event.origin as KeyboardEvent
@@ -58,10 +59,11 @@ export default class ToolPasteGraph extends ToolBase {
   }
 
   active() {
-    this.editor.tree.add(this.editor.pasteData)
+    this.editor.sky.add(this.editor.pasteData)
     this.editor.pasteData.computeBoundsBox()
     this.editor.selector.hittable = false
     this.editor.guideline.visible = true
+    this.editor.sky.render()
     this.editor.addEventListener(PointerEvent.TAP, this.onTap)
     this.editor.addEventListener(PointerEvent.MOVE, this.onMove)
     this.editor.addEventListener(KeyEvent.HOLD, this.onKeydown)
@@ -69,10 +71,10 @@ export default class ToolPasteGraph extends ToolBase {
   inactive() {
     this.editor.pasteData.clear()
     this.editor.pasteData.position.set(0,0)
-    this.editor.tree.remove(this.editor.pasteData)
+    this.editor.sky.remove(this.editor.pasteData)
     this.editor.selector.hittable = true
     this.editor.guideline.visible = false
-    this.editor.tree.render()
+    this.editor.sky.render()
     this.editor.removeEventListener(PointerEvent.TAP, this.onTap)
     this.editor.removeEventListener(PointerEvent.MOVE, this.onMove)
     this.editor.removeEventListener(KeyEvent.HOLD, this.onKeydown)
