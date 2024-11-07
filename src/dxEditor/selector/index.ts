@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2024-09-27 16:04:35
  * @LastEditors: ldx
- * @LastEditTime: 2024-11-07 09:39:37
+ * @LastEditTime: 2024-11-07 10:29:55
  */
 import { EditorView } from "../index"
 import { getClosestTimesVal } from "../utils"
@@ -370,6 +370,7 @@ export default class Selector {
   }
 
   onKeyDown = (event: KeyEvent) => {
+    if(this.dragging || this.editing) return
     const { code } = event.origin as KeyboardEvent
     if (!['ArrowLeft', 'ArrowRight', 'ArrowDown', 'ArrowUp'].includes(code)) return
     const { moveSize } = globalConfig
