@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2023-12-21 15:26:11
  * @LastEditors: ldx
- * @LastEditTime: 2024-11-06 14:10:08
+ * @LastEditTime: 2024-11-06 16:11:15
  */
 import { Collapse, ColorPicker, Empty, Select, Slider } from 'antd'
 import { useContext, useEffect, useState } from 'react'
@@ -38,6 +38,7 @@ const CanvasSettings = () => {
     setBgColor(backgroundColor)
     setGridColor(globalConfig.gridColor)
     setGridSize(globalConfig.gridSize)
+    setIsAdsorb(globalConfig.isAdsorb)
     setRulerBgColor(globalConfig.rulerBgColor)
     setRulerTextColor(globalConfig.rulerTextColor)
   }, [editor])
@@ -120,6 +121,7 @@ const CanvasSettings = () => {
                     placeholder='混合'
                     onChange={(value) => {
                       setIsAdsorb(value)
+                      globalConfig.isAdsorb = value
                       if (value) {
                         globalConfig.moveSize = globalConfig.gridSize / 2
                       } else {

@@ -3,13 +3,13 @@
  * @Author: ldx
  * @Date: 2024-09-27 16:04:35
  * @LastEditors: ldx
- * @LastEditTime: 2024-11-06 14:33:03
+ * @LastEditTime: 2024-11-07 09:39:37
  */
 import { EditorView } from "../index"
 import { getClosestTimesVal } from "../utils"
 import globalConfig from '../config'
 import { Bounds, Box, Img, IObject, Object2D, Rect, Text } from "@/dxCanvas"
-import { PointerEvent, DragEvent, EditorEvent } from '../event'
+import { PointerEvent, DragEvent, EditorEvent, KeyEvent } from '../event'
 import { LeafList } from "./leafList"
 import { EditToolCreator } from "./editTool/EditToolCreator"
 import { IPointerEvent } from "@/dxCanvas/event"
@@ -253,17 +253,30 @@ export default class Selector {
     // 不允许交互
     if (!this.hittable) return
     if (this.dragging) {
+      const { downData } = this
+      if (!downData) return
+      const origin = event.origin as IPointerEvent
+      const { moveSize } = globalConfig
+      const distance = this.editor.tree.getPageLenByWorld(moveSize, 0).x
+      let x = getClosestTimesVal(origin!.x, distance)
+      let y = getClosestTimesVal(origin!.y, distance)
+      let x2 = getClosestTimesVal(downData!.x, distance)
+      let y2 = getClosestTimesVal(downData!.y, distance)
+      event.moveX = x - x2
+      event.moveY = y - y2
+      if (event.moveX === 0 && event.moveY === 0) return
+      this.downData = event.origin as IPointerEvent
       this.list.forEach(element => {
         const tag = element.editOuter as string
         const editTool = this.editToolList[tag] = this.editToolList[tag] || EditToolCreator.get(tag, this.editor)
-        editTool?.onDrag && editTool.onDrag(event)
+        editTool?.onDrag && editTool.onDrag({ ...event, target: element })
       })
-      this.editor.dispatchEvent(EditorEvent.DRAG,new EditorEvent('drag',{target:this.list}))
+      this.editor.dispatchEvent(EditorEvent.DRAG, new EditorEvent('drag', { target: this.list }))
       this.editor.render()
     } else {
       const { clientX, clientY } = event.origin as IPointerEvent
       const worldPoint = this.editor.sky.getPageByClient(clientX, clientY)
-      this.selectArea.setRect( worldPoint)
+      this.selectArea.setRect(worldPoint)
     }
   }
   onDragEnd = (event: DragEvent) => {
@@ -273,7 +286,7 @@ export default class Selector {
       this.list.forEach(element => {
         const tag = element.editOuter as string
         const editTool = this.editToolList[tag] = this.editToolList[tag] || EditToolCreator.get(tag, this.editor)
-        editTool?.onDragEnd && editTool.onDragEnd(event)
+        editTool?.onDragEnd && editTool.onDragEnd({ ...event, target: element })
       })
       this.editor.dispatchEvent(EditorEvent.UPDATE, new EditorEvent('update', { target: this.list }))
     } else {
@@ -296,7 +309,7 @@ export default class Selector {
     // 将当前操作图形设为选中并且取消其他图形选中
     target && this.select(target)
     // debugger
-    if (this.single) {
+    if (this.single && this.element.editable) {
       const editTarget = this.element
       const tag = editTarget.editInner || 'EditTool'
       const editTool = this.editToolList[tag] = this.editToolList[tag] || EditToolCreator.get(tag, this.editor)
@@ -308,7 +321,7 @@ export default class Selector {
     }
   }
   closeInnerEditor() {
-    if (this.single) {
+    if (this.single && this.element.editable) {
       const editTarget = this.element
       const tag = editTarget.editInner || 'EditTool'
       const editTool = this.editToolList[tag] = this.editToolList[tag] || EditToolCreator.get(tag, this as any)
@@ -356,6 +369,35 @@ export default class Selector {
     }
   }
 
+  onKeyDown = (event: KeyEvent) => {
+    const { code } = event.origin as KeyboardEvent
+    if (!['ArrowLeft', 'ArrowRight', 'ArrowDown', 'ArrowUp'].includes(code)) return
+    const { moveSize } = globalConfig
+    const distance = this.editor.tree.getPageLenByWorld(moveSize, 0).x
+    switch (code) {
+      case 'ArrowLeft':
+        event.moveX = -distance
+        break;
+      case 'ArrowRight':
+        event.moveX = distance
+        break;
+      case 'ArrowDown':
+        event.moveY = distance
+        break;
+      case 'ArrowUp':
+        event.moveY = -distance
+        break;
+      default:
+        break;
+    }
+    this.list.forEach(element => {
+      const tag = element.editOuter as string
+      const editTool = this.editToolList[tag] = this.editToolList[tag] || EditToolCreator.get(tag, this.editor)
+      editTool?.onDrag && editTool.onDrag({ ...event, target: element })
+    })
+    this.editor.dispatchEvent(EditorEvent.DRAG, new EditorEvent('drag', { target: this.list }))
+    this.editor.render()
+  }
 
 
   listen() {
@@ -369,6 +411,8 @@ export default class Selector {
 
     this.editor.addEventListener(EditorEvent.HOVER, this.onHover)
     this.editor.addEventListener(EditorEvent.SELECT, this.onSelect)
+
+    this.editor.addEventListener(KeyEvent.DOWN, this.onKeyDown)
   }
 
   destroy() {
@@ -382,6 +426,8 @@ export default class Selector {
 
     this.editor.removeEventListener(EditorEvent.HOVER, this.onHover)
     this.editor.removeEventListener(EditorEvent.SELECT, this.onSelect)
+
+    this.editor.removeEventListener(KeyEvent.DOWN, this.onKeyDown)
 
   }
 

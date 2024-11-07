@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2024-10-13 19:14:05
  * @LastEditors: ldx
- * @LastEditTime: 2024-10-29 15:30:16
+ * @LastEditTime: 2024-11-07 09:38:23
  */
 
 import { Bounds, Object2D } from "@/dxCanvas"
@@ -16,6 +16,7 @@ class VirtualGroup {
   tag = 'virtualGroup'
   /** 名称 */
   name = '虚拟组'
+  editable = true
   /** 编辑类型 */
   public get editOuter() { return 'EditOuter' }
   /** 编辑类型 */

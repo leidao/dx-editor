@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2024-09-29 10:27:51
  * @LastEditors: ldx
- * @LastEditTime: 2024-11-06 13:59:11
+ * @LastEditTime: 2024-11-06 16:10:35
  */
 
 export enum MoveType {
@@ -37,6 +37,9 @@ class GlobalConfig {
   guidelineColor = '#ff0000'
   /** 显示辅助线 */
   guidelineVisible = true
+
+  /** 是否吸附 */
+  isAdsorb = 1
 
   
 }

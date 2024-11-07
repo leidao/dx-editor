@@ -4,7 +4,7 @@
  * @Author: ldx
  * @Date: 2024-08-20 14:50:58
  * @LastEditors: ldx
- * @LastEditTime: 2024-11-06 15:24:58
+ * @LastEditTime: 2024-11-06 17:33:02
  */
 
 
@@ -47,7 +47,7 @@ export class EditorView extends EventDispatcher {
     }
   })
   grid = new Grid()
-  ruler = new Ruler()
+  ruler!:Ruler
   maskGroup = new Group({ name: '遮罩', index: Infinity, enableCamera: false, style: { globalAlpha: 0.6 } })
   /**  */
   selector = new Selector(this)
@@ -81,12 +81,14 @@ export class EditorView extends EventDispatcher {
     this.orbitControler.minZoom = 0.3
 
     this.ground.add(this.grid)
-    this.sky.add(this.ruler)
-    this.sky.add(this.maskGroup)
+    this.ruler = new Ruler(this)
+    // this.sky.add(this.ruler)
+    // this.sky.add(this.maskGroup)
     this.sky.add(this.guideline)
 
     this.exportJson(data.children)
     this.keybord.hotkeys.showAll()
+    this.dispatchEvent(EditorEvent.UPDATE, new EditorEvent('add'))
     this.render()
 
     this.listen()
@@ -357,22 +359,10 @@ export class EditorView extends EventDispatcher {
         this.guideline.coord.y += origin.clientY
         this.guideline.coord.x += origin.clientX
       }
-      this.drawMask()
       this.render()
     })
 
-    this.addEventListener(EditorEvent.SELECT, () => {
-      this.drawMask()
-      this.sky.render()
-    })
-    this.addEventListener(EditorEvent.DRAG, () => {
-      this.drawMask()
-      this.sky.render()
-    })
-    this.addEventListener(EditorEvent.HISTORY_CHANGE, () => {
-      this.drawMask()
-      this.sky.render()
-    })
+   
   }
 
   destroy() {

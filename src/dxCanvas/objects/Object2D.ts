@@ -58,7 +58,7 @@ abstract class Object2D extends EventDispatcher {
   hitBounds = true
   /** 元素是否响应交互事件，默认为 true */
   hittable = true
-  /** editable 元素才能被选中 */
+  /** editable 元素才能被编辑 */
   editable = true
   /** 父级 */
   parent: Scene | Group | undefined

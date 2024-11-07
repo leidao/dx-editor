@@ -3,7 +3,7 @@
  * @Author: ldx
  * @Date: 2023-12-09 10:21:06
  * @LastEditors: ldx
- * @LastEditTime: 2024-11-06 09:19:12
+ * @LastEditTime: 2024-11-07 09:44:57
  */
 import { EditorView } from '@/dxEditor'
 import ToolBase from './toolBase'
@@ -39,11 +39,11 @@ export default class ToolPasteGraph extends ToolBase {
   onMove = (event: PointerEvent) => {
     const {clientX,clientY} = event.origin as IPointerEvent
     const pagePoint = this.editor.tree.getWorldByClient(clientX,clientY)
-    let x = getClosestTimesVal(pagePoint.x, globalConfig.moveSize)
-    let y = getClosestTimesVal(pagePoint.y, globalConfig.moveSize)
-    const px = x - this.editor.pasteData.bounds.x 
-    const py = y - this.editor.pasteData.bounds.y 
-    this.editor.pasteData.position.set(px,py)
+    const px = pagePoint.x - this.editor.pasteData.bounds.x 
+    const py = pagePoint.y - this.editor.pasteData.bounds.y 
+    let x = getClosestTimesVal(px, globalConfig.moveSize)
+    let y = getClosestTimesVal(py, globalConfig.moveSize)
+    this.editor.pasteData.position.set(x,y)
     this.editor.sky.render()
   }
   onKeydown = (event: KeyEvent) => {
