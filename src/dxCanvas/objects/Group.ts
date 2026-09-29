@@ -161,7 +161,7 @@ class Group extends Object2D {
     const { children, bounds } = this
     bounds.clear()
     children.forEach(object => {
-      updateChildBoundsBox && object.computeBoundsBox(false)
+      updateChildBoundsBox && object.computeBoundsBox(object instanceof Group)
       bounds.expand(object.bounds.min, object.bounds.max)
     })
     this.parent?.computeBoundsBox()
@@ -169,8 +169,10 @@ class Group extends Object2D {
 
   /** 点位是否在图形中 */
   isPointInGraph(mp: Vector2) {
+    if (!this.visible) return false
     const { children, hitChildren } = this
     for (let obj of [...children].reverse()) {
+      if (!obj.visible) continue
       const child = obj.isPointInGraph(mp)
       if (child) return hitChildren ? child : obj
     }
@@ -200,8 +202,8 @@ class Group extends Object2D {
 
 
   destroy() {
-    this.removeAllListeners()
-    this.children.forEach((obj) => obj.destroy())
+    for (const obj of [...this.children]) obj.destroy()
+    super.destroy()
   }
 
 

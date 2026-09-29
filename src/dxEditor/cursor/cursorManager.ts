@@ -7,7 +7,7 @@
  */
 import './cursor.scss'
 
-import { EditorView } from '../view'
+import type { EditorView } from '../index'
 
 export interface ICursorRotation {
   type: 'rotation'

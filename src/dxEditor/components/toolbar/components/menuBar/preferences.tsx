@@ -1,44 +1,50 @@
-/*
- * @Description: 设置
- * @Author: ldx
- * @Date: 2023-12-21 11:13:40
- * @LastEditors: ldx
- * @LastEditTime: 2024-09-30 10:37:47
- */
-
-import { Button, Dropdown, MenuProps, Tooltip } from 'antd'
-import { useContext, useEffect, useState } from 'react'
-
+import { Button, Dropdown, Input, MenuProps, message, Modal } from 'antd'
+import { useContext, useState } from 'react'
 import EditorContext from '@/dxEditor/context'
-
 import 快捷键 from '@/dxEditor/components/toolbar/icons/快捷键.svg?react'
 
 const Preferences = () => {
-  const [selectedName, setSelectedName] = useState('')
-  const [tools, setTools] = useState<any[]>([])
   const editor = useContext(EditorContext)
-
-  useEffect(() => {
-    if (!editor) return
-
-  }, [editor])
-
+  const [open, setOpen] = useState(false)
+  const [, refresh] = useState(0)
   const items: MenuProps['items'] = [
     {
-      key: '1',
-      label: <span className='text-12px ml-10px'>快捷键设置</span>,
-      icon: <快捷键 />,
+      key: 'shortcuts', label: <span className="text-12px ml-10px">快捷键设置</span>,
+      icon: <快捷键 />, onClick: () => setOpen(true)
     },
     {
-      key: '2',
-      label: <span className='text-12px ml-10px'>系统设置</span>,
-      icon: <span className='w-16px h-16px' />,
-    },
-  ];
+      key: 'canvas', label: <span className="text-12px ml-10px">画布设置</span>,
+      icon: <span className="w-16px h-16px" />,
+      onClick: () => editor?.selector.cancel()
+    }
+  ]
+
   return (
-    <Dropdown menu={{ items }} placement="bottomLeft" overlayStyle={{ minWidth: '188px' }}>
-      <Button type="text">设置</Button>
-    </Dropdown>
+    <>
+      <Dropdown menu={{ items }} placement="bottomLeft" overlayStyle={{ minWidth: '188px' }}>
+        <Button type="text">设置</Button>
+      </Dropdown>
+      <Modal title="快捷键设置" open={open} footer={null} onCancel={() => setOpen(false)}>
+        <p>使用 ctrl、shift、alt 与按键组合；Mac 上用 ctrl 表示 ⌘。</p>
+        <div className="max-h-400px overflow-auto">
+          {Array.from(editor?.keybord.KeybordMap.values() || []).map(command => (
+            <div key={command.name} className="flex items-center gap-12px my-8px">
+              <span className="w-120px">{command.name}</span>
+              <Input defaultValue={Array.isArray(command.keyboard) ? command.keyboard[0] : command.keyboard}
+                onBlur={event => {
+                  try {
+                    editor?.keybord.setShortcut(command.name, event.target.value)
+                    refresh(value => value + 1)
+                  } catch (error) {
+                    message.error(error instanceof Error ? error.message : '快捷键保存失败')
+                    event.target.value = Array.isArray(command.keyboard) ? command.keyboard[0] : command.keyboard
+                  }
+                }} />
+            </div>
+          ))}
+        </div>
+      </Modal>
+    </>
   )
 }
 

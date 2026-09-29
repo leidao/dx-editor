@@ -60,8 +60,33 @@ export default class KeybordManager {
     if (this.KeybordMap.has(name)) {
       throw new Error(`快捷键命令 ${name} 已经被使用过，请换一个名称`)
     }
+    if (typeof localStorage !== 'undefined') {
+      try {
+        const saved = JSON.parse(localStorage.getItem('dx-editor-shortcuts') || '{}')
+        if (typeof saved[command.name] === 'string') command.keyboard = saved[command.name]
+      } catch { /* Ignore invalid local preferences. */ }
+    }
     this.KeybordMap.set(command.name, command)
     // this[command.name] = command.execute
+  }
+
+  setShortcut(name: string, keyboard: string) {
+    const command = this.KeybordMap.get(name)
+    if (!command) throw new Error('快捷键命令不存在')
+    const value = keyboard.trim().toLocaleLowerCase().replace(/\s+/g, '')
+    if (!value) throw new Error('快捷键不能为空')
+    for (const other of this.KeybordMap.values()) {
+      if (other === command) continue
+      const keys = Array.isArray(other.keyboard) ? other.keyboard : [other.keyboard]
+      if (keys.includes(value)) throw new Error(`快捷键已被“${other.name}”使用`)
+    }
+    command.keyboard = value
+    if (typeof localStorage !== 'undefined') {
+      let saved: Record<string, string> = {}
+      try { saved = JSON.parse(localStorage.getItem('dx-editor-shortcuts') || '{}') } catch { /* Ignore invalid local preferences. */ }
+      saved[name] = value
+      localStorage.setItem('dx-editor-shortcuts', JSON.stringify(saved))
+    }
   }
 
   /** 取消注册 */
@@ -70,9 +95,11 @@ export default class KeybordManager {
   }
 
   onKeydown = (event: KeyEvent) => {
+    const target = event.origin?.target as HTMLElement | null
     if (
-      event.origin?.target instanceof HTMLInputElement ||
-      event.origin?.target instanceof HTMLTextAreaElement 
+      target instanceof HTMLInputElement ||
+      target instanceof HTMLTextAreaElement ||
+      target?.isContentEditable
     ) {
       return
     }

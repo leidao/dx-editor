@@ -24,11 +24,13 @@ import BoxEditInner from "./editInner/boxEditInner"
 
 Object2D.setEditOuter = function (toolName: string): void {
   Object.defineProperty(this.prototype, 'editOuter', {
+    configurable: true,
     get(): string { return toolName }
   })
 }
 Object2D.setEditInner = function (toolName: string): void {
   Object.defineProperty(this.prototype, 'editInner', {
+    configurable: true,
     get(): string { return toolName }
   })
 }
@@ -138,7 +140,7 @@ export default class Selector {
     const { clientX, clientY } = event.origin! as IPointerEvent
     const worldPoint = this.editor.tree.getWorldByClient(clientX, clientY)
     const obj = this.editor.tree.isPointInGraph(worldPoint)
-    return obj?.hittable ? obj : null
+    return obj?.hittable && obj.visible && !obj.locked ? obj : null
   }
 
   public isMultipleSelect(): boolean {
@@ -187,11 +189,10 @@ export default class Selector {
           this.addItem(find)
         }
       } else {
-        // if(this.multiple && this.hasItem(find)){
-        //   TODO 可以做多个选中平移优化
-        // }
-        this.leafList.reset()
-        this.addItem(find)
+        if (!this.hasItem(find)) {
+          this.leafList.reset()
+          this.addItem(find)
+        }
       }
     } else {
       if (!this.isMultipleSelect()) {
@@ -370,9 +371,13 @@ export default class Selector {
   }
 
   onKeyDown = (event: KeyEvent) => {
-    if(this.dragging || this.editing) return
-    const { code } = event.origin as KeyboardEvent
+    if (this.dragging || this.editing || !this.hittable || this.list.length === 0) return
+    const origin = event.origin as KeyboardEvent
+    const target = origin.target as HTMLElement | null
+    if (target && (target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName))) return
+    const { code } = origin
     if (!['ArrowLeft', 'ArrowRight', 'ArrowDown', 'ArrowUp'].includes(code)) return
+    origin.preventDefault()
     const { moveSize } = globalConfig
     const distance = this.editor.tree.getPageLenByWorld(moveSize, 0).x
     switch (code) {
@@ -398,6 +403,7 @@ export default class Selector {
     })
     this.editor.dispatchEvent(EditorEvent.DRAG, new EditorEvent('drag', { target: this.list }))
     this.editor.render()
+    this.editor.dispatchEvent(EditorEvent.UPDATE, new EditorEvent('update', { target: this.list }))
   }
 
 
@@ -434,4 +440,3 @@ export default class Selector {
 
 
 }
-

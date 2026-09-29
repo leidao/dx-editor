@@ -15,6 +15,7 @@ import 文字 from '@/dxEditor/components/toolbar/icons/文字.svg?react'
 import 导线 from '@/dxEditor/components/toolbar/icons/导线.svg?react'
 import 母线 from '@/dxEditor/components/toolbar/icons/母线.svg?react'
 import 按钮 from '@/dxEditor/components/toolbar/icons/按钮.svg?react'
+import 矩形 from '@/dxEditor/components/toolbar/icons/矩形.svg?react'
 
 const Insert = () => {
   const editor = useContext(EditorContext)
@@ -46,6 +47,12 @@ const Insert = () => {
         tip: 'B',
         icon: 按钮,
         action:  () =>  editor.tool.setActiveTool('drawBtn')
+      },
+      {
+        name: '矩形',
+        tip: 'R',
+        icon: 矩形,
+        action: () => editor.tool.setActiveTool('drawRect')
       },
     ];
     setMenus(menus)

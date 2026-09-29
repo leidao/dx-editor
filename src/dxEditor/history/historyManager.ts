@@ -13,6 +13,7 @@ import { produce, enablePatches, applyPatches, Patch } from "immer"
 // import { InnerEditorEvent } from 'leafer-editor'
 import _ from 'lodash'
 import { reconcileSnapshot } from './reconcileSnapshot'
+import { syncWireConnections } from '../wireConnections'
 // import { IKeyEvent } from '@leafer-ui/interface'
 
 export type Queue = { [key: number]: { redo: Patch[], undo: Patch[] } }
@@ -37,7 +38,16 @@ export default class HistoryManager {
     this.editor.removeEventListener(EditorEvent.REMOVE, this.change)
     this.editor.removeEventListener(EditorEvent.UPDATE, this.change)
   }
+  reset() {
+    const data: { [key: string]: any } = {}
+    this.editor.tree.toJSON().children?.forEach((child: any) => { data[child.uuid] = child })
+    this.initialState = data
+    this.queue = {}
+    this.current = -1
+    this.editor.dispatchEvent(EditorEvent.HISTORY_CHANGE, new EditorEvent('reset'))
+  }
   change = () => {
+    syncWireConnections(this.editor.tree)
     const json = this.editor.tree.toJSON()
     const data: { [key: string]: any } = {}
     json.children?.forEach((child: any) => data[child.uuid] = child)

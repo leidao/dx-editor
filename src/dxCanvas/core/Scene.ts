@@ -157,7 +157,10 @@ class Scene extends Group {
   }
   destroy() {
     window.removeEventListener('resize', this.resize)
-    this.children.forEach((obj) => obj.destroy())
+    for (const obj of [...this.children]) obj.destroy()
+    this.children = []
+    this.removeAllListeners()
+    this._canvas.remove()
   }
 
 }

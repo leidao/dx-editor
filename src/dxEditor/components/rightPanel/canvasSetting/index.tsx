@@ -105,6 +105,7 @@ const CanvasSettings = () => {
                     onChange={(value) => {
                       setGridSize(value)
                       globalConfig.gridSize = value
+                      if (globalConfig.isAdsorb) globalConfig.moveSize = value / 2
                       editor?.ground.render()
                     }}
                   />

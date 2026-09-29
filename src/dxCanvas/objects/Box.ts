@@ -88,7 +88,7 @@ export class Box extends Group {
     const { children, bounds, padding: [w, h] } = this
     bounds.clear()
     children.forEach(object => {
-      updateChildBoundsBox && object.computeBoundsBox(false)
+      updateChildBoundsBox && object.computeBoundsBox(object instanceof Group)
       bounds.expand(object.bounds.min, object.bounds.max)
     })
     bounds.min.x -= w / 2

@@ -86,14 +86,18 @@ export class OrbitControler extends EventDispatcher {
     }
   }
   zoom(scale: number, origin?: Vector2, event?: WheelEvent) {
-    const { enableZoom, camera, zoomSpeed, stage, scene } = this
-    camera.zoom *= scale
+    const { enableZoom, camera, scene } = this
+    if (!enableZoom || !Number.isFinite(scale) || scale <= 0 || camera.zoom <= 0) return
+    const nextZoom = Math.max(this.minZoom, Math.min(this.maxZoom, camera.zoom * scale))
+    if (!Number.isFinite(nextZoom) || nextZoom <= 0 || nextZoom === camera.zoom) return
+    const appliedScale = nextZoom / camera.zoom
+    camera.zoom = nextZoom
     if (!origin) {
       const { viewportWidth, viewportHeight } = scene.viewPort
       origin = new Vector2().set(viewportWidth / 2, viewportHeight / 2)
     }
     const P1 = new Vector2().addVectors(origin, camera.position)
-    const P2 = P1.clone().multiplyScalar(scale)
+    const P2 = P1.clone().multiplyScalar(appliedScale)
     camera.position.add(P2.sub(P1))
     // const type = scale > 1 ? 'in' : 'out'
     this.dispatchEvent(OrbitEvent.CHANGE, new OrbitEvent('wheel', event))
@@ -111,6 +115,7 @@ export class OrbitControler extends EventDispatcher {
     this.zoom(scale, origin, event)
   }
   zoomGraph(graph: Object2D[]) {
+    if (graph.length === 0) return
     const { camera, scene } = this
     // 计算图形的包围盒
     bounds.clear()
@@ -122,7 +127,15 @@ export class OrbitControler extends EventDispatcher {
     const { viewportWidth, viewportHeight } = scene.viewPort
 
     // 计算缩放比例，保持纵横比
-    const zoom = Math.min(viewportWidth / width, viewportHeight / height)
+    const fitZoom = Math.min(
+      width > 0 ? viewportWidth / width : Infinity,
+      height > 0 ? viewportHeight / height : Infinity
+    )
+    const zoom = Math.max(
+      this.minZoom,
+      Math.min(this.maxZoom, Number.isFinite(fitZoom) ? fitZoom : camera.zoom)
+    )
+    if (!Number.isFinite(zoom) || zoom <= 0) return
 
     const P1 = new Vector2(x, y).multiplyScalar(zoom)
     const P2 = new Vector2(viewportWidth / 2, viewportHeight / 2)

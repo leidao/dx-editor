@@ -13,7 +13,7 @@ type Type =
   'hover' | 'hoverLeave' | 'hoverEnter' | 'select' | 'unselect' |
   'add' | 'update' | 'remove' | 'before_paste' | 'paste' | 'shear' | 'copy' |
   'openInnerEdit' | 'closeInnerEdit' | 'drag' | 'end' | 'start' |
-  'redo' | 'undo'
+  'redo' | 'undo' | 'reset'
 
 export class EditorEvent extends IEvent {
 

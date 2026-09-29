@@ -17,11 +17,11 @@ export const loadSVG = (svgUrl: string): Promise<Document> => {
         const svgDocument = parser.parseFromString(xhr.responseText, 'image/svg+xml');
         resolve(svgDocument)
       } else {
-        console.error('Failed to load SVG:', xhr.statusText);
+        reject(new Error(`Failed to load SVG: ${xhr.statusText || xhr.status}`))
       }
     };
     xhr.onerror = function () {
-      reject('Network error while fetching SVG.')
+      reject(new Error('Network error while fetching SVG.'))
     };
     xhr.send();
   })

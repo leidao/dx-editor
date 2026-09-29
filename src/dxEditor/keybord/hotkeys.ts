@@ -5,9 +5,10 @@
  * @LastEditors: ldx
  * @LastEditTime: 2024-11-05 17:30:52
  */
-import { generateUUID, Vector2 } from "@/dxCanvas";
+import { Vector2 } from "@/dxCanvas";
 import { EditorView } from "@/dxEditor";
 import { EditorEvent } from "../event";
+import { remapWireConnections } from '../wireConnections';
 
 export default class Hotkeys {
   constructor(public editor: EditorView) { }
@@ -33,21 +34,35 @@ export default class Hotkeys {
   copy = () => {
     const list = this.editor.selector.list
     if (list.length === 0) return
+    this.editor.pasteData.clear()
+    this.editor.pasteData.position.set(0, 0)
+    const copies: typeof list = []
     list.forEach(element => {
       const copyElement = element.clone()
-      // console.log('copyElement',copyElement,element);
+      const matrix = element.parent
+        ? element.parent.worldMatrix.multiply(element.matrix)
+        : element.matrix
+      const { position, rotate, scale } = matrix.decompose()
+      copyElement.position.copy(position)
+      copyElement.rotate = rotate
+      copyElement.scale.copy(scale)
       this.editor.pasteData.add(copyElement)
+      copies.push(copyElement)
     })
+    remapWireConnections(list, copies)
     this.editor.dispatchEvent(EditorEvent.PASTE_CHANGE,new EditorEvent('copy'))
   }
   /** 剪切 */
   cut = () => {
-    const list = this.editor.selector.list
+    const list = [...this.editor.selector.list]
     if (list.length === 0) return
+    this.copy()
+    this.editor.selector.cancel()
     list.forEach(element => {
-      this.editor.pasteData.add(element)
+      element.remove()
     })
     this.editor.tree.render()
+    this.editor.dispatchEvent(EditorEvent.REMOVE, new EditorEvent('remove'))
     this.editor.dispatchEvent(EditorEvent.PASTE_CHANGE,new EditorEvent('shear'))
   }
   /** 缩小 */

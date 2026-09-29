@@ -11,7 +11,7 @@
 import _ from 'lodash'
 import globalConfig from './config'
 import { loadSVG, getClosestTimesVal, toURL } from './utils'
-import { OrbitEvent, OrbitControler, Vector2, Img, Camera, Scene, IObject, Group, Ellipse, Rect } from '@/dxCanvas'
+import { OrbitEvent, OrbitControler, Vector2, Img, Camera, Scene, IObject, Group, Ellipse, Rect, Text, Object2D } from '@/dxCanvas'
 import { Ruler, Grid, Guideline } from './objects'
 import { EventDispatcher, IPointerEvent } from '@/dxCanvas/event'
 import Selector from './selector'
@@ -22,6 +22,7 @@ import HistoryManager from './history/historyManager'
 import CursorManger from './cursor/cursorManager'
 import { Creator } from '@/dxCanvas/utils'
 import data from './data.json'
+import { syncWireConnections } from './wireConnections'
 
 type Option = {
   container: HTMLDivElement
@@ -82,7 +83,6 @@ export class EditorView extends EventDispatcher {
 
     this.ground.add(this.grid)
     this.ruler = new Ruler(this)
-    // this.sky.add(this.ruler)
     // this.sky.add(this.maskGroup)
     this.sky.add(this.guideline)
 
@@ -95,6 +95,7 @@ export class EditorView extends EventDispatcher {
 
   }
   render = () => {
+    syncWireConnections(this.tree)
     requestAnimationFrame(() => {
       this.ground.render()
       this.tree.render()
@@ -137,7 +138,9 @@ export class EditorView extends EventDispatcher {
     }
   }
   onPointerup = (event: PointerEvent) => {
+    const wasDown = this.downing
     this.downing = false
+    if (!wasDown) return
     this.dispatchEvent(MyPointerEvent.UP, new MyPointerEvent('up', event))
     /** 右键松开 */
     this.rightClick = false
@@ -145,7 +148,7 @@ export class EditorView extends EventDispatcher {
     if (this.dragging) {
       this.dragging = false
       this.dispatchEvent(MyDragEvent.END, new MyDragEvent('end', event))
-    } else {
+    } else if (event.target && this.domElement.contains(event.target as Node)) {
       this.onTap(event)
     }
   }
@@ -280,19 +283,92 @@ export class EditorView extends EventDispatcher {
           src: hoverSrc
         },
         userData: {
-          ellipseData: data
+          ellipseData: data,
+          portSize: [width, height]
         }
       })
       this.tree.add(image)
       this.dispatchEvent(EditorEvent.ADD, new EditorEvent('add', { target: image }))
-    })
+    }).catch(error => console.error('Failed to place SVG:', error))
+  }
+
+  private prepareChildren(children: IObject[]): Object2D[] {
+    const prepared = children.map(item => Creator.get(item.tag).one(item))
+    // Compute geometry before touching the open document. Invalid nested data can throw here.
+    const staging = new Group()
+    staging.add(...prepared)
+    staging.clear()
+    return prepared
+  }
+
+  private replaceChildren(children: Object2D[]) {
+    this.tree.clear()
+    this.tree.add(...children)
+    this.tree.render()
   }
 
   exportJson(children: IObject[]) {
-    const child = children.map((item: IObject) => Creator.get(item.tag).one(item))
-    this.tree.clear()
-    this.tree.add(...child)
-    this.tree.render()
+    this.replaceChildren(this.prepareChildren(children))
+  }
+
+  importJson(data: unknown) {
+    const children = (data as { children?: unknown } | null)?.children
+    if (!Array.isArray(children)) throw new Error('图纸缺少 children 数组')
+    for (const item of children) {
+      if (!item || typeof item.tag !== 'string' || !Creator.get(item.tag)) {
+        throw new Error('图纸包含不支持的图形')
+      }
+    }
+    const prepared = this.prepareChildren(children)
+    if (this.tool.toolMap.has('operationGraph')) this.tool.setActiveTool('operationGraph')
+    this.selector.cancel()
+    this.replaceChildren(prepared)
+    this.history.reset()
+    this.render()
+  }
+
+  moveSelectionToEdge(edge: 'top' | 'bottom') {
+    const selected = new Set(this.selector.list)
+    const parents = new Set(this.selector.list.map(item => item.parent).filter(Boolean))
+    let changed = false
+    for (const parent of parents) {
+      if (!parent) continue
+      const moving = parent.children.filter(item => selected.has(item))
+      const remaining = parent.children.filter(item => !selected.has(item))
+      if (moving.length === 0 || remaining.length === 0) continue
+      const order = edge === 'top' ? [...remaining, ...moving] : [...moving, ...remaining]
+      if (order.every((item, index) => item === parent.children[index])) continue
+      parent.children = order
+      order.forEach((item, index) => { item.index = index })
+      changed = true
+    }
+    if (changed) {
+      this.tree.render()
+      this.dispatchEvent(EditorEvent.UPDATE, new EditorEvent('update'))
+    }
+  }
+
+  find(query: string) {
+    const value = query.trim().toLocaleLowerCase()
+    if (!value) return false
+    let found: Object2D | undefined
+    this.tree.traverse(item => {
+      if (found || item === this.tree) return
+      let ancestor: Object2D | undefined = item
+      while (ancestor && ancestor !== this.tree) {
+        if (!ancestor.visible || ancestor.locked) return
+        ancestor = ancestor.parent
+      }
+      const content = item instanceof Text ? item.getText() : ''
+      if (item.name.toLocaleLowerCase().includes(value) || content.toLocaleLowerCase().includes(value)) found = item
+    })
+    if (!found) return false
+    let target: Object2D = found
+    while (target.parent && target.parent !== this.tree) target = target.parent
+    this.selector.select(target)
+    this.orbitControler.zoomGraph([target])
+    this.render()
+    return true
   }
 
   /** 选中图形的遮罩 */
@@ -348,7 +424,7 @@ export class EditorView extends EventDispatcher {
       if (pagePoint.x <= 20) pageX = 20
       if (pagePoint.x >= this.sky.viewPort.viewportWidth) pageX = this.sky.viewPort.viewportWidth
       if (pagePoint.y <= 20) pageY = 20
-      if (pagePoint.y >= this.sky.viewPort.viewportHeight) pageX = this.sky.viewPort.viewportHeight
+      if (pagePoint.y >= this.sky.viewPort.viewportHeight) pageY = this.sky.viewPort.viewportHeight
       this.guideline.coord.set(pageX, pageY)
       this.sky.render()
     })
@@ -366,12 +442,18 @@ export class EditorView extends EventDispatcher {
   }
 
   destroy() {
+    if (this.selector.editing) this.selector.closeInnerEditor()
+    this.tool.activeTool?.inactive()
+    this.tool.destroy()
+    this.keybord.destroy()
+    this.history.destroy()
     /* 滑动滚轮缩放 */
     this.domElement.removeEventListener('wheel', this.onWheel)
     this.domElement.removeEventListener('pointerdown', this.onPointerdown)
     window.removeEventListener('pointermove', this.onPointermove)
     window.removeEventListener('pointerup', this.onPointerup)
     window.removeEventListener('contextmenu', this.onContextMenu)
+    window.removeEventListener('keydown', this.onKeyDown)
     window.removeEventListener('keyup', this.onKeyUp)
     this.selector.destroy()
     this.ground.destroy()

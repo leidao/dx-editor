@@ -6,7 +6,8 @@
  * @LastEditTime: 2024-11-04 15:15:26
  */
 
-import { Button, Divider, Tooltip, Upload } from 'antd'
+import { Button, Divider, Tooltip, Upload, message } from 'antd'
+import FileSaver from 'file-saver'
 import { useContext, useEffect, useState } from 'react'
 import { isWindows } from '@/dxEditor/utils'
 import EditorContext from '@/dxEditor/context'
@@ -42,6 +43,7 @@ import 母线 from '@/dxEditor/components/toolbar/icons/母线.svg?react'
 import 文字 from '@/dxEditor/components/toolbar/icons/文字.svg?react'
 import 按钮 from '@/dxEditor/components/toolbar/icons/按钮.svg?react'
 import 图片 from '@/dxEditor/components/toolbar/icons/图片.svg?react'
+import 矩形 from '@/dxEditor/components/toolbar/icons/矩形.svg?react'
 
 import ToolDrawWire from '@/dxEditor/tools/drawWire'
 import ToolBase from '@/dxEditor/tools/toolBase'
@@ -55,6 +57,7 @@ import ToolPasteGraph from '@/dxEditor/tools/pasteGraph'
 import { EditorEvent } from '@/dxEditor/event'
 import { degToRad } from '@/dxCanvas'
 import ToolAddPic from '@/dxEditor/tools/addPic'
+import ToolDrawRect from '@/dxEditor/tools/drawRect'
 
 type Tool = {
   name: string
@@ -79,14 +82,20 @@ const ToolBtn = () => {
           name: '新建',
           tip: `新建`,
           icon: 新建,
-          action: () => { }
+          action: () => {
+            if (editor.tree.children.length > 0 && !window.confirm('新建图纸会清空当前内容，继续吗？')) return
+            editor.importJson({ children: [] })
+          }
         },
         {
           name: '保存',
           tip: `保存 ${isWindows ? 'Ctrl+S' : '⌘s'}`,
           icon: 保存,
           keyboard: 'ctrl+s',
-          action: () => { }
+          action: () => FileSaver.saveAs(
+            new Blob([JSON.stringify(editor.tree.toJSON())], { type: 'application/json' }),
+            'dx_editor.json'
+          )
         }
       ],
       [
@@ -150,7 +159,10 @@ const ToolBtn = () => {
           icon: 查找,
           keyboard: 'ctrl+f',
           // disabled:true,
-          action: () => { }
+          action: () => {
+            const query = window.prompt('查找图元名称或文本')?.trim()
+            if (query && !editor.find(query)) message.info('未找到匹配的图元')
+          }
         },
         {
           name: '放大',
@@ -259,7 +271,7 @@ const ToolBtn = () => {
           name: '水平等距分布',
           tip: `水平等距分布 ${isWindows ? 'Ctrl+Alt+H' : '⌘⌥h'}`,
           icon: 水平等距分布,
-          keyboard: 'ctrl+shift+e',
+          keyboard: 'ctrl+alt+h',
           disabled: true,
           action: editor.keybord.hotkeys.horizontalEquidistance
         },
@@ -267,7 +279,7 @@ const ToolBtn = () => {
           name: '垂直等距分布',
           tip: `垂直等距分布 ${isWindows ? 'Ctrl+Alt+E' : '⌘⌥e'}`,
           icon: 垂直等距分布,
-          keyboard: 'ctrl+shift+e',
+          keyboard: 'ctrl+alt+e',
           disabled: true,
           action: editor.keybord.hotkeys.verticalEquidistance
         },
@@ -332,6 +344,14 @@ const ToolBtn = () => {
           action: () => {
             editor.tool.setActiveTool('drawBtn')
           }
+        },
+        {
+          name: '矩形',
+          tip: '矩形 R',
+          icon: 矩形,
+          keyboard: 'r',
+          instance: new ToolDrawRect(editor),
+          action: () => editor.tool.setActiveTool('drawRect')
         },
       ],
     ]

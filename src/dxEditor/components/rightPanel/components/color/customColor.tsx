@@ -13,8 +13,11 @@ import {
   Alpha,
   Saturation
 } from 'react-color/lib/components/common/';
+// @ts-expect-error react-color does not publish types for its internal components.
 import ChromeFields from 'react-color/lib/components/chrome/ChromeFields'
+// @ts-expect-error react-color does not publish types for its internal components.
 import Swatch from 'react-color/lib/components/common/Swatch'
+// @ts-expect-error react-color does not publish types for its internal helpers.
 import * as color from 'react-color/lib/helpers/color'
 import { CustomPicker, SketchPicker } from 'react-color';
 

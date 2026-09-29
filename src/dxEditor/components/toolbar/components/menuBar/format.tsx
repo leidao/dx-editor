@@ -129,7 +129,7 @@ const Format = () => {
         // tip: `${isWindows ? 'Ctrl+Alt+E' : '⌘⌥e'}`,
         icon: 移到顶层,
         disabled: true,
-        action: () => { }
+        action: () => editor.moveSelectionToEdge('top')
 
       },
       {
@@ -137,7 +137,7 @@ const Format = () => {
         // tip: `${isWindows ? 'Ctrl+Alt+E' : '⌘⌥e'}`,
         icon: 移到底层,
         disabled: true,
-        action: () => { }
+        action: () => editor.moveSelectionToEdge('bottom')
       },
     ];
     setMenus(menus)
@@ -174,6 +174,10 @@ const Format = () => {
       水平等距分布 && (水平等距分布.disabled = !(editor.selector.list.length > 1))
       const 垂直等距分布 = menus.find(menu => menu.name === '垂直等距分布')
       垂直等距分布 && (垂直等距分布.disabled = !(editor.selector.list.length > 1))
+      const 移到顶层 = menus.find(menu => menu.name === '移到顶层')
+      移到顶层 && (移到顶层.disabled = editor.selector.list.length === 0)
+      const 移到底层 = menus.find(menu => menu.name === '移到底层')
+      移到底层 && (移到底层.disabled = editor.selector.list.length === 0)
       setMenus(menus.slice())
     }
     editor.addEventListener(EditorEvent.SELECT, selectChange)
@@ -196,6 +200,7 @@ const Format = () => {
         return menu.type === 'divider' ?
           <Divider className='my-2px' key={index} /> :
           <div key={index} className='flex items-center hover:bg-#f5f5f5 p-6px rounded-6px' onClick={() => {
+            if (menu.disabled) return
             menu.action()
             setOpen(false);
           }} style={{ cursor: menu.disabled ? 'not-allowed' : 'pointer' }}>

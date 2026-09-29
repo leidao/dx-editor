@@ -11,14 +11,14 @@ import { getClosestTimesVal } from '@/dxEditor/utils'
 import globalConfig from '@/dxEditor/config'
 import { Ellipse, IPointerEvent, Line, radToDeg, Vector2 } from '@/dxCanvas'
 import { EditorEvent, KeyEvent, PointerEvent } from '../event'
-import { LeafList } from '../selector/leafList'
+import { findWirePort, WirePort } from '../wireConnections'
 /** 绘制导线 */
 export default class ToolDrawWire extends ToolBase {
   readonly type = 'drawWire'
   wire: Line | null = null
   /** 重新计算 */
   resetCalculation = true
-  leafList = new LeafList()
+  private activePort: WirePort | null = null
   ellipse = new Ellipse({
     width: 6,
     height: 6,
@@ -36,12 +36,13 @@ export default class ToolDrawWire extends ToolBase {
 
   }
   onTap = (event: PointerEvent) => {
+    this.onMove(event)
     // 获取world坐标
     const { clientX, clientY } = event.origin as IPointerEvent
     const pagePoint = this.editor.tree.getWorldByClient(clientX, clientY)
     // 获取网格的倍数坐标
-    let x = getClosestTimesVal(pagePoint.x, globalConfig.moveSize)
-    let y = getClosestTimesVal(pagePoint.y, globalConfig.moveSize)
+    let x = this.activePort?.position.x ?? getClosestTimesVal(pagePoint.x, globalConfig.moveSize)
+    let y = this.activePort?.position.y ?? getClosestTimesVal(pagePoint.y, globalConfig.moveSize)
     if (!this.wire) {
       this.wire = new Line({
         position: [x, y],
@@ -63,12 +64,14 @@ export default class ToolDrawWire extends ToolBase {
           // 记录真实page点位坐标
           _points: [{ x, y }],
           _movePoints: [],
+          connections: this.activePort ? { start: this.activePort.connection } : {},
         },
       })
       this.editor.tree.add(this.wire)
     } else {
       this.wire.userData._points = this.wire.userData._movePoints.slice()
-      if (this.ellipse.state === 'hoverEnter') {
+      if (this.activePort) {
+        this.wire.userData.connections.end = this.activePort.connection
         this.wire = null
         /** 触发撤销回退栈栈的收集 */
         this.editor.dispatchEvent(EditorEvent.ADD,new EditorEvent('add'))
@@ -78,10 +81,9 @@ export default class ToolDrawWire extends ToolBase {
   onMove = (event: PointerEvent) => {
     const { clientX, clientY } = event.origin as IPointerEvent
     const worldPoint = this.editor.tree.getWorldByClient(clientX, clientY)
-    let x = getClosestTimesVal(worldPoint.x, globalConfig.moveSize)
-    let y = getClosestTimesVal(worldPoint.y, globalConfig.moveSize)
-
-    this.calculatedAdsorptionEffect(new Vector2(x, y))
+    this.calculatedAdsorptionEffect(worldPoint)
+    let x = this.activePort?.position.x ?? getClosestTimesVal(worldPoint.x, globalConfig.moveSize)
+    let y = this.activePort?.position.y ?? getClosestTimesVal(worldPoint.y, globalConfig.moveSize)
 
     if (this.wire) {
       const lastPoint = this.wire.userData._points[this.wire.userData._points.length - 1]
@@ -145,32 +147,14 @@ export default class ToolDrawWire extends ToolBase {
     }
   }
   calculatedAdsorptionEffect(point: Vector2) {
-    this.leafList.reset()
-    this.editor.tree.traverse((item) => {
-      if ((item.tag === 'Img' && item.userData.ellipseData && item.bounds.hitPoint(point))) {
-        this.leafList.add(item)
-      }
-    })
-    this.ellipse.state = 'none'
-    const list = this.leafList.list
-    for (let index = 0; index < list.length; index++) {
-      const target = list[index];
-      const ellipseData: { x: number, y: number }[] = target.userData.ellipseData
-      for (let i = 0; i < ellipseData.length; i++) {
-        const element = ellipseData[i];
-        const ellipseWorldPoint = new Vector2(element.x, element.y).applyMatrix3(target.worldMatrix)
-        // 相等
-        if (Math.abs(ellipseWorldPoint.x - point.x) < 1 && Math.abs(ellipseWorldPoint.y - point.y) < 1) {
-          this.ellipse.state = 'hoverEnter'
-          this.ellipse.position.copy(ellipseWorldPoint)
-          this.ellipse.computeBoundsBox(true)
-
-          return
-        }
-      }
+    const tolerance = this.editor.tree.getWorldLenByPage(8, 0).x
+    this.activePort = findWirePort(this.editor.tree, point, tolerance)
+    this.ellipse.state = this.activePort ? 'hoverEnter' : 'none'
+    if (this.activePort) {
+      this.ellipse.position.copy(this.activePort.position)
+      this.ellipse.computeBoundsBox(true)
     }
     this.editor.sky.render()
-
   }
 
   active() {
@@ -188,6 +172,7 @@ export default class ToolDrawWire extends ToolBase {
       this.wire = null
     }
     this.ellipse.state = 'none'
+    this.activePort = null
     this.editor.sky.remove(this.ellipse)
     this.editor.selector.hittable = true
     this.editor.guideline.visible = false
@@ -198,4 +183,3 @@ export default class ToolDrawWire extends ToolBase {
   }
 
 }
-

@@ -93,7 +93,7 @@ const ToolZoom = () => {
     setTools(tools)
 
     return () => {
-      // editor.app.tree.off(LayoutEvent.AFTER, zoomChange)
+      editor.orbitControler.removeEventListener(OrbitEvent.CHANGE, zoomChange)
       tools.forEach(tool => {
         if (!tool.keyboard) return
         editor.keybord && editor.keybord.unRegister(tool.name)
@@ -175,6 +175,7 @@ const ToolZoom = () => {
               if (!editor) return
               editor.ruler.visible = !rulerVisible
               setRulerVisible(!rulerVisible)
+              editor.sky.render()
             }}
           >
             <span className="flex justify-between items-center ">

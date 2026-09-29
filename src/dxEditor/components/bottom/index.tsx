@@ -14,11 +14,6 @@ const Bottom = () => {
 
   const [opacity, setOpacity] = useState(100)
 
-  const change = (e)=>{
-    console.log('e',e);
-    
-  }
-
   useEffect(() => {
     if (!editor) return
 

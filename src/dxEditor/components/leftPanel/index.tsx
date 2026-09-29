@@ -10,7 +10,7 @@ import './index.scss'
 import { Tabs, TabsProps } from 'antd'
 
 import Assets from './metafile/index'
-// import Layer from './layer'
+import Layer from './layer'
 const items: TabsProps['items'] = [
   {
     key: 'element',
@@ -18,12 +18,11 @@ const items: TabsProps['items'] = [
     forceRender:true,
     children: <Assets />
   },
-  // {
-  //   key: 'layer',
-  //   label: '图层',
-  //   forceRender:true,
-  //   children: <Layer />
-  // }
+  {
+    key: 'layer',
+    label: '图层',
+    children: <Layer />
+  }
 ]
 
 const Structure = () => {
@@ -34,4 +33,3 @@ const Structure = () => {
   )
 }
 export default Structure
-

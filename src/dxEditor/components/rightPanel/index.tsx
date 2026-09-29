@@ -9,7 +9,7 @@ import globalConfig from '@/dxEditor/config'
 import { Collapse, Empty, Slider } from 'antd'
 import { useContext, useEffect, useState } from 'react'
 import EditorContext from '@/dxEditor/context'
-import { Text, Line, Img, Box, IPointerEvent } from '@/dxCanvas'
+import { Text, Line, Img, Box, Rect, IPointerEvent } from '@/dxCanvas'
 import { EditorEvent,PointerEvent } from '@/dxEditor/event'
 import CanvasSettings from './canvasSetting'
 import BusbarSetting from './busbar'
@@ -17,6 +17,7 @@ import WireSetting from './wire'
 import TextSetting from './text'
 import CircuitSetting from './circuit'
 import BtnSetting from './btn'
+import GeometrySetting from './geometry'
 import { getClosestTimesVal, toFixed } from '@/dxEditor/utils'
 
 const Panel = () => {
@@ -48,6 +49,7 @@ const Panel = () => {
     editor.addEventListener(PointerEvent.MOVE, onMove)    
     return () => {
       editor.removeEventListener(EditorEvent.SELECT, change)
+      editor.removeEventListener(PointerEvent.MOVE, onMove)
     }
   }, [editor])
 
@@ -60,6 +62,8 @@ const Panel = () => {
       return <TextSetting selectList={selectList} />
     } else if (selectList.every(element => element instanceof Img)) {
       return <CircuitSetting selectList={selectList} />
+    } else if (selectList.every(element => element instanceof Rect)) {
+      return <GeometrySetting selectList={selectList} title="矩形" />
     }else if (selectList.every(element => element instanceof Box)) {
       return <BtnSetting selectList={selectList} />
     } else {

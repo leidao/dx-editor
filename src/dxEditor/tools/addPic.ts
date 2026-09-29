@@ -8,7 +8,7 @@
 
 import { EditorView } from '@/dxEditor'
 import ToolBase from './toolBase'
-import { DragEvent, EditorEvent, KeyEvent, PointerEvent } from '@/dxEditor/event'
+import { EditorEvent, KeyEvent, PointerEvent } from '@/dxEditor/event'
 import { IPointerEvent } from '@/dxCanvas/event'
 import { getClosestTimesVal, loadSVG, toURL } from '../utils'
 import globalConfig from '@/dxEditor/config'
@@ -16,21 +16,25 @@ import { Img } from '@/dxCanvas'
 export default class ToolAddPic extends ToolBase {
   readonly type = 'addPic'
   image?: Img
+  private activationId = 0
   constructor(editor: EditorView) {
     super(editor)
   }
   onTap = (event: PointerEvent) => {
-    if (!this.image) return
+    const image = this.image
+    if (!image) return
     // 获取world坐标
     const { clientX, clientY } = event.origin as IPointerEvent
     const worldPoint = this.editor.tree.getWorldByClient(clientX, clientY)
     // 获取网格的倍数坐标
-    const x = getClosestTimesVal(worldPoint.x - this.image.size.x / 2, globalConfig.moveSize)
-    const y = getClosestTimesVal(worldPoint.y - this.image.size.y / 2, globalConfig.moveSize)
-    this.image.position.set(x, y)
-    this.image.computeBoundsBox(true)
+    const x = getClosestTimesVal(worldPoint.x - image.size.x / 2, globalConfig.moveSize)
+    const y = getClosestTimesVal(worldPoint.y - image.size.y / 2, globalConfig.moveSize)
+    this.editor.sky.remove(image)
+    this.image = undefined
+    image.position.set(x, y)
+    this.editor.tree.add(image)
     this.editor.tree.render()
-    this.editor.dispatchEvent(EditorEvent.ADD, new EditorEvent('add', { target: this.image }))
+    this.editor.dispatchEvent(EditorEvent.ADD, new EditorEvent('add', { target: image }))
     this.editor.tool.setActiveTool('operationGraph')
   }
   onMove = (event: PointerEvent) => {
@@ -41,18 +45,13 @@ export default class ToolAddPic extends ToolBase {
     const y = getClosestTimesVal(worldPoint.y - this.image.size.y / 2, globalConfig.moveSize)
     this.image.position.set(x, y)
     this.image.computeBoundsBox(true)
-    this.editor.tree.render()
+    this.editor.sky.render()
   }
 
   onKeydown = (event: KeyEvent) => {
     const { code } = event.origin as KeyboardEvent
     switch (code) {
       case 'Escape':
-        if (this.image) {
-          this.editor.tree.remove(this.image)
-          this.image = undefined
-          this.editor.tree.render()
-        }
         this.editor.tool.setActiveTool('operationGraph')
         break;
       default:
@@ -60,7 +59,9 @@ export default class ToolAddPic extends ToolBase {
     }
   }
   active(src: string) {
+    const activationId = ++this.activationId
     loadSVG(src).then(svgDocument => {
+      if (activationId !== this.activationId) return
       const svg = svgDocument.querySelectorAll('svg');
       // 获取svg的大小
       const width = +(svg[0].getAttribute('width') || 70)
@@ -111,9 +112,15 @@ export default class ToolAddPic extends ToolBase {
         },
         selectStyle: {
           src: hoverSrc
-        }
+        },
+        userData: { ellipseData: data, portSize: [width, height] }
       })
-      this.editor.tree.add(this.image)
+      this.editor.sky.add(this.image)
+      this.editor.sky.render()
+    }).catch(() => {
+      if (activationId === this.activationId) this.editor.tool.setActiveTool('operationGraph')
+    }).finally(() => {
+      if (src.startsWith('blob:')) URL.revokeObjectURL(src)
     })
     this.editor.selector.hittable = false
     this.editor.guideline.visible = true
@@ -123,6 +130,11 @@ export default class ToolAddPic extends ToolBase {
     this.editor.addEventListener(KeyEvent.HOLD, this.onKeydown)
   }
   inactive() {
+    this.activationId++
+    if (this.image) {
+      this.editor.sky.remove(this.image)
+      this.image = undefined
+    }
     this.editor.selector.hittable = true
     this.editor.guideline.visible = false
     this.editor.sky.render()
@@ -131,4 +143,3 @@ export default class ToolAddPic extends ToolBase {
     this.editor.removeEventListener(KeyEvent.HOLD, this.onKeydown)
   }
 }
-
