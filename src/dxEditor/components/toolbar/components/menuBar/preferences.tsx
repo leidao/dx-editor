@@ -21,7 +21,7 @@ const Preferences = () => {
 
   return (
     <>
-      <Dropdown menu={{ items }} placement="bottomLeft" overlayStyle={{ minWidth: '188px' }}>
+      <Dropdown menu={{ items }} trigger={['click']} placement="bottomLeft" overlayStyle={{ minWidth: '188px' }}>
         <Button type="text">设置</Button>
       </Dropdown>
       <Modal title="快捷键设置" open={open} footer={null} onCancel={() => setOpen(false)}>

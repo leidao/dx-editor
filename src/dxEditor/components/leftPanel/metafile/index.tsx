@@ -55,16 +55,16 @@ const PicAssets: React.FC<Props> = ({ className = '' }) => {
       <div className="w-43px text-#202020 bg-#eee">
         {imgData.map((data) => {
           return (
-            <div
+            <button type="button"
               key={data.name}
-              className="cursor-pointer hover:text-#0f8fff"
+              className="cursor-pointer hover:text-#0f8fff border-0 p-0 text-left"
               style={styleFn(data.name)}
               onClick={() => {
                 setSelected(data.name)
               }}
             >
-              <div className="my-20px mx-10px">{data.name}</div>
-            </div>
+              <span className="block my-20px mx-10px">{data.name}</span>
+            </button>
           )
         })}
       </div>
@@ -82,8 +82,9 @@ const PicAssets: React.FC<Props> = ({ className = '' }) => {
       >
         {imgs.map((img) => {
           return (
-            <div
+            <button type="button"
               key={img.id}
+              aria-label={`放置${img.name}`}
               className="w-82px h-80px p-6px box-border cursor-pointer border-1px hover:border-#666 rounded-6px border-#fff flex flex-col justify-between"
               onClick={() => editor?.tool.setActiveTool('addPic', img.url)}
             >
@@ -96,13 +97,13 @@ const PicAssets: React.FC<Props> = ({ className = '' }) => {
                 onDragEnd={dragend}
                 className="cursor-copy"
               />
-              <div
-                className="max-w-70px text-center"
+              <span
+                className="block max-w-70px text-center"
                 style={{ font: '16px arial, sans-serif' }}
               >
                 {img.name}
-              </div>
-            </div>
+              </span>
+            </button>
           )
         })}
       </div>

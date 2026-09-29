@@ -451,7 +451,7 @@ const ToolBtn = () => {
           <div key={index} className='flex items-center '>
             {item.map(tool => (
               <Tooltip key={tool.name} placement="bottom" title={tool.tip} arrow={false}>
-                <Button disabled={tool.disabled} type='text' className='w-28px h-28px p-6px mx-2px'
+                <Button disabled={tool.disabled} type='text' aria-label={tool.name} className='w-28px h-28px p-6px mx-2px'
                   icon={<tool.icon style={{ fill: tool.disabled ? '#ccc' : '#000' }} />} onClick={tool.action} />
               </Tooltip>
             ))}

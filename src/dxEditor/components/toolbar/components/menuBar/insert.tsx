@@ -65,6 +65,7 @@ const Insert = () => {
   
   return (
     <Popover
+      trigger="click"
       open={open}
       onOpenChange={(newOpen)=>setOpen(newOpen)}
       placement="bottomLeft"
@@ -74,14 +75,15 @@ const Insert = () => {
       content={menus?.map((menu, index) => {
         return menu.type === 'divider' ?
           <Divider className='my-2px' key={index}/> :
-          <div key={index} className='flex items-center hover:bg-#f5f5f5 p-6px rounded-6px' onClick={() => {
+          <button type="button" key={index} disabled={menu.disabled}
+            className='w-100% flex items-center text-left hover:bg-#f5f5f5 p-6px rounded-6px border-0 bg-transparent' onClick={() => {
             menu.action()
             setOpen(false);
           }} style={{ cursor: menu.disabled ? 'not-allowed' : 'pointer' }}>
             <menu.icon style={{ fill: menu.disabled ? '#ccc' : '#000' }} />
             <span className='text-12px ml-14px flex-1' style={{ color: menu.disabled ? '#ccc' : '#000' }}>{menu.name}</span>
             <span className='text-12px' style={{ color: menu.disabled ? '#ccc' : '#000' }}>{menu.tip}</span>
-          </div>
+          </button>
       })}>
       <Button type="text">放置</Button>
     </Popover>
