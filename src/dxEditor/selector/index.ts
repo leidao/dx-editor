@@ -177,6 +177,7 @@ export default class Selector {
   onDown = (e: PointerEvent) => {
     // 在编辑中或者不允许交互不进入判断
     if (this.editing || !this.hittable) return
+    if (this.editor.vertexEditor?.capture(e)) return
     // const { app } = this
     const oldList = this.leafList.clone()
     const find = this.findUI(e)
@@ -235,6 +236,7 @@ export default class Selector {
   onDragStart = (event: DragEvent) => {
     // 不允许交互
     if (!this.hittable) return
+    if (this.editor.vertexEditor?.capturing) return
     const find = this.findUI(event)
     this.dragging = !!find
     this.downData = event.origin as IPointerEvent
@@ -253,6 +255,7 @@ export default class Selector {
   onDrag = (event: DragEvent) => {
     // 不允许交互
     if (!this.hittable) return
+    if (this.editor.vertexEditor?.capturing) return
     if (this.dragging) {
       const { downData } = this
       if (!downData) return
@@ -283,6 +286,7 @@ export default class Selector {
   onDragEnd = (event: DragEvent) => {
     // 不允许交互
     if (!this.hittable) return
+    if (this.editor.vertexEditor?.capturing) return
     if (this.dragging) {
       this.list.forEach(element => {
         const tag = element.editOuter as string
@@ -321,7 +325,7 @@ export default class Selector {
       }
     }
   }
-  closeInnerEditor() {
+  closeInnerEditor(cancel = false) {
     if (this.single && this.element.editable) {
       const editTarget = this.element
       const tag = editTarget.editInner || 'EditTool'
@@ -329,8 +333,8 @@ export default class Selector {
       if (editTool.closeInnerEditor) {
         this.editing = false
         editTool.closeInnerEditor()
-        this.editor.dispatchEvent(EditorEvent.CLOSEINNEREDIT, new EditorEvent('closeInnerEdit', { target: editTarget as Object2D }))
-        this.editor.dispatchEvent(EditorEvent.UPDATE, new EditorEvent('update'))
+        this.editor.dispatchEvent(EditorEvent.CLOSEINNEREDIT, new EditorEvent('closeInnerEdit', { target: editTarget as Object2D, cancel }))
+        if (!cancel) this.editor.dispatchEvent(EditorEvent.UPDATE, new EditorEvent('update'))
       }
     }
   }

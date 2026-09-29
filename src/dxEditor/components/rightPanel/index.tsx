@@ -9,7 +9,7 @@ import globalConfig from '@/dxEditor/config'
 import { Collapse, Empty, Slider } from 'antd'
 import { useContext, useEffect, useState } from 'react'
 import EditorContext from '@/dxEditor/context'
-import { Text, Line, Img, Box, Rect, IPointerEvent } from '@/dxCanvas'
+import { Text, Line, Img, Box, Rect, Ellipse, IPointerEvent } from '@/dxCanvas'
 import { EditorEvent,PointerEvent } from '@/dxEditor/event'
 import CanvasSettings from './canvasSetting'
 import BusbarSetting from './busbar'
@@ -64,6 +64,8 @@ const Panel = () => {
       return <CircuitSetting selectList={selectList} />
     } else if (selectList.every(element => element instanceof Rect)) {
       return <GeometrySetting selectList={selectList} title="矩形" />
+    } else if (selectList.every(element => element instanceof Ellipse)) {
+      return <GeometrySetting selectList={selectList} title="圆/椭圆" />
     }else if (selectList.every(element => element instanceof Box)) {
       return <BtnSetting selectList={selectList} />
     } else {

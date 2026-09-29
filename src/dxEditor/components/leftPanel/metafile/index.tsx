@@ -6,6 +6,7 @@
  * @LastEditTime: 2024-10-24 11:02:15
  */
 import { useContext, useState } from 'react'
+import { Input } from 'antd'
 
 import EditorContext from '@/dxEditor/context'
 
@@ -16,9 +17,10 @@ type Props = {
 const PicAssets: React.FC<Props> = ({ className = '' }) => {
   const editor = useContext(EditorContext)
   const [selected, setSelected] = useState('元件')
-  const [imgs, setImgs] = useState<Children[]>(
-    imgData.find((data) => data.name === selected)?.children || []
-  )
+  const [query, setQuery] = useState('')
+  const imgs: Children[] = query.trim()
+    ? imgData.flatMap(data => data.children).filter(img => img.name.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()))
+    : imgData.find(data => data.name === selected)?.children || []
   const dragstart = (event: React.DragEvent<HTMLImageElement>) => {
     const img = event.target as HTMLImageElement | null
     if (!editor || !img) return
@@ -59,7 +61,6 @@ const PicAssets: React.FC<Props> = ({ className = '' }) => {
               style={styleFn(data.name)}
               onClick={() => {
                 setSelected(data.name)
-                setImgs(data.children)
               }}
             >
               <div className="my-20px mx-10px">{data.name}</div>
@@ -67,6 +68,9 @@ const PicAssets: React.FC<Props> = ({ className = '' }) => {
           )
         })}
       </div>
+      <div className="flex-1 min-w-0 flex flex-col">
+      <Input size="small" className="m-6px w-auto" placeholder="搜索图元；点击后在画布放置" value={query}
+        onChange={event => setQuery(event.target.value)} allowClear />
       <div
         className="flex-1 p-10px overflow-auto"
         style={{
@@ -81,6 +85,7 @@ const PicAssets: React.FC<Props> = ({ className = '' }) => {
             <div
               key={img.id}
               className="w-82px h-80px p-6px box-border cursor-pointer border-1px hover:border-#666 rounded-6px border-#fff flex flex-col justify-between"
+              onClick={() => editor?.tool.setActiveTool('addPic', img.url)}
             >
               <img
                 src={img.url}
@@ -100,6 +105,7 @@ const PicAssets: React.FC<Props> = ({ className = '' }) => {
             </div>
           )
         })}
+      </div>
       </div>
     </div>
   )

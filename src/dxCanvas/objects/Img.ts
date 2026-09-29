@@ -132,24 +132,20 @@ export class Img extends Object2D {
 
   /* 计算边界盒子 */
   computeBoundsBox(updateParentBoundsBox = true) {
-    const {
-      bounds: { min, max },
-      size,
-      offset,
-    } = this
     this.bounds.clear()
-    min.copy(offset)
-    max.addVectors(offset, size)
-    min.applyMatrix3(this.worldMatrix)
-    max.applyMatrix3(this.worldMatrix)
-    this.bounds.expand(min.clone(),max.clone())
+    for (const x of [0, this.size.x]) for (const y of [0, this.size.y]) {
+      const point = new Vector2(x, y).applyMatrix3(this.moMatrix)
+      this.bounds.expand(point)
+    }
     updateParentBoundsBox && this.parent?.computeBoundsBox()
   }
 
   /** 点位是否在图形中 */
   isPointInGraph(point: Vector2) {
-    const isPointInBounds = this.isPointInBounds(point)
-    return isPointInBounds ? this : false
+    if (!this.isPointInBounds(point)) return false
+    const local = point.clone().applyMatrix3(this.moMatrix.clone().invert())
+    return local.x >= Math.min(0, this.size.x) && local.x <= Math.max(0, this.size.x) &&
+      local.y >= Math.min(0, this.size.y) && local.y <= Math.max(0, this.size.y) ? this : false
   }
 
   toJSON() {

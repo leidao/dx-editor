@@ -50,7 +50,7 @@ export class Ellipse extends Object2D {
 
   /* 绘图 */
   drawShape(ctx: CanvasRenderingContext2D) {
-    const { width, height, innerRadius, startAngle, endAngle, _style } = this;
+    const { width, height, startAngle, endAngle, _style } = this;
     // 应用样式
     this.applyStyle(ctx);
 
@@ -64,19 +64,8 @@ export class Ellipse extends Object2D {
     const startRad = startAngle * (Math.PI / 180);
     const endRad = endAngle * (Math.PI / 180);
 
-    ctx.moveTo(centerX, centerY);
-
-    // 绘制到起始角度对应的椭圆上的点
-    let startX = centerX + a * Math.cos(startRad);
-    let startY = centerY + b * Math.sin(startRad);
-    ctx.lineTo(startX, startY);
-    // 绘制椭圆
-    ctx.ellipse(centerX,centerY,a,b,0,startRad,endRad)
-    // 绘制到结束角度对应的椭圆上的点
-    let endX = centerX + a * Math.cos(endRad);
-    let endY = centerY + b * Math.sin(endRad);
-    ctx.lineTo(endX, endY);
-    // 闭合路径回到圆心
+    if (Math.abs(endAngle - startAngle) < 360) ctx.moveTo(centerX, centerY)
+    ctx.ellipse(centerX, centerY, Math.abs(a), Math.abs(b), 0, startRad, endRad)
     ctx.closePath();
 
     for (const method of _style.drawOrder) {
@@ -87,23 +76,24 @@ export class Ellipse extends Object2D {
 
   /** 获取包围盒数据 */
   computeBoundsBox(updateParentBoundsBox = true) {
-    const {
-      width,
-      height,
-      bounds: { min, max },
-    } = this;
-    min.set(-Math.abs(width) / 2, -Math.abs(height) / 2)
-    max.set(Math.abs(width) / 2, Math.abs(height) / 2)
-    min.applyMatrix3(this.worldMatrix);
-    max.applyMatrix3(this.worldMatrix);
-    this.bounds.expand(min.clone(),max.clone())
+    const halfWidth = Math.abs(this.width) / 2
+    const halfHeight = Math.abs(this.height) / 2
+    this.bounds.clear()
+    for (const x of [-halfWidth, halfWidth]) for (const y of [-halfHeight, halfHeight]) {
+      const point = new Vector2(x, y).applyMatrix3(this.worldMatrix)
+      this.bounds.expand(point, point)
+    }
     updateParentBoundsBox && this.parent?.computeBoundsBox();
   }
 
   /** 点位是否在图形中 */
   isPointInGraph(point: Vector2) {
-    const isPointInBounds = this.isPointInBounds(point);
-    return isPointInBounds ? this : false
+    if (!this.isPointInBounds(point) || !this.width || !this.height) return false
+    if (Math.abs(this.endAngle - this.startAngle) < 360) return this
+    const local = point.clone().applyMatrix3(this.worldMatrix.clone().invert())
+    const x = local.x / (this.width / 2)
+    const y = local.y / (this.height / 2)
+    return x * x + y * y <= 1 ? this : false
   }
 
   toJSON() {

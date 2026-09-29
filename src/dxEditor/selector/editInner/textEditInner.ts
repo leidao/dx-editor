@@ -94,7 +94,7 @@ export default class TextEditInner extends EditTool {
   }
 
   onEscape = (e: KeyboardEvent) => {
-    if (e.code === 'Escape') this.editor.selector.closeInnerEditor()
+    if (e.code === 'Escape') this.editor.selector.closeInnerEditor(this.editor.tool.getActiveToolName() === 'drawText')
   }
   onUpdate = () => {
     const { selector } = this.editor

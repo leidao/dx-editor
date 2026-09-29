@@ -16,6 +16,8 @@ import 导线 from '@/dxEditor/components/toolbar/icons/导线.svg?react'
 import 母线 from '@/dxEditor/components/toolbar/icons/母线.svg?react'
 import 按钮 from '@/dxEditor/components/toolbar/icons/按钮.svg?react'
 import 矩形 from '@/dxEditor/components/toolbar/icons/矩形.svg?react'
+import 圆 from '@/dxEditor/components/toolbar/icons/圆.svg?react'
+import 椭圆 from '@/dxEditor/components/toolbar/icons/椭圆.svg?react'
 
 const Insert = () => {
   const editor = useContext(EditorContext)
@@ -54,6 +56,8 @@ const Insert = () => {
         icon: 矩形,
         action: () => editor.tool.setActiveTool('drawRect')
       },
+      { name: '圆', tip: 'C', icon: 圆, action: () => editor.tool.setActiveTool('drawCircle') },
+      { name: '椭圆', tip: 'E', icon: 椭圆, action: () => editor.tool.setActiveTool('drawEllipse') },
     ];
     setMenus(menus)
   }, [editor])

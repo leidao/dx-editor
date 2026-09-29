@@ -7,8 +7,7 @@
  */
 
 import { IObject, Object2D, Object2DType } from './Object2D'
-import { Line, LineType } from './Line'
-import { BasicStyleType, StandStyle, StandStyleType } from '../style'
+import { StandStyle, StandStyleType } from '../style'
 import { generateUUID, Vector2 } from '../math'
 import { Creator } from '../utils'
 
@@ -28,18 +27,18 @@ export class Rect extends Object2D {
   _style: StandStyle = new StandStyle()
   style: StandStyleType = {}
   public get tag() { return 'Rect' }
-  constructor(attr: LineType = {}) {
+  constructor(attr: RectType = {}) {
     super()
     this.setOption(attr)
   }
 
   /* 属性设置 */
-  setOption(attr: LineType) {
+  setOption(attr: RectType) {
     for (const [key, val] of Object.entries(attr)) {
       switch (key) {
         case 'position':
         case 'scale':
-          this[key].fromArray(val)
+          this[key].fromArray(val as [number, number])
           break
         case 'tag':
           break
@@ -72,26 +71,21 @@ export class Rect extends Object2D {
 
   /** 获取包围盒数据 */
   computeBoundsBox(updateParentBoundsBox = true) {
-    const {
-      width,
-      height,
-      bounds: { min, max },
-      pickingBuffer
-    } = this
-    // 根据点计算边界
-    min.set(width < 0 ? width : 0, height < 0 ? height : 0)
-    max.set(width > 0 ? width : 0, height > 0 ? height : 0)
-    min.applyMatrix3(this.worldMatrix)
-    max.applyMatrix3(this.worldMatrix)
-    this.bounds.expand(min.clone(), max.clone())
+    this.bounds.clear()
+    for (const x of [0, this.width]) for (const y of [0, this.height]) {
+      const point = new Vector2(x, y).applyMatrix3(this.worldMatrix)
+      this.bounds.expand(point)
+    }
 
     updateParentBoundsBox && this.parent?.computeBoundsBox()
   }
 
   /** 点位是否在图形中 */
   isPointInGraph(point: Vector2) {
-    const isPointInBounds = this.isPointInBounds(point)
-    return isPointInBounds ? this : false
+    if (!this.isPointInBounds(point)) return false
+    const local = point.clone().applyMatrix3(this.worldMatrix.clone().invert())
+    return local.x >= Math.min(0, this.width) && local.x <= Math.max(0, this.width) &&
+      local.y >= Math.min(0, this.height) && local.y <= Math.max(0, this.height) ? this : false
   }
 
   toJSON() {

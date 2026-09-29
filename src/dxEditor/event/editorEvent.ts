@@ -13,7 +13,7 @@ type Type =
   'hover' | 'hoverLeave' | 'hoverEnter' | 'select' | 'unselect' |
   'add' | 'update' | 'remove' | 'before_paste' | 'paste' | 'shear' | 'copy' |
   'openInnerEdit' | 'closeInnerEdit' | 'drag' | 'end' | 'start' |
-  'redo' | 'undo' | 'reset'
+  'redo' | 'undo' | 'reset' | 'find' | 'save'
 
 export class EditorEvent extends IEvent {
 
@@ -35,8 +35,11 @@ export class EditorEvent extends IEvent {
   static CLOSEINNEREDIT = 'editor.closeInnerEdit'
 
   static HISTORY_CHANGE = 'editor.history_change'
+  static FIND = 'editor.find'
+  static SAVE = 'editor.save'
 
-  constructor(type: Type, data: { target?: Object2D | Object2D[], origin?: PointerEvent | DragEvent | null } = {}) {
+  cancel?: boolean
+  constructor(type: Type, data: { target?: Object2D | Object2D[], origin?: PointerEvent | DragEvent | null, cancel?: boolean } = {}) {
     super(type)
     Object.assign(this, data)
   }

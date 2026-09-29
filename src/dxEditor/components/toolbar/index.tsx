@@ -9,6 +9,7 @@
 import MenuBar from './components/menuBar'
 import ToolBtn from './components/toolBtn'
 import ToolZoom from './components/toolZoom'
+import SearchDialog from './searchDialog'
 type Props = {
   className?: string
 }
@@ -21,6 +22,7 @@ const ToolBar: React.FC<Props> = ({ className = '' }) => {
       <div className='flex justify-center items-center '>
         <ToolBtn></ToolBtn>
         <ToolZoom></ToolZoom>
+        <SearchDialog />
       </div>
 
     </div>

@@ -12,6 +12,7 @@ import _ from 'lodash'
 import NumberInput from '../components/numberInput'
 import { Line, StandStyleType } from '@/dxCanvas'
 import { EditorEvent } from '@/dxEditor/event'
+import LineVertices from '../lineVertices'
 
 const patternOptions = [
   { value: 'solid', label: '实线' },
@@ -136,6 +137,7 @@ const Busbar: React.FC<Props> = ({ selectList }) => {
           ),
         }
       ]} />
+      <LineVertices selectList={selectList} />
     </div>
   )
 }

@@ -6,8 +6,7 @@
  * @LastEditTime: 2024-11-04 15:15:26
  */
 
-import { Button, Divider, Tooltip, Upload, message } from 'antd'
-import FileSaver from 'file-saver'
+import { Button, Divider, Tooltip, Upload } from 'antd'
 import { useContext, useEffect, useState } from 'react'
 import { isWindows } from '@/dxEditor/utils'
 import EditorContext from '@/dxEditor/context'
@@ -44,6 +43,8 @@ import 文字 from '@/dxEditor/components/toolbar/icons/文字.svg?react'
 import 按钮 from '@/dxEditor/components/toolbar/icons/按钮.svg?react'
 import 图片 from '@/dxEditor/components/toolbar/icons/图片.svg?react'
 import 矩形 from '@/dxEditor/components/toolbar/icons/矩形.svg?react'
+import 圆 from '@/dxEditor/components/toolbar/icons/圆.svg?react'
+import 椭圆 from '@/dxEditor/components/toolbar/icons/椭圆.svg?react'
 
 import ToolDrawWire from '@/dxEditor/tools/drawWire'
 import ToolBase from '@/dxEditor/tools/toolBase'
@@ -58,6 +59,7 @@ import { EditorEvent } from '@/dxEditor/event'
 import { degToRad } from '@/dxCanvas'
 import ToolAddPic from '@/dxEditor/tools/addPic'
 import ToolDrawRect from '@/dxEditor/tools/drawRect'
+import ToolDrawEllipse from '@/dxEditor/tools/drawEllipse'
 
 type Tool = {
   name: string
@@ -83,7 +85,7 @@ const ToolBtn = () => {
           tip: `新建`,
           icon: 新建,
           action: () => {
-            if (editor.tree.children.length > 0 && !window.confirm('新建图纸会清空当前内容，继续吗？')) return
+            if (!editor.documentSession.confirmDiscard()) return
             editor.importJson({ children: [] })
           }
         },
@@ -92,10 +94,7 @@ const ToolBtn = () => {
           tip: `保存 ${isWindows ? 'Ctrl+S' : '⌘s'}`,
           icon: 保存,
           keyboard: 'ctrl+s',
-          action: () => FileSaver.saveAs(
-            new Blob([JSON.stringify(editor.tree.toJSON())], { type: 'application/json' }),
-            'dx_editor.json'
-          )
+          action: () => editor.dispatchEvent(EditorEvent.SAVE, new EditorEvent('save'))
         }
       ],
       [
@@ -159,10 +158,7 @@ const ToolBtn = () => {
           icon: 查找,
           keyboard: 'ctrl+f',
           // disabled:true,
-          action: () => {
-            const query = window.prompt('查找图元名称或文本')?.trim()
-            if (query && !editor.find(query)) message.info('未找到匹配的图元')
-          }
+          action: () => editor.dispatchEvent(EditorEvent.FIND, new EditorEvent('find'))
         },
         {
           name: '放大',
@@ -352,6 +348,16 @@ const ToolBtn = () => {
           keyboard: 'r',
           instance: new ToolDrawRect(editor),
           action: () => editor.tool.setActiveTool('drawRect')
+        },
+        {
+          name: '圆', tip: '圆 C', icon: 圆, keyboard: 'c',
+          instance: new ToolDrawEllipse(editor, true),
+          action: () => editor.tool.setActiveTool('drawCircle')
+        },
+        {
+          name: '椭圆', tip: '椭圆 E', icon: 椭圆, keyboard: 'e',
+          instance: new ToolDrawEllipse(editor),
+          action: () => editor.tool.setActiveTool('drawEllipse')
         },
       ],
     ]

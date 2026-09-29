@@ -6,7 +6,7 @@
  * @LastEditTime: 2024-10-29 16:16:11
  */
 
-import { Button, Divider, Dropdown, MenuProps, Popover, Tooltip, message } from 'antd'
+import { Button, Divider, Dropdown, MenuProps, Popover, Tooltip } from 'antd'
 import { useContext, useEffect, useState } from 'react'
 
 import EditorContext from '@/dxEditor/context'
@@ -106,10 +106,7 @@ const Edit = () => {
         name: '查找',
         tip: `${isWindows ? 'Ctrl+F' : '⌘f'}`,
         icon: 查找,
-        action: () => {
-          const query = window.prompt('查找图元名称或文本')?.trim()
-          if (query && !editor.find(query)) message.info('未找到匹配的图元')
-        }
+        action: () => editor.dispatchEvent(EditorEvent.FIND, new EditorEvent('find'))
       },
     ];
 

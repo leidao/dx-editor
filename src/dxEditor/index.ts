@@ -23,6 +23,8 @@ import CursorManger from './cursor/cursorManager'
 import { Creator } from '@/dxCanvas/utils'
 import data from './data.json'
 import { syncWireConnections } from './wireConnections'
+import DocumentSession from './documentSession'
+import LineVertexEditor from './lineVertexEditor'
 
 type Option = {
   container: HTMLDivElement
@@ -64,6 +66,8 @@ export class EditorView extends EventDispatcher {
   tool = new ToolManager(this)
   keybord = new KeybordManger(this)
   history = new HistoryManager(this)
+  documentSession!: DocumentSession
+  vertexEditor!: LineVertexEditor
   cursor = new CursorManger(this)
   pastetype = ''
   pasteData = new Group({ name: '粘贴组', hitBounds: false, style: { globalAlpha: 0.3 } })
@@ -85,11 +89,15 @@ export class EditorView extends EventDispatcher {
     this.ruler = new Ruler(this)
     // this.sky.add(this.maskGroup)
     this.sky.add(this.guideline)
+    this.vertexEditor = new LineVertexEditor(this)
 
     this.exportJson(data.children)
     this.keybord.hotkeys.showAll()
     this.dispatchEvent(EditorEvent.UPDATE, new EditorEvent('add'))
     this.render()
+
+    this.documentSession = new DocumentSession(this)
+    this.documentSession.restoreDraft()
 
     this.listen()
 
@@ -324,6 +332,7 @@ export class EditorView extends EventDispatcher {
     this.selector.cancel()
     this.replaceChildren(prepared)
     this.history.reset()
+    this.documentSession?.markSaved()
     this.render()
   }
 
@@ -348,26 +357,33 @@ export class EditorView extends EventDispatcher {
     }
   }
 
-  find(query: string) {
+  findAll(query: string): Object2D[] {
     const value = query.trim().toLocaleLowerCase()
-    if (!value) return false
-    let found: Object2D | undefined
+    if (!value) return []
+    const found: Object2D[] = []
     this.tree.traverse(item => {
-      if (found || item === this.tree) return
+      if (item === this.tree) return
       let ancestor: Object2D | undefined = item
       while (ancestor && ancestor !== this.tree) {
         if (!ancestor.visible || ancestor.locked) return
         ancestor = ancestor.parent
       }
       const content = item instanceof Text ? item.getText() : ''
-      if (item.name.toLocaleLowerCase().includes(value) || content.toLocaleLowerCase().includes(value)) found = item
+      if (item.name.toLocaleLowerCase().includes(value) || content.toLocaleLowerCase().includes(value)) found.push(item)
     })
-    if (!found) return false
-    let target: Object2D = found
-    while (target.parent && target.parent !== this.tree) target = target.parent
+    return found
+  }
+
+  focusObject(target: Object2D) {
     this.selector.select(target)
     this.orbitControler.zoomGraph([target])
     this.render()
+  }
+
+  find(query: string) {
+    const found = this.findAll(query)[0]
+    if (!found) return false
+    this.focusObject(found)
     return true
   }
 
@@ -442,6 +458,8 @@ export class EditorView extends EventDispatcher {
   }
 
   destroy() {
+    this.documentSession?.destroy()
+    this.vertexEditor?.destroy()
     if (this.selector.editing) this.selector.closeInnerEditor()
     this.tool.activeTool?.inactive()
     this.tool.destroy()

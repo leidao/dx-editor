@@ -15,6 +15,7 @@ import { EditorEvent, PointerEvent } from '@/dxEditor/event'
 import { IPointerEvent } from '@/dxCanvas/event'
 export default class ToolDrawText extends ToolBase {
   readonly type = 'drawText'
+  private createdText: Text | null = null
 
 
   constructor(editor: EditorView) {
@@ -43,6 +44,7 @@ export default class ToolDrawText extends ToolBase {
       },
     })
     this.editor.tree.add(text)
+    this.createdText = text
     // 打开内部编辑
     this.editor.guideline.visible = false
     this.editor.selector.openInnerEditor(text)
@@ -51,9 +53,14 @@ export default class ToolDrawText extends ToolBase {
   }
 
 
-  onCloseInnerEditor = () => {
+  onCloseInnerEditor = (event: EditorEvent) => {
+    const text = this.createdText
+    this.createdText = null
+    if (text && (event.cancel || !text.getText().trim())) {
+      this.editor.selector.cancel()
+      this.editor.tree.remove(text)
+    }
     this.editor.tree.render()
-    this.editor.dispatchEvent(EditorEvent.UPDATE, new EditorEvent('add'))
     // 设置toolbar为默认并且关闭监听鼠标点击事件
     this.editor.tool.setActiveTool('operationGraph')
   }
@@ -74,4 +81,3 @@ export default class ToolDrawText extends ToolBase {
     this.editor.selector.editing && this.editor.selector.closeInnerEditor()
   }
 }
-

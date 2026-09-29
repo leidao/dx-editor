@@ -51,6 +51,9 @@ export class Line extends Object2D {
   }
 
   /** 设置点位 */
+  getPoints(): [number, number][] {
+    return this.points.map(([x, y]) => [x, y])
+  }
   setPoints(points: [number, number][]) {
     this.points = points
     this.computeBoundsBox()

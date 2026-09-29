@@ -1,7 +1,8 @@
 import { Button, Dropdown, MenuProps, message, Spin, Upload } from 'antd'
-import { useContext, useRef, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import FileSaver from 'file-saver'
 import EditorContext from '@/dxEditor/context'
+import { EditorEvent } from '@/dxEditor/event'
 
 import 新建 from '@/dxEditor/components/toolbar/icons/新建.svg?react'
 import 打开 from '@/dxEditor/components/toolbar/icons/打开.svg?react'
@@ -22,6 +23,36 @@ const File = () => {
     const blob = new Blob([JSON.stringify(editor.tree.toJSON())], { type: 'application/json' })
     FileSaver.saveAs(blob, finalName)
     setFilename(finalName)
+    editor.documentSession.markSaved()
+  }
+
+  useEffect(() => {
+    if (!editor) return
+    const onSave = () => save()
+    editor.addEventListener(EditorEvent.SAVE, onSave)
+    return () => editor.removeEventListener(EditorEvent.SAVE, onSave)
+  }, [editor, filename])
+
+  const exportPng = () => {
+    if (!editor) return
+    editor.tree.render()
+    requestAnimationFrame(() => {
+      try {
+        const source = editor.tree._canvas
+        const canvas = document.createElement('canvas')
+        canvas.width = source.width
+        canvas.height = source.height
+        const context = canvas.getContext('2d')
+        if (!context) throw new Error('无法创建图片画布')
+        context.fillStyle = '#fff'
+        context.fillRect(0, 0, canvas.width, canvas.height)
+        context.drawImage(source, 0, 0)
+        canvas.toBlob(blob => {
+          if (blob) FileSaver.saveAs(blob, filename.replace(/\.json$/i, '') + '.png')
+          else message.error('PNG 导出失败')
+        }, 'image/png')
+      } catch { message.error('PNG 导出失败，请检查图元图片是否可用') }
+    })
   }
 
   const readFile = (file: File, options?: { onSuccess?: (value: null) => void; onError?: (error: Error) => void }) => {
@@ -30,7 +61,12 @@ const File = () => {
     reader.onload = () => {
       try {
         if (!editor || typeof reader.result !== 'string') throw new Error('图纸读取失败')
-        editor.importJson(JSON.parse(reader.result))
+        const drawing = JSON.parse(reader.result)
+        if (!editor.documentSession.confirmDiscard()) {
+          options?.onSuccess?.(null)
+          return
+        }
+        editor.importJson(drawing)
         setFilename(file.name)
         options?.onSuccess?.(null)
       } catch (error) {
@@ -52,7 +88,7 @@ const File = () => {
     {
       key: 'new', label: <span className="text-12px ml-10px">新建</span>, icon: <新建 />,
       onClick: () => {
-        if (!editor || (editor.tree.children.length > 0 && !window.confirm('新建图纸会清空当前内容，继续吗？'))) return
+        if (!editor || !editor.documentSession.confirmDiscard()) return
         editor.importJson({ children: [] })
         setFilename('dx_editor.json')
       }
@@ -83,6 +119,10 @@ const File = () => {
     {
       key: 'export', label: <span className="text-12px ml-10px">导出</span>, icon: <导出 />,
       onClick: () => save('dx_editor.json')
+    },
+    {
+      key: 'exportPng', label: <span className="text-12px ml-10px">导出当前视图 PNG</span>, icon: <导出 />,
+      onClick: exportPng
     }
   ]
 

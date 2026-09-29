@@ -28,6 +28,12 @@ let Line
 let ToolDrawWire
 let syncWireConnections
 let ToolDrawRect
+let ToolDrawText
+let ToolDrawEllipse
+let LineVertexEditor
+let DocumentSession
+let Ellipse
+let EditorEvent
 
 before(async () => {
   server = await createServer({
@@ -51,12 +57,17 @@ before(async () => {
     { default: AddPic },
     { default: KeybordManager },
     { EditorView },
-    { Rect, Group, Vector2, Text, Scene, Img, Line },
+    { Rect, Group, Vector2, Text, Scene, Img, Line, Ellipse },
     { loadSVG },
     { default: HistoryManager },
     { default: ToolDrawWire },
     { syncWireConnections },
-    { default: ToolDrawRect }
+    { default: ToolDrawRect },
+    { default: ToolDrawText },
+    { default: ToolDrawEllipse },
+    { default: LineVertexEditor },
+    { default: DocumentSession },
+    { EditorEvent }
   ] = await Promise.all([
     server.ssrLoadModule('/src/dxEditor/selector/index.ts'),
     server.ssrLoadModule('/src/dxEditor/keybord/hotkeys.ts'),
@@ -70,7 +81,12 @@ before(async () => {
     server.ssrLoadModule('/src/dxEditor/history/historyManager.ts'),
     server.ssrLoadModule('/src/dxEditor/tools/drawWire.ts'),
     server.ssrLoadModule('/src/dxEditor/wireConnections.ts'),
-    server.ssrLoadModule('/src/dxEditor/tools/drawRect.ts')
+    server.ssrLoadModule('/src/dxEditor/tools/drawRect.ts'),
+    server.ssrLoadModule('/src/dxEditor/tools/drawText.ts'),
+    server.ssrLoadModule('/src/dxEditor/tools/drawEllipse.ts'),
+    server.ssrLoadModule('/src/dxEditor/lineVertexEditor.ts'),
+    server.ssrLoadModule('/src/dxEditor/documentSession.ts'),
+    server.ssrLoadModule('/src/dxEditor/event/editorEvent.ts')
   ])
 })
 
@@ -643,4 +659,156 @@ test('rectangle preview appears on the first drag event', () => {
 
   assert.equal(tree.children[0].width, 20)
   assert.equal(tree.children[0].height, 30)
+})
+
+test('canceling or leaving a new text empty removes the uncommitted object', () => {
+  const tree = new Group()
+  tree.render = () => {}
+  tree.getWorldByClient = (x, y) => new Vector2(x, y)
+  const editor = {
+    tree,
+    guideline: { visible: false },
+    selector: { openInnerEditor() {}, cancel() {} },
+    removeEventListener() {},
+    tool: { setActiveTool() {} }
+  }
+  const tool = new ToolDrawText(editor)
+  tool.onTap({ origin: { clientX: 10, clientY: 20 } })
+  assert.equal(tree.children.length, 1)
+  tool.onCloseInnerEditor({ cancel: true })
+  assert.equal(tree.children.length, 0)
+
+  tool.onTap({ origin: { clientX: 10, clientY: 20 } })
+  tool.onCloseInnerEditor({ cancel: false })
+  assert.equal(tree.children.length, 0)
+})
+
+test('local draft marks unsaved work and can be restored without marking it saved', t => {
+  const originalWindow = globalThis.window
+  const originalStorage = globalThis.localStorage
+  const values = new Map()
+  globalThis.localStorage = {
+    getItem: key => values.get(key) || null,
+    setItem: (key, value) => values.set(key, value),
+    removeItem: key => values.delete(key)
+  }
+  globalThis.window = { addEventListener() {}, removeEventListener() {}, confirm: () => true }
+  t.after(() => { globalThis.window = originalWindow; globalThis.localStorage = originalStorage })
+  let document = { children: [] }
+  const listeners = new Map()
+  const editor = {
+    tree: { toJSON: () => document },
+    addEventListener(type, callback) { listeners.set(type, callback) },
+    removeEventListener(type) { listeners.delete(type) },
+    importJson(value) { document = value; session.markSaved() }
+  }
+  const session = new DocumentSession(editor)
+  document = { children: [{ tag: 'Rect' }] }
+  listeners.get(EditorEvent.UPDATE)()
+  assert.equal(session.dirty, true)
+  let prevented = false
+  session.beforeUnload({ preventDefault() { prevented = true }, returnValue: null })
+  assert.equal(prevented, true)
+  assert.ok(values.has('dx-editor-draft-v1'))
+  document = { children: [] }
+  session.markSaved()
+  values.set('dx-editor-draft-v1', JSON.stringify({ version: 1, document: { children: [{ tag: 'Rect' }] } }))
+  session.restoreDraft()
+  assert.equal(session.dirty, true)
+  assert.equal(document.children.length, 1)
+  session.destroy()
+})
+
+test('editing line vertices detaches a moved endpoint and preserves intermediate points', () => {
+  const line = new Line({ points: [[0, 0], [10, 0], [20, 0]], userData: {
+    connections: { start: { targetId: 'image', portIndex: 0 } }
+  } })
+  const editor = {
+    selector: { single: true, element: line },
+    render() {},
+    dispatchEvent() {}
+  }
+  const vertices = Object.create(LineVertexEditor.prototype)
+  vertices.editor = editor
+  vertices.refresh = () => {}
+  vertices.changeCoordinate(0, 'x', 5)
+  assert.deepEqual(line.getPoints(), [[5, 0], [10, 0], [20, 0]])
+  assert.equal(line.userData.connections.start, undefined)
+  vertices.insertAfter(1)
+  assert.deepEqual(line.getPoints()[2], [15, 0])
+  vertices.remove(2)
+  assert.deepEqual(line.getPoints(), [[5, 0], [10, 0], [20, 0]])
+})
+
+test('one pointer move is enough to drag a line vertex and record an update', () => {
+  const line = new Line({ points: [[0, 0], [10, 0]] })
+  const events = []
+  const editor = {
+    selector: { single: true, element: line },
+    camera: { zoom: 1 },
+    tree: {
+      getPageByClient: (x, y) => new Vector2(x, y),
+      getPageByWorld: (x, y) => new Vector2(x, y),
+      getWorldByClient: (x, y) => new Vector2(x, y)
+    },
+    sky: { add() {}, remove() {}, render() {} },
+    orbitControler: { addEventListener() {}, removeEventListener() {} },
+    addEventListener() {}, removeEventListener() {},
+    dispatchEvent(type) { events.push(type) },
+    render() {}
+  }
+  const vertices = new LineVertexEditor(editor)
+  assert.equal(vertices.capture({ origin: { clientX: 0, clientY: 0 } }), true)
+  vertices.onDragStart({ origin: { clientX: 20, clientY: 20 } })
+  vertices.onDragEnd({ origin: { clientX: 20, clientY: 20 } })
+  assert.deepEqual(line.getPoints()[0], [20, 20])
+  assert.equal(events.filter(type => type === EditorEvent.UPDATE).length, 1)
+  vertices.destroy()
+})
+
+test('ellipse bounds and hit testing account for rotation', () => {
+  const ellipse = new Ellipse({ width: 100, height: 50, rotate: Math.PI / 4 })
+  ellipse.computeBoundsBox()
+  assert.ok(ellipse.bounds.minX < -50)
+  assert.ok(ellipse.bounds.maxX > 50)
+  assert.equal(ellipse.isPointInGraph(new Vector2(0, 0)), ellipse)
+  assert.equal(ellipse.isPointInGraph(new Vector2(50, 50)), false)
+})
+
+test('rotated rectangle and image bounds include all four corners', () => {
+  const rect = new Rect({ width: 100, height: 40, rotate: Math.PI / 4 })
+  rect.computeBoundsBox()
+  assert.ok(rect.bounds.minX < -20)
+  assert.ok(rect.bounds.maxY > 90)
+  assert.equal(rect.isPointInGraph(new Vector2(0, 80)), false)
+
+  const image = new Img({ size: [100, 40], rotate: Math.PI / 4 })
+  image.computeBoundsBox()
+  assert.ok(image.bounds.minX < -20)
+  assert.ok(image.bounds.maxY > 90)
+  assert.equal(image.isPointInGraph(new Vector2(0, 80)), false)
+})
+
+test('search returns every matching visible unlocked graphic', () => {
+  const tree = new Group()
+  const first = new Rect({ name: 'Breaker A' })
+  const second = new Rect({ name: 'Breaker B' })
+  const hidden = new Rect({ name: 'Breaker hidden', visible: false })
+  tree.add(first, second, hidden)
+  const results = EditorView.prototype.findAll.call({ tree }, 'breaker')
+  assert.deepEqual(results, [first, second])
+})
+
+test('circle tool creates equal dimensions from a drag', () => {
+  const tree = new Group()
+  tree.render = () => {}
+  tree.getWorldByClient = (x, y) => new Vector2(x, y)
+  const editor = { tree, dispatchEvent() {}, tool: { setActiveTool() {} } }
+  const tool = new ToolDrawEllipse(editor, true)
+  tool.onDown({ origin: { clientX: 0, clientY: 0 } })
+  tool.onDragStart({ origin: { clientX: 30, clientY: 20 } })
+  assert.equal(tree.children[0].width, 20)
+  assert.equal(tree.children[0].height, 20)
+  tool.onDragEnd({ origin: { clientX: 30, clientY: 20 } })
+  assert.equal(tree.children.length, 1)
 })
