@@ -12,33 +12,11 @@ import { EditorEvent } from '@/dxEditor/event'
 import { produce, enablePatches, applyPatches, Patch } from "immer"
 // import { InnerEditorEvent } from 'leafer-editor'
 import _ from 'lodash'
+import { reconcileSnapshot } from './reconcileSnapshot'
 // import { IKeyEvent } from '@leafer-ui/interface'
 
 export type Queue = { [key: number]: { redo: Patch[], undo: Patch[] } }
 
-function isPlainValue(data: any) {
-  return !(Object.prototype.toString.call(data) === '[object Object]' || Array.isArray(data))
-}
-const deepCompareAndMerge = (draft: any, data: any) => {
-  const mergeData = { ...draft, ...data }
-  // TODO 比较老数据和新数据的变化，这里只做了一层比较，后续做改造
-  Object.keys(mergeData).forEach(key => {
-    // 新的有，老得没有，直接赋值
-    if (!draft[key]) {
-      draft[key] = data[key]
-    } else if (!data[key]) {
-      // 新的没有，老得有，直接删除
-      delete draft[key]
-    } else {
-      if (isPlainValue(draft[key]) && isPlainValue(data[key])) {
-        draft[key] = data[key]
-      } else {
-        // 两个都有，并且都不是普通值
-        deepCompareAndMerge(draft[key], data[key])
-      }
-    }
-  })
-}
 export default class HistoryManager {
   current = -1 // 前进后退的索引值
   maxQueueValue = 50 // 最大存放数
@@ -66,7 +44,7 @@ export default class HistoryManager {
 
     this.initialState = produce(this.initialState, draft => {
 
-      deepCompareAndMerge(draft, data)
+      reconcileSnapshot(draft, data)
 
     }, (patches, inversePatches) => {
       // 没有任何变化
