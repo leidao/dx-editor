@@ -719,6 +719,143 @@ test('local draft marks unsaved work and can be restored without marking it save
   session.destroy()
 })
 
+test('starting a JSON download keeps a recovery copy before clearing the dirty flag', t => {
+  const originalWindow = globalThis.window
+  const originalStorage = globalThis.localStorage
+  const values = new Map()
+  globalThis.localStorage = {
+    getItem: key => values.get(key) || null,
+    setItem: (key, value) => values.set(key, value),
+    removeItem: key => values.delete(key)
+  }
+  globalThis.window = { addEventListener() {}, removeEventListener() {} }
+  t.after(() => { globalThis.window = originalWindow; globalThis.localStorage = originalStorage })
+  let drawing = { children: [] }
+  const listeners = new Map()
+  const editor = {
+    tree: { toJSON: () => drawing },
+    addEventListener(type, callback) { listeners.set(type, callback) },
+    removeEventListener(type) { listeners.delete(type) }
+  }
+  const session = new DocumentSession(editor)
+  drawing = { children: [{ tag: 'Rect' }] }
+  listeners.get(EditorEvent.UPDATE)()
+  assert.equal(session.dirty, true)
+  let backedUpBeforeDownload = false
+  assert.equal(session.startDownload(() => {
+    backedUpBeforeDownload = values.has('dx-editor-recovery-v1') && session.dirty
+  }), true)
+  assert.equal(backedUpBeforeDownload, true)
+  assert.equal(session.dirty, false)
+  const copies = session.getRecoveryCopies()
+  assert.equal(copies.length, 1)
+  assert.equal(copies[0].kind, 'download')
+  assert.ok(values.has('dx-editor-recovery-v1'))
+  session.destroy()
+})
+
+test('declining startup recovery keeps the drawing available for later restoration', t => {
+  const originalWindow = globalThis.window
+  const originalStorage = globalThis.localStorage
+  const values = new Map([['dx-editor-draft-v1', JSON.stringify({ version: 1, document: { children: [{ tag: 'Rect' }] } })]])
+  globalThis.localStorage = {
+    getItem: key => values.get(key) || null,
+    setItem: (key, value) => values.set(key, value),
+    removeItem: key => values.delete(key)
+  }
+  let shouldConfirm = false
+  globalThis.window = { addEventListener() {}, removeEventListener() {}, confirm: () => shouldConfirm }
+  t.after(() => { globalThis.window = originalWindow; globalThis.localStorage = originalStorage })
+  let drawing = { children: [] }
+  const editor = {
+    tree: { toJSON: () => drawing },
+    addEventListener() {},
+    removeEventListener() {},
+    importJson(value) { drawing = value; session.markSaved() }
+  }
+  const session = new DocumentSession(editor)
+  session.restoreDraft()
+  assert.equal(drawing.children.length, 0)
+  assert.equal(values.has('dx-editor-draft-v1'), false)
+  const [copy] = session.getRecoveryCopies()
+  assert.equal(copy.kind, 'deferred')
+  drawing = { children: [{ tag: 'Text' }] }
+  session.beforeUnload({ preventDefault() {}, returnValue: null })
+  assert.equal(JSON.parse(values.get('dx-editor-draft-v1')).document.children[0].tag, 'Text')
+  assert.equal(session.getRecoveryCopies()[0].id, copy.id)
+  shouldConfirm = true
+  assert.equal(session.restoreRecoveryCopy(copy.id), true)
+  assert.equal(drawing.children[0].tag, 'Rect')
+  assert.equal(session.dirty, true)
+  assert.equal(session.getRecoveryCopies().length, 0)
+  session.destroy()
+})
+
+test('a failed recovery backup does not mark an edited drawing saved', t => {
+  const originalWindow = globalThis.window
+  const originalStorage = globalThis.localStorage
+  globalThis.localStorage = {
+    getItem: () => null,
+    setItem(key) { if (key === 'dx-editor-recovery-v1') throw new Error('storage full') },
+    removeItem() {}
+  }
+  globalThis.window = { addEventListener() {}, removeEventListener() {} }
+  t.after(() => { globalThis.window = originalWindow; globalThis.localStorage = originalStorage })
+  let drawing = { children: [] }
+  const listeners = new Map()
+  const editor = {
+    tree: { toJSON: () => drawing },
+    addEventListener(type, callback) { listeners.set(type, callback) },
+    removeEventListener(type) { listeners.delete(type) }
+  }
+  const session = new DocumentSession(editor)
+  drawing = { children: [{ tag: 'Rect' }] }
+  listeners.get(EditorEvent.UPDATE)()
+  const oldWarn = console.warn
+  console.warn = () => {}
+  try { assert.equal(session.startDownload(() => {}), false) }
+  finally { console.warn = oldWarn }
+  assert.equal(session.dirty, true)
+  session.destroy()
+})
+
+test('failed download keeps the drawing unsaved and recent backups do not evict deferred drafts', t => {
+  const originalWindow = globalThis.window
+  const originalStorage = globalThis.localStorage
+  const values = new Map([['dx-editor-recovery-v1', JSON.stringify([{
+    id: 'deferred-draft', savedAt: 1, kind: 'deferred', document: { children: [{ tag: 'Old' }] }
+  }])]])
+  globalThis.localStorage = {
+    getItem: key => values.get(key) || null,
+    setItem: (key, value) => values.set(key, value),
+    removeItem: key => values.delete(key)
+  }
+  globalThis.window = { addEventListener() {}, removeEventListener() {} }
+  t.after(() => { globalThis.window = originalWindow; globalThis.localStorage = originalStorage })
+  let drawing = { children: [] }
+  const listeners = new Map()
+  const editor = {
+    tree: { toJSON: () => drawing },
+    addEventListener(type, callback) { listeners.set(type, callback) },
+    removeEventListener(type) { listeners.delete(type) }
+  }
+  const session = new DocumentSession(editor)
+  drawing = { children: [{ tag: 'Rect', index: 0 }] }
+  listeners.get(EditorEvent.UPDATE)()
+  assert.throws(() => session.startDownload(() => { throw new Error('download failed') }), /download failed/)
+  assert.equal(session.dirty, true)
+  for (let index = 1; index <= 4; index++) {
+    drawing = { children: [{ tag: 'Rect', index }] }
+    listeners.get(EditorEvent.UPDATE)()
+    assert.equal(session.startDownload(() => {}), true)
+  }
+  const copies = JSON.parse(values.get('dx-editor-recovery-v1'))
+  assert.equal(copies.filter(copy => copy.kind === 'download').length, 3)
+  assert.deepEqual(copies.filter(copy => copy.kind === 'download').map(copy => copy.document.children[0].index), [4, 3, 2])
+  assert.equal(copies.find(copy => copy.id === 'deferred-draft').kind, 'deferred')
+  session.destroy()
+})
+
 test('editing line vertices detaches a moved endpoint and preserves intermediate points', () => {
   const line = new Line({ points: [[0, 0], [10, 0], [20, 0]], userData: {
     connections: { start: { targetId: 'image', portIndex: 0 } }
